@@ -1,0 +1,743 @@
+<!-- public/estoque/pedidosMateriais.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEDIDOS DE MATERIAIS</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI", Roboto, sans-serif;
+}
+
+body{
+    background:#0f172a;
+}
+
+/* HEADER SIIV */
+
+.header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+}
+
+.left{
+    justify-self:start;
+}
+
+.center{
+    justify-self:center;
+    color:#cbd5f5;
+}
+
+.right{
+    justify-self:end;
+}
+
+.logout{
+    cursor:pointer;
+    color:#ef4444;
+}
+
+/* MAIN */
+/* MAIN */
+
+main{
+    max-width:1300px;
+    margin:30px auto;
+    background:white;
+    padding:40px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+/* TÍTULO */
+
+.page-title{
+    font-size:24px;
+    font-weight:600;
+    color:#0f172a;
+    margin-bottom:20px;
+}
+
+/* #busca{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    margin-bottom:20px;
+} */
+
+
+
+/* TABELA */
+
+.table-container{
+    width:100%;
+    overflow-x:auto;
+    padding-bottom:10px;
+}
+
+.table-header,
+.pedido-item{
+    min-width:1200px;
+}
+
+
+.table-header{
+    display:grid;
+    grid-template-columns:
+        10px     /* ITEM */
+        130px    /* CODIGO */
+        1fr      /* PRODUTO */
+        180px    /* SOLICITANTE */
+        180px    /* DATA/HORA SOLICITACAO */
+        180px    /* DATA/HORA ENTREGA */
+        90px     /* QTD */
+        170px;   /* STATUS */
+
+    column-gap:15px;
+    background:#e2e8f0;
+    padding:15px 20px;
+    border-radius:8px;
+    font-weight:bold;
+    color:#475569;
+    margin-bottom:10px;
+    text-align:center;
+}
+
+.pedido-item{
+    display:grid;
+    grid-template-columns:
+        10px
+        130px
+        1fr
+        180px
+        180px
+        180px
+        90px
+        170px;
+
+    column-gap:15px;
+    align-items:center;
+    padding:18px 20px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+
+
+/* ALINHAMENTO */
+.pedido-item > div:nth-child(1),
+.pedido-item > div:nth-child(2),
+.pedido-item > div:nth-child(4),
+.pedido-item > div:nth-child(5),
+.pedido-item > div:nth-child(6),
+.pedido-item > div:nth-child(7){
+    text-align:center;
+}
+
+.codigo{
+    font-size:18px;
+    font-weight:bold;
+    color:#1d4ed8;
+}
+
+.produto-titulo{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:5px;
+    color:#0f172a;
+}
+
+.produto-desc{
+    font-size:14px;
+    color:#475569;
+    line-height:1.5;
+}
+
+.fornecedor{
+    text-align:center;
+    font-size:14px;
+    font-weight:600;
+}
+
+.qtd{
+    text-align:center;
+    font-weight:bold;
+}
+
+.valor{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+/* STATUS */
+.status{
+    color:white;
+    padding:8px 14px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:700;
+    display:inline-block;
+    cursor:pointer;
+    border:none;
+}
+
+.status-entregue{
+    background:#16a34a;
+}
+
+.status-enviado{
+    background:#2563eb;
+}
+
+.status-pendente{
+    background:#d97706;
+}
+
+/* TOTAL */
+
+.total-geral{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:20px;
+
+    margin-top:30px;
+    padding:20px 25px;
+
+    background:#f8fafc;
+    border-top:3px solid #2563eb;
+    border-radius:8px;
+}
+
+.titulo-total{
+    font-size:18px;
+    font-weight:700;
+    color:#334155;
+}
+
+.valor-total-geral{
+    font-size:28px;
+    font-weight:800;
+    color:#2563eb;
+}
+
+
+/* PAGINAÇÃO */
+
+#paginacao{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin:30px 0;
+}
+
+#paginacao button{
+    padding:6px 12px;
+    font-size:13px;
+    border:1px solid #cbd5e1;
+    background:white;
+    color:#475569;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+#paginacao button:hover{
+    background:#f1f5f9;
+}
+
+#infoPagina{
+    font-size:13px;
+    font-weight:600;
+    color:#64748b;
+    min-width:100px;
+    text-align:center;
+}
+
+
+
+
+/* BOTÕES FINAIS */
+
+.actions{
+    display:flex;
+    gap:10px;
+    padding-top:25px;
+}
+
+.actions button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.voltar{
+    background:#334155;
+    color:white;
+}
+
+.voltar:hover{
+    background:#475569;
+}
+
+
+.arquivoPedidos{
+    background:#2563eb;
+    color:white;
+}
+
+.arquivoPedidos:hover{
+    background:#1d4ed8;
+}
+
+
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+    main{
+        margin:10px;
+        padding:20px;
+    }
+
+    .table-header{
+        display:none;
+    }
+
+    .pedido-item{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .qtd,
+    .valor{
+        text-align:left;
+    }
+
+    .acoes{
+        justify-content:flex-start;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="left">
+        <h1 onclick="irHome()" style="cursor:pointer;">
+            S.I.I.V.
+        </h1>
+    </div>
+
+    <div class="center">
+        <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+        <span class="logout" onclick="logout()">
+            SAIR ➜]
+        </span>
+    </div>
+
+</header>
+
+<main>
+    <div class="page-title"> PEDIDOS DE MATERIAIS </div>
+    <!-- <input id="busca" placeholder="🔍 Buscar pedido..." >     -->
+    <div class="table-container">
+        <div class="table-header">
+            <div>ITEM</div>
+            <div>CÓDIGO</div>
+            <div>PRODUTO</div>
+            <div>SOLICITANTE</div>
+            <div>DATA SOLICITAÇÃO</div>
+            <div>DATA ENTREGA</div>
+            <div>QTD</div>
+            <div>STATUS</div>
+        </div>
+
+        <div id="listaPedidos"></div>
+    </div>
+
+    <div id="paginacao">
+        <button onclick="paginaAnterior()"> ◀ ANTERIOR </button>
+        <span id="infoPagina"></span>
+        <button onclick="proximaPagina()"> PRÓXIMA ▶ </button>
+    </div>
+
+
+    <!-- BOTÃO VOLTAR -->
+    <div class="actions">
+        <button class="voltar" onclick="voltar()">
+            ⬅ Voltar
+        </button>
+        <button class="arquivoPedidos" onclick="arquivoPedidos()">
+            📂 Arquivo Pedidos
+        </button>
+    </div>
+    
+</main>
+
+<script>
+
+// TOKEN
+
+const token = localStorage.getItem("token");
+
+if(!token){
+    window.location.href = "../index.html";
+}
+
+// USUÁRIO
+    const usuario = localStorage.getItem("usuario");
+
+    document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+// HOME
+    function irHome(){
+        window.location.href = "../home.html";
+    }
+
+// VOLTAR
+    function voltar(){
+        window.location.href = "estoque.html";
+    }
+
+// BOTÃO ARQUIVO DE PEDIDOS
+    function arquivoPedidos(){
+        window.location.href = "arquivoPedidos.html";
+    }
+
+
+// ARRAY DE ITENS
+    const pedidos = [
+
+        {
+            id:1,
+            codigo:"BIT-001",
+            pedido:"125",
+            produto:"Jogo de Juntas Bitzer 4NFCY",
+            solicitante:"OFICINA",
+            dataSolicitacao:"02/09/2026",
+            dataEntrega:"02/09/2026",
+            qtd:"2 kits",
+            status:"ENTREGUE"
+        },
+
+        {
+            id:2,
+            codigo:"BIT-014",
+            pedido:"124",
+            produto:"Filtro de Óleo Bitzer",
+            solicitante:"MANUTENÇÃO",
+            dataSolicitacao:"01/09/2026",
+            dataEntrega:"01/09/2026",
+            qtd:"5 un",
+            status:"PENDENTE"
+        },
+
+        {
+            id:3,
+            codigo:"BIT-027",
+            pedido:"123",
+            produto:"Placa de Válvula 4PES",
+            solicitante:"OFICINA",
+            dataSolicitacao:"01/09/2026",
+            dataEntrega:"01/09/2026",
+            qtd:"3 un",
+            status:"PENDENTE"
+        },
+
+        {
+            id:4,
+            codigo:"BIT-032",
+            pedido:"122",
+            produto:"Óleo Bitzer BSE32",
+            solicitante:"MONTAGEM",
+            dataSolicitacao:"31/08/2026",
+            dataEntrega:"31/08/2026",
+            qtd:"4 galões",
+            status:"PENDENTE"
+        },
+
+        {
+            id:5,
+            codigo:"BIT-100",
+            pedido:"121",
+            produto:"Compressor Bitzer 4NES-14Y Remanufaturado",
+            solicitante:"EXPEDIÇÃO",
+            dataSolicitacao:"30/08/2026",
+            dataEntrega:"30/08/2026",
+            qtd:"1 un",
+            status:"ENTREGUE"
+        },
+
+        {
+            id:6,
+            codigo:"BIT-101",
+            pedido:"120",
+            produto:"Compressor Bitzer 6GE-34Y Novo",
+            solicitante:"VENDAS",
+            dataSolicitacao:"30/08/2026",
+            dataEntrega:"31/08/2026",
+            qtd:"1 un",
+            status:"ENTREGUE"
+        },
+
+        {
+            id:7,
+            codigo:"BIT-045",
+            pedido:"119",
+            produto:"Retentor de Eixo Bitzer",
+            solicitante:"ASSISTÊNCIA TÉCNICA",
+            dataSolicitacao:"29/08/2026",
+            dataEntrega:"29/08/2026",
+            qtd:"6 un",
+            status:"PENDENTE"
+        },
+
+        {
+            id:8,
+            codigo:"BIT-052",
+            pedido:"118",
+            produto:"Bomba de Óleo Bitzer",
+            solicitante:"OFICINA",
+            dataSolicitacao:"28/08/2026",
+            dataEntrega:"28/08/2026",
+            qtd:"2 un",
+            status:"ENTREGUE"
+        }
+
+    ];
+
+// variáveis da paginação
+    let paginaAtual = 1;
+    const itensPorPagina = 5;
+    let pedidosFiltrados = [...pedidos];
+
+
+// função render
+    function render(lista){
+
+        const container =
+        document.getElementById("listaPedidos");
+
+        container.innerHTML = "";
+
+        const inicio =
+        (paginaAtual - 1) * itensPorPagina;
+
+        const fim =
+        inicio + itensPorPagina;
+
+        const totalPaginas =
+        Math.ceil(lista.length / itensPorPagina);
+
+        lista
+        .slice(inicio,fim)
+        .forEach(pedido => {
+
+            const classeStatus =
+            pedido.status === "ENTREGUE"
+            ? "status-entregue"
+            : "status-pendente";
+
+            const textoStatus =
+            pedido.status === "ENTREGUE"
+            ? "✅ ENTREGUE"
+            : "⏳ PENDENTE";
+
+            container.innerHTML += `
+
+            <div class="pedido-item">
+
+                <div>${pedido.id}</div>
+
+                <div>
+                    <div class="codigo">
+                        ${pedido.codigo}
+                    </div>
+
+                    <div>
+                        Pedido #${pedido.pedido}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="produto-titulo">
+                        ${pedido.produto}
+                    </div>
+                </div>
+
+                <div>${pedido.solicitante}</div>
+
+                <div>${pedido.dataSolicitacao}</div>
+
+                <div>${pedido.dataEntrega}</div>
+
+                <div class="qtd">
+                    ${pedido.qtd}
+                </div>
+
+                <button
+                    class="status ${classeStatus}"
+                    onclick="alterarStatus(this)">
+                    ${textoStatus}
+                </button>
+
+            </div>
+
+            `;
+
+        });
+
+        document
+            .getElementById("infoPagina")
+            .textContent =
+        `Página ${paginaAtual} de ${totalPaginas}`;
+
+    }
+
+// Função AlterarStatus
+    function alterarStatus(botao){
+
+        // Se já estiver entregue
+        if(botao.classList.contains("status-entregue")){
+
+            alert("✅ Material já foi entregue.");
+
+            return;
+        }
+
+        const confirmar = confirm(
+            "O material foi entregue corretamente?"
+        );
+
+        if(!confirmar){
+            return;
+        }
+
+        botao.classList.remove("status-pendente");
+
+        botao.classList.add("status-entregue");
+
+        botao.innerHTML = "✅ ENTREGUE";
+
+    }
+
+
+// Funções da paginação
+    function proximaPagina(){
+
+        const totalPaginas =
+        Math.ceil(
+            pedidosFiltrados.length /
+            itensPorPagina
+        );
+
+        if(paginaAtual < totalPaginas){
+
+            paginaAtual++;
+
+            render(pedidosFiltrados);
+
+        }
+
+    }
+
+    function paginaAnterior(){
+
+        if(paginaAtual > 1){
+
+            paginaAtual--;
+
+            render(pedidosFiltrados);
+
+        }
+
+    }
+
+
+// FUNÇÃO DE BUSCA
+    // document
+    // .getElementById("busca")
+    // .addEventListener("input", function(e){
+
+    //     const termo =
+    //     e.target.value.toLowerCase();
+
+    //     pedidosFiltrados =
+    //     pedidos.filter(pedido =>
+
+    //         pedido.produto
+    //         .toLowerCase()
+    //         .includes(termo)
+
+    //         ||
+
+    //         pedido.codigo
+    //         .toLowerCase()
+    //         .includes(termo)
+
+    //         ||
+
+    //         pedido.solicitante
+    //         .toLowerCase()
+    //         .includes(termo)
+
+    //     );
+
+    //     paginaAtual = 1;
+
+    //     render(pedidosFiltrados);
+
+    // });
+
+// Inicialização    
+    render(pedidosFiltrados);
+
+
+// LOGOUT
+    function logout(){
+
+        const confirmar =
+            confirm("⚠️ Deseja realmente sair do sistema?");
+
+        if(!confirmar) return;
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+
+        window.location.href = "../index.html";
+    }
+
+</script>
+
+</body>
+</html>

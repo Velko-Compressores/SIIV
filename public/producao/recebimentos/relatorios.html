@@ -1,0 +1,660 @@
+<!-- public/producao/recebimentos/relatorios.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Motores</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Roboto, sans-serif;
+    }
+
+    body{
+        background: #0f172a;
+        color: #1e293b;
+    }
+
+
+    /* HEADER */
+    .header {
+        background: #020617;
+        color: white;
+        padding: 15px 30px;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: center;
+    }
+
+    .left {
+        justify-self: start;
+    }
+
+    .center {
+        justify-self: center;
+        font-size: 16px;
+        color: #cbd5f5;
+    }
+
+    .right {
+        justify-self: end;
+    }
+
+    .logout {
+        cursor: pointer;
+        color: #ef4444;
+    }
+
+
+    select{
+        padding:10px
+    }
+
+    .dashboard{
+        max-width:1600px;
+        margin:0 auto;
+        padding-top:70px;
+    }
+
+
+    h2{
+        color:#2c3e50;
+        font-size: large;
+    }
+
+    .graficos{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:20px;
+    }
+
+    .grafico{
+        background:#fff;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 2px 10px rgba(0,0,0,.1);
+
+        min-width:0;
+        overflow:hidden;
+    }
+
+    .grafico canvas{
+        width:100% !important;
+        height:250px !important;
+    }
+
+    .indicador{
+        display:flex;
+        align-items:center;
+        gap:6px;
+        background:#fff;
+        padding:8px 12px;
+        border-radius:8px;
+        box-shadow:0 2px 8px rgba(0,0,0,.08);
+        color:#2c3e50;
+        font-size:15px;
+        white-space:nowrap;
+    }
+
+    .indicador span{
+        color:#0d6efd;
+        font-weight:bold;
+    }
+
+    .filtros{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        margin-bottom:30px;
+        align-items:center;
+    }
+
+    .filtros select{
+        background:#fff;
+        padding:8px 12px;
+        border:none;
+        border-radius:8px;
+        box-shadow:0 2px 8px rgba(0,0,0,.08);
+        color:#2c3e50;
+        font-size:13px;
+        min-width:150px;
+        cursor:pointer;
+        outline:none;
+        transition:.2s;
+    }
+
+    .filtros select:hover{
+        box-shadow:0 4px 12px rgba(0,0,0,.12);
+    }
+
+    .filtros select:focus{
+        box-shadow:0 0 0 3px rgba(13,110,253,.15);
+    }
+
+
+    @media(max-width:1200px){
+        .graficos{
+            grid-template-columns:1fr 1fr;
+        }
+    }
+
+    @media(max-width:768px){
+        .graficos{
+            grid-template-columns:1fr;
+        }
+    }
+
+
+</style>
+
+</head>
+<body>
+
+<header class="header">
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">S.I.I.V.</h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+</header>
+
+
+<div class="dashboard">
+    <!-- <h1>Recebimento de Compressores</h1> -->
+
+    <div class="filtros">
+
+        <select id="anoFiltro">
+            <option value="">Todos os Anos</option>
+        </select>
+
+        <select id="mesFiltro">
+            <option value="">Todos os Meses</option>
+        </select>
+
+        <select id="fabricanteFiltro">
+            <option value="">Todos os Fabricantes</option>
+        </select>
+
+        <select id="tensaoFiltro">
+            <option value="">Todas as Tensões</option>
+        </select>
+
+        <select id="modeloFiltro">
+            <option value="">Todos os Modelos</option>
+        </select>
+
+        <select id="tipoFiltro">
+            <option value="">Todos os Tipos</option>
+        </select>
+
+        <div class="indicador">
+            <strong>Tot. Compressores:</strong>
+            <span id="totalMotores">0</span>
+        </div>
+
+        <div class="indicador">
+            <strong>Temp. Méd. check-in:</strong>
+            <span id="tempoMedio">0</span>
+        </div>
+
+    </div>
+
+
+
+    <!-- Bloco 1  -->
+    <div class="graficos">
+        <div class="grafico">
+            <h2>Compressores por Mês</h2>
+            <canvas id="graficoMes"></canvas>
+        </div>
+
+        <div class="grafico">
+            <h2>Compressores por Fabricante</h2>
+            <canvas id="graficoFabricante"></canvas>
+        </div>
+
+        <div class="grafico">
+            <h2>Compressores por Modelo</h2>
+            <canvas id="graficoModelo"></canvas>
+        </div>
+
+
+
+        <div class="grafico">
+            <h2>Compressores por ano</h2>
+            <canvas id="graficoAnoMes"></canvas>
+        </div>
+
+        <div class="grafico">
+            <h2>Compressores por Tensão</h2>
+            <canvas id="graficoTensao"></canvas>
+        </div>
+
+        <div class="grafico">
+            <h2>Compressores por Tipo</h2>
+            <canvas id="graficoTipo"></canvas>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    const fabricantes = [
+
+    'Bitzer','Bitzer','Bitzer','Bitzer', 'Copeland','Copeland','Copeland',
+    'Frascold','Frascold', 'Bock','Bock', 'Daikin', 'Sabroe','Hanbell', 'York',
+    'Carrier', 'Trane', 'Refcomp', 'Dorin', 'Mycom', 'Jehall', 'Hitachi'
+
+    ];
+    const fabricantesFixos = [
+        ...new Set(fabricantes)
+    ];
+
+
+
+    const tensoesPeso = [
+    '220', '380', '440', '690', '220', '380', '440', '690',
+    '220V /380V', '220V /380V', '220V /380V', '220V /380V',
+    '220V / 440V', '220V / 440V', '380V / 690V', 'Sem Motor'
+
+    ];
+    const tensoesFixas = [
+        ...new Set(tensoesPeso)
+    ];
+
+
+    const modelosPeso = [
+
+    '4FC-3.2', '4FC-3.2', '4FC-3.2', '4FC-5.2', '4FC-5.2',
+    '4EC-4.2', '4EC-4.2', '4EC-6.2', '4DC-5.2', '4DC-7.2',
+    '4CC-6.2', '4CC-9.2', '4VCS-6.2', '4TCS-8.2','4PCS-8.2',
+    '4NCS-10.2', '4NCS-12.2', '4VES-7'
+
+    ];
+    const modelosFixos = [
+        ...new Set(modelosPeso)
+    ];
+
+
+    const tiposPeso = [
+
+    'Pistão', 'Pistão', 'Pistão', 'Pistão', 'Pistão',
+    'Parafuso', 'Parafuso'
+
+    ];
+    const tiposFixos = [
+        ...new Set(tiposPeso)
+    ];
+
+
+    const mesesBase = [
+        'Jan','Fev','Mar','Abr','Mai','Jun',
+        'Jul','Ago','Set','Out','Nov','Dez'
+    ];
+
+    /*
+    Quantidade de motores por mês
+    */
+    const volumeMensal = {
+            /* Ja,Fe,Ma,Ab,Ma,Ju,Ju,Ag,Se,Ou,No,De  */
+        2022: [48,45,42,41,40,25,28,30,33,35,38,40],
+        2023: [40,38,35,33,30,23,25,29,30,34,38,41],
+        2024: [42,36,32,30,31,22,25,28,31,33,36,42],
+        2025: [70,65,61,60,49,42,45,50,60,65,62,70]
+    };
+
+        
+    function sorteia(lista){
+        return lista[
+            Math.floor(
+                Math.random() * lista.length
+            )
+        ];
+    }
+
+    function gerarTempoAtividade(){
+        const faixas = [
+            8,10,12,15,18,
+            20,24,24,24,
+            30,36,40,48,
+            60,72
+        ];
+        return sorteia(faixas);
+    }
+
+    const dadosMotores = [];
+    // let indice = 0;
+    Object.keys(volumeMensal).forEach(ano => {
+        mesesBase.forEach((mes, mesIndex) => {
+            const quantidadeMotores =
+                volumeMensal[ano][mesIndex];
+            for(let i = 0; i < quantidadeMotores; i++){
+                dadosMotores.push({
+                    ano: Number(ano),
+                    mes,
+                    fabricante: sorteia(fabricantes),
+                    tensao: sorteia(tensoesPeso),
+                    modelo: sorteia(modelosPeso),
+                    tipo: sorteia(tiposPeso),
+                    tempoAtividade: gerarTempoAtividade()
+                });
+            }
+        });
+    });
+
+
+    const anos = [...new Set(dadosMotores.map(x => x.ano))] .sort((a,b) => a-b);
+
+    const meses=[...new Set(dadosMotores.map(x=>x.mes))];
+    const fabricantesFiltro=[...new Set(dadosMotores.map(x=>x.fabricante))];
+    const tensoesFiltro=[...new Set(dadosMotores.map(x=>x.tensao))];
+    const modelosFiltro=[...new Set(dadosMotores.map(x=>x.modelo))];
+    const tiposFiltro=[...new Set(dadosMotores.map(x=>x.tipo))];
+    function fill(id,itens){itens.forEach(v=>document.getElementById(id).innerHTML+=`<option value="${v}">${v}</option>`)}
+    fill('anoFiltro',anos);fill('mesFiltro',meses);
+    fill('fabricanteFiltro',fabricantesFiltro);fill('tensaoFiltro',tensoesFiltro);
+    fill('modeloFiltro',modelosFiltro);fill('tipoFiltro',tiposFiltro);
+    
+    document.getElementById('anoFiltro').value = Math.max(...anos);
+
+    let g1,g2,g3,g4,g5,g6;
+    function atualizar(){
+        let d=[...dadosMotores];
+        const 
+            ano=anoFiltro.value,
+            mes=mesFiltro.value,
+            fabricante=fabricanteFiltro.value,
+            tensao=tensaoFiltro.value,
+            modelo=modeloFiltro.value,
+            tipo=tipoFiltro.value;
+
+        if(ano)d=d.filter(x=>x.ano==ano);
+        if(mes)d=d.filter(x=>x.mes==mes);
+        if(fabricante)d=d.filter(x=>x.fabricante===fabricante);
+        if(tensao)d=d.filter(x=>x.tensao===tensao);
+        if(modelo)d=d.filter(x=>x.modelo===modelo);
+        if(tipo)d=d.filter(x=>x.tipo===tipo);
+        
+        totalMotores.innerText=d.length;
+        const mediaTempo = d.length
+            ? d.reduce(
+                (soma,item) =>
+                    soma + item.tempoAtividade,
+                0
+            ) / d.length
+            : 0;
+
+
+        tempoMedio.innerText =
+            `${mediaTempo.toFixed(1)} horas`;
+
+        const mesesLabels =
+            mes ? [mes] : mesesBase;
+
+        const qtdMeses = mesesLabels.map(
+            m => d.filter(
+                x => x.mes === m
+            ).length
+        );
+
+        if(g1)g1.destroy();
+
+
+        g1=new Chart(graficoMes,
+            {
+                type:'bar',
+                data: {
+                    labels:mesesLabels,datasets:[
+                        {
+                            label:'Compressores',
+                            data:qtdMeses,
+                            backgroundColor:'#0d6efd'
+                        }
+                    ]
+                },          
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+        const labels = anos;
+        const valores = anos.map(anoGrafico => {
+            return dadosMotores.filter(item => {
+                let ok = item.ano == anoGrafico;
+                /* FILTRO MÊS */
+                if (mes)
+                    ok = ok &&
+                        item.mes === mes;
+                /* FILTRO FABRICANTE */
+                if (fabricante)
+                    ok = ok &&
+                        item.fabricante === fabricante;
+                /* FILTRO TENSÃO */
+                if (tensao)
+                    ok = ok &&
+                        item.tensao === tensao;
+                /* FILTRO MODELO */
+                if (modelo)
+                    ok = ok &&
+                        item.modelo === modelo;
+                /* FILTRO TIPO */
+                if (tipo)
+                    ok = ok &&
+                        item.tipo === tipo;
+                return ok;
+            }).length;
+        });
+        if (g2) {
+            g2.destroy();
+        }
+
+        g2 = new Chart(
+            graficoAnoMes,
+            {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        // label: 'Compressores por Ano',
+                        data: valores,
+                        borderColor: '#28a745',
+                        backgroundColor: '#28a745',
+                    }]
+                },
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+
+
+        const fabricantesLabels = fabricantesFixos;
+        const fabricantesValores =
+            fabricantesLabels.map(f =>
+
+                d.filter(x =>
+                    x.fabricante === f
+                ).length
+
+            )
+
+        if(g3) g3.destroy();
+        g3 = new Chart(
+            graficoFabricante,
+            {
+                type:'bar',
+                data:{
+                    labels:fabricantesLabels,
+                    datasets:[{
+                        label:'Fabricantes',
+                        data:fabricantesValores,
+                        backgroundColor:'#ff9800'
+                    }]
+                },
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+
+
+        const modelosLabels = modelosFixos;
+        const modelosValores =
+            modelosLabels.map(m =>
+                d.filter(x =>
+                    x.modelo === m
+                ).length
+            );
+
+        if(g4) g4.destroy();
+
+        g4 = new Chart(
+            graficoModelo,
+            {
+                type:'bar',
+                data:{
+                    labels:modelosLabels,
+                    datasets:[{
+                        label:'Modelos',
+                        data:modelosValores,
+                        backgroundColor:'#9c27b0'
+                    }]
+                },
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+
+
+        const tensoesLabels = tensoesFixas;
+        const tensoesValores =
+            tensoesLabels.map(t =>
+                d.filter(x =>
+                    x.tensao === t
+                ).length
+            );
+
+        if(g5) g5.destroy();
+
+        g5 = new Chart(
+            graficoTensao,
+            {
+                type:'bar',
+                data:{
+                    labels:tensoesLabels,
+                    datasets:[{
+                        label:'Tensões',
+                        data:tensoesValores,
+                        backgroundColor:'#BFDBF7'
+                    }]
+                },
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+
+        const tiposLabels = tiposFixos;
+        const tiposValores =
+            tiposLabels.map(t =>
+                d.filter(x =>
+                    x.tipo === t
+                ).length
+            );
+
+        if(g6) g6.destroy();
+
+        g6 = new Chart(
+            graficoTipo,
+            {
+                type:'bar',
+                data:{
+                    labels:tiposLabels,
+                    datasets:[{
+                        data:tiposValores,
+                        label:'Tipo',
+                        backgroundColor:'#BFDBF7'
+                    }]
+                },
+                options:{
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    }
+                }
+            }
+        );
+
+    } // Final funcao atualizar
+
+    document.querySelectorAll('select').forEach(s=>s.addEventListener('change',atualizar));
+    atualizar();
+
+    // Proteção simples - verifica token - exibi ola usuario logado
+    const token = localStorage.getItem("token");
+    const usuario = localStorage.getItem("usuario");
+
+    if (!token) window.location.href = "index.html";
+    document.getElementById("usuario").textContent =
+        usuario ? `👋 Olá, ${usuario}` : "Olá";
+
+    function ir(pagina) {
+        window.location.href = pagina;
+    }
+
+    function irHome(){
+        window.location.href = "recebimentos.html";
+    }
+
+    // ✅ LOGOUT
+    function logout(){
+        const confirmar = confirm("⚠️ Deseja realmente sair do sistema?");
+        if (!confirmar) return;
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        window.location.href = "index.html";
+    }
+
+</script>
+</body>
+</html>

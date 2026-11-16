@@ -1,0 +1,734 @@
+<!-- public/cadastros/prestadores/cadastroPrestadores.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Cadastro de Prestadores</title>
+
+<style>
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+  }
+
+  /* HEADER */
+  .header {
+    background: #020617;
+    color: white;
+    padding: 15px 30px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .left {justify-self: start;}
+  .center {justify-self: center; color: #cbd5f5;}
+  .right {justify-self: end;}
+  .logout {cursor: pointer; color: #ef4444;}
+
+
+  main {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    color: #0f172a;
+    font-size: 18px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+  }
+
+  .full {
+    grid-column: span 2;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  label {
+    font-size: 13px;
+    color: #475569;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+  }
+
+  input:focus, select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+  }
+
+
+   /* BOTÕES */
+  .actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 25px;
+  }
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .salvar {
+    background: #22c55e;
+    color: white;
+  }
+
+  .salvar:hover {
+    background: #16a34a;
+  }
+
+  svg {
+    stroke: currentColor;
+  }
+
+  #msg {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+
+  .success { color: #16a34a; }
+  .error { color: #dc2626; }
+
+
+    
+  input[type="checkbox"] {
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+
+
+
+
+
+
+textarea {
+  height: 150px;
+  width: 750px;
+  resize: both;
+}
+
+
+  @media print {
+
+    body {
+      background: white;
+    }
+
+    .header,
+    .actions,
+    #btnImprimir {
+      display: none !important;
+    }
+
+    main {
+      box-shadow: none;
+      margin: 0;
+      border-radius: 0;
+    }
+
+  } 
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div><h1 onclick="home()" style="cursor:pointer;">S.I.I.V.</h1></div>
+  <div class="center"><span id="usuario"></span></div>
+  <div class="right"><span class="logout" onclick="logout()"> SAIR ➜] </span></div>
+</header>
+
+<main>
+<section>
+    <!-- ✅ DADOS EMPRESA -->
+    <h2>Dados da Empresa</h2>
+    <div class="grid">
+        <div class="campo">
+            <label>Razão Social</label>
+            <input id="razaoSocial" placeholder="Razão Social">
+        </div>
+
+        <div class="campo">
+            <label>Nome Fantasia</label>
+            <input id="nomeFantasia" placeholder="Nome Fantasia">
+        </div>
+
+        <div class="campo">
+            <label>CNPJ</label>
+            <input id="documento" placeholder="CNPJ">
+        </div>
+
+        <div class="campo">
+            <label>Inscrição Estadual</label>
+            <input id="inscricaoEstadual">
+        </div>
+
+        <div class="campo">
+            <label>Inscrição Municipal</label>
+            <input id="inscricaoMunicipal">
+        </div>
+
+        <div class="campo">
+            <label>Endereço</label>
+            <input id="endereco">
+        </div>
+
+        <div class="campo">
+            <label>Complemento</label>
+            <input id="complemento">
+        </div>
+
+        <div class="campo">
+            <label>Bairro</label>
+            <input id="bairro">
+        </div>
+
+        <div class="campo">
+            <label>Cidade</label>
+            <input id="cidade">
+        </div>
+
+        <div class="campo">
+            <label>Estado</label>
+            <input id="estado">
+        </div>
+
+        <div class="campo">
+            <label>País</label>
+            <input id="pais">
+        </div>
+
+        <div class="campo">
+            <label>CEP</label>
+            <input id="cep">
+        </div>
+
+        <div class="campo">
+            <label>Telefone</label>
+            <input id="telefone">
+        </div>
+
+        <div class="campo">
+            <label>Celular</label>
+            <input id="celular">
+        </div>
+
+        <div class="campo">
+            <label>Regime de Tributação</label>
+              <select id="tributacao">
+                <option value="">Selecione</option>
+                <option value="rnlp">
+                  Regime Normal-Lucro Presumido
+                </option>
+                <option value="sn">
+                  Simples Nacional
+                </option>
+                <option value="rnlr">
+                  Regime Normal-Lucro Real
+                </option>
+                <option value="esfl">
+                  Empresa Sem Fins Lucrativos
+                </option>
+              </select>
+          </div>
+
+          <div class="campo">
+            <label>Situação ICMS</label>
+              <select id="icms">
+                <option value="">Selecione</option>
+                <option value="contribuinte">
+                  Contribuinte do ICMS
+                </option>
+                <option value="naoContribuinte">
+                  Não Contribuinte do ICMS
+                </option>
+                <option value="contribuinteInsento">
+                  Contribuinte Isento de Inscrição no cadastro de contribuinte de ICMS
+                </option>
+              </select>
+          </div>
+
+        <div class="campo">
+            <label>E-mail DANFE</label>
+            <input id="emailDanfe">
+        </div>
+
+        <div class="campo">
+            <label>E-mail Cobrança</label>
+            <input id="emailCobranca">
+        </div>
+    </div>
+</section>
+
+
+<!-- ✅ DADOS BANCÁRIOS -->
+<section>
+  <h2>Dados Bancários</h2>
+  <div class="grid">
+
+    <div class="campo">
+      <label>Banco</label>
+      <input id="banco">
+    </div>
+
+    <div class="campo">
+      <label>Agência</label>
+      <input id="agencia">
+    </div>
+
+    <div class="campo">
+      <label>Conta</label>
+      <input id="conta">
+    </div>
+
+    <!-- ✅ NOVO CAMPO -->
+    <div class="campo">
+      <label>Chave PIX</label>
+      <input id="chavePix" placeholder="CPF, CNPJ, e-mail ou telefone">
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ✅ CONTATOS -->
+<section>
+  <h2>Contatos</h2>
+
+  <div class="grid">
+
+    <!-- RESPONSÁVEL -->
+    <div class="campo">
+      <label>Responsável</label>
+      <input id="responsavel">
+    </div>
+
+    <div class="campo">
+      <label>Telefone</label>
+      <input id="telefoneResponsavel">
+    </div>
+
+    <div class="campo">
+      <label>E-mail</label>
+      <input id="emailResponsavel">
+    </div>
+
+    <!-- COMERCIAL -->
+    <div class="campo">
+      <label>Comercial / Vendedor</label>
+      <input id="comercial">
+    </div>
+
+    <div class="campo">
+      <label>Telefone</label>
+      <input id="telefoneComercial">
+    </div>
+
+    <div class="campo">
+      <label>E-mail</label>
+      <input id="emailComercial">
+    </div>
+
+    <!-- FINANCEIRO -->
+    <div class="campo">
+      <label>Financeiro</label>
+      <input id="financeiro">
+    </div>
+
+    <div class="campo">
+      <label>Telefone</label>
+      <input id="telefoneFinanceiro">
+    </div>
+
+    <div class="campo">
+      <label>E-mail</label>
+      <input id="emailFinanceiro">
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- ✅ SERVIÇO -->
+<h2>Tipo de Serviço</h2>
+
+<textarea id="descricaoServico" placeholder="Descreva o serviço prestado"></textarea>
+
+<!-- ✅ DOCUMENTOS -->
+  <section>
+    <h2>Documentação</h2>
+    <div class="grid">
+
+      <div class="campo">
+        <label>Alvará de Funcionamento</label>
+        <input type="file" id="alvara">
+        <button
+          type="button"
+          id="btnVerAlvara"
+          class="voltar"
+          style="display:none; margin-top:5px;"
+          onclick="abrirAlvara()"
+        >
+          📄 Ver Alvará
+        </button>
+      </div>
+
+      <div class="campo">
+        <label>Cartão do CNPJ</label>
+        <input type="file" id="cartaoCnpj">
+        <button
+          type="button"
+          id="btnVerCartao"
+          class="voltar"
+          style="display:none; margin-top:5px;"
+          onclick="abrirCartao()"
+        >
+          📄 Ver Cartão CNPJ
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+
+<!-- ✅ CONTROLE -->
+
+<section>
+    <h2>Controle</h2>
+    <div class="grid">
+        <div class="campo">
+            <label>Data/Hora do cadastro</label>
+            <input id="dataHora" type="datetime-local">
+        </div>
+
+        <div class="campo">
+            <label>Cadastrado por</label>
+            <input id="cadastradoPor" readonly>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+  <!-- ✅ BOTÕES -->
+  <div class="actions">
+    <button class="voltar" id="btnVoltar" onclick="voltar()">⬅ Voltar</button>
+    <button class="voltar" id="btnImprimir" onclick="imprimir()" style="display:none;"> 🖨 Imprimir </button>
+    <button class="salvar" onclick="salvar()">💾 Salvar</button>
+  </div>
+
+</main>
+
+<script>
+
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const modo = params.get("modo");
+
+  // ✅ REMOVE FLICKER DO HEADER IMEDIATAMENTE
+  if (modo === "visualizar") {
+    document.querySelector(".header").style.display = "none";
+  }
+
+
+  if (!token) location.href = "../../index.html";
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+  // ✅ INIT
+  window.addEventListener("load", async () => {
+    if(id){
+      await carregarPrestador();
+      if(modo === "visualizar"){
+        ativarModoVisualizacao();
+      }
+    } else {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, "0");
+        const dia = String(agora.getDate()).padStart(2, "0");
+        const hora = String(agora.getHours()).padStart(2, "0");
+        const minuto = String(agora.getMinutes()).padStart(2, "0");
+        document.getElementById("dataHora").value =
+          `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+            
+        document.getElementById("cadastradoPor").value =
+          usuario || "";
+      }
+  });
+
+
+  // ✅ CARREGAR PRESTADOR
+  async function carregarPrestador(){
+    try {
+      const res = await fetch(
+        `/api/prestadores/${id}`,
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      const prestador = await res.json();
+      if(!res.ok){
+        alert(prestador.erro || "Erro ao carregar prestador");
+        return;
+      }
+
+      document
+        .querySelectorAll("input, textarea, select")
+        .forEach(el => {
+          if(el.type !== "file"){
+
+            if(prestador[el.id] !== undefined){
+              el.value = prestador[el.id] || "";
+            }
+          }
+        });
+
+      // ✅ ALVARÁ
+      if (prestador.alvara) {
+        document
+          .getElementById("btnVerAlvara")
+          .style.display = "flex";
+      }
+
+      // ✅ CARTÃO CNPJ
+      if (prestador.cartaoCnpj) {
+        document
+          .getElementById("btnVerCartao")
+          .style.display = "flex";
+      }
+
+    } catch(err){
+      console.error(err);
+      alert("Erro ao carregar prestador");
+    }
+  }
+
+
+  // ✅ VISUALIZAÇÃO
+  function ativarModoVisualizacao(){
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+        el.disabled = true;
+      });
+
+    // esconder upload
+    document.querySelectorAll('input[type="file"]').forEach(el => {
+        el.style.display = "none";
+      });
+    document.querySelector(".salvar").style.display = "none";
+    document.getElementById("btnVoltar").style.display = "none";
+    document.getElementById("btnImprimir").style.display = "flex";
+  }
+
+
+
+  // ✅ SALVAR
+  async function salvar(){
+    const formData = new FormData();
+
+    // ✅ Coleta todos os campos
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+
+      // arquivos
+      if (el.type === "file") {
+        if (el.files.length > 0) {
+          formData.append(el.id, el.files[0]);
+        }
+      }
+      // demais campos
+      else {
+        formData.append(
+          el.id,
+          el.value || ""
+        );
+      }
+    });
+
+    // ✅ garante usuário logado
+    formData.set(
+      "cadastradoPor",
+      usuario || ""
+    );
+
+    try {
+      const url =
+        id
+          ? `/api/prestadores/${id}`
+          : "/api/prestadores";
+
+      const metodo =
+        id
+          ? "PUT"
+          : "POST";
+
+      const res = await fetch(url, {
+        method: metodo,
+        headers: {
+          Authorization: token
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok){
+        alert(data.erro || "Erro ao salvar");
+        return;
+      }
+      alert(
+        id
+          ? "✅ Prestador atualizado com sucesso!"
+          : "✅ Prestador cadastrado com sucesso!"
+      );
+      window.location.href = "listaPrestadores.html";
+
+    } catch (err){
+
+      console.error(err);
+      alert("Erro de conexão com servidor");
+    }
+  }
+
+  function home(){
+    window.location.href = "../../home.html";
+  }
+
+  function voltar(){
+    window.location.href = "listaPrestadores.html";
+  }
+
+  function imprimir(){
+    window.print();
+  }
+
+
+  function logout(){
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    location.href = "../../index.html";
+  }
+
+  // ✅ function abrirAlvara
+  async function abrirAlvara(){
+    if(!id) return;
+    try {
+      const res = await fetch(
+        `/api/prestadores/${id}/alvara`,
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      );
+      if(!res.ok){
+        alert("Erro ao abrir Alvará");
+        return;
+      }
+      const blob = await res.blob();
+      const url =
+        window.URL.createObjectURL(blob);
+      window.open(url);
+    } catch(err){
+      console.error(err);
+      alert("Erro ao abrir Alvará");
+    }
+  }
+
+  // ✅ function abrirCartao
+  async function abrirCartao(){
+    if(!id) return;
+    try {
+      const res = await fetch(
+        `/api/prestadores/${id}/cartao`,
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      );
+      if(!res.ok){
+        alert("Erro ao abrir Cartão CNPJ");
+        return;
+      }
+      const blob = await res.blob();
+      const url =
+        window.URL.createObjectURL(blob);
+      window.open(url);
+    } catch(err){
+      console.error(err);
+      alert("Erro ao abrir Cartão CNPJ");
+    }
+  }
+
+
+</script>
+
+</body>
+</html>

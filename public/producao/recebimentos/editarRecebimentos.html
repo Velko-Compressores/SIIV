@@ -1,0 +1,1699 @@
+<!-- public/producao/recebimentos/editarRecebimentos.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Recebimento</title>
+
+<style>
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+  }
+
+  body{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background:white;
+  }
+
+  .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left{justify-self:start;}
+  .center{justify-self:center;color:#cbd5f5;}
+  .right{justify-self:end;}
+
+  .logout{
+    cursor:pointer;
+    color:#ef4444;
+  }
+
+  main{
+      flex: 1;
+      background: white;
+      padding: 30px;
+  }
+
+  .card{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    gap:15px;
+    margin-bottom:15px;
+
+  }
+
+  h2{
+    margin-top:5px;
+    margin-bottom:15px;
+    font-size:medium;
+    color:#0f172a;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+  }
+
+  .campo{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .full{
+    grid-column:span 1;
+  }
+
+  label{
+    font-size:12px;
+    color:#475569;
+  }
+
+
+  input,
+  select{
+    width:100%;
+    padding:15px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    font-size:12px;
+  }
+
+  input:focus,
+  select:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+  }
+
+
+  .fotos{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+    gap:8px;
+    padding:10px;
+  }
+
+  .foto{
+    position:relative;
+    aspect-ratio:1 / 1;
+    /* max-width:150px; */
+  }
+
+  .foto img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:12px;
+    display:none;
+
+    cursor:pointer;
+
+    position:absolute;
+    top:0;
+    left:0;
+  }
+
+  .foto input[type="file"]{
+    display:none;
+  }
+
+  .upload-box{
+    border:2px dashed #cbd5e1;
+    border-radius:12px;
+    background:#f8fafc;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.2s;
+    text-align:center;
+    padding:10px;
+  }
+
+  .upload-box:hover{
+    background:#eff6ff;
+    border-color:#3b82f6;
+  }
+
+  .upload-box .icone{
+    font-size:28px;
+    margin-bottom:5px;
+  }
+
+  .upload-box .texto{
+    font-size:12px;
+    color:#475569;
+  }
+
+  .upload-box .subtexto{
+    font-size:10px;
+    color:#94a3b8;
+    margin-top:4px;
+  }
+
+  .btn-remover{
+    position:absolute;
+    top:5px;
+    right:5px;
+
+    width:24px;
+    height:24px;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:0;
+
+    border:none;
+    border-radius:50%;
+
+    background:#ef4444;
+    color:#fff;
+
+    font-size:14px;
+    font-weight:bold;
+    line-height:1;
+
+    cursor:pointer;
+    z-index:10;
+  }
+
+  .btn-remover:hover{
+    background:#dc2626;
+  }
+
+  /* Modal para visualizar foto ampliada */
+  .modal-foto{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.9);
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+  }
+
+  .modal-foto img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(255,255,255,.2);
+    cursor:zoom-out;
+  }
+
+  .modal-foto.ativo{
+    display:flex;
+  }
+
+
+  .btn-fechar-modal{
+    position:absolute;
+    top:20px;
+    right:20px;
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#ef4444;
+    color:#fff;
+
+    font-size:22px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:10000;
+  }
+
+  .btn-fechar-modal:hover{
+    background:#dc2626;
+  }
+
+
+  .actions{
+    display:flex;
+    gap:10px;
+    /* margin-top:30px; */
+    padding: 25px;
+    background:#eff6ff;
+  }
+
+  button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+
+  /* Pesquisar clientes */
+  #listaClientes{
+    position: relative;
+    width: 100%;
+  }
+
+  .itemCliente{
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-top: none;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .itemCliente:hover{
+    background: #f1f5f9;
+  }
+
+
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .exportar {
+    background: #e4af1f;
+    color: white;
+  }
+
+  .exportar:hover {
+    background: #ecc149;
+  }
+
+  td button {
+    margin: 2px;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  td button:hover {
+    opacity: 0.8;
+  }
+
+
+  /* ================= Exportar PDF ================= */
+  @media print{
+
+    /* Oculta elementos desnecessários */
+    .header,
+    .footer-actions,
+    .logout,
+    .modal-foto,
+    .btn-fechar-modal,
+    .btn-remover{
+      display:none !important;
+    }
+
+    .ocultar-pdf{
+      display:none !important;
+    }
+
+
+    /* Remove margens */
+    body,
+    main{
+      margin:0;
+      padding:0;
+      background:white;
+    }
+
+    /* Cards sem borda */
+.card{
+  border:none !important;
+  box-shadow:none !important;
+  margin-bottom:5px !important;
+  padding:4px 0 !important;
+}
+
+.controle-card .grid{
+  grid-template-columns:
+    repeat(4, 1fr) !important;
+}
+
+
+    /* Títulos das seções */
+h2{
+  color:black;
+  border-bottom:1px solid #e5e7eb;
+  padding-bottom:2px;
+  margin-bottom:4px;
+}
+
+.grid{
+  gap:8px !important;
+}
+
+    /* Inputs e selects viram texto */
+    input,
+    select{
+      border:none !important;
+      box-shadow:none !important;
+      background:transparent !important;
+      padding:2px 0 !important;
+      color:black !important;
+    }
+
+    input:focus,
+    select:focus{
+      outline:none !important;
+      box-shadow:none !important;
+    }
+
+    /* Labels discretos */
+    label{
+      color:#64748b;
+      font-size:11px;
+      font-weight:600;
+    }
+
+    /* Fotos */
+
+    select{
+      appearance:none !important;
+      -webkit-appearance:none !important;
+      -moz-appearance:none !important;
+
+      background-image:none !important;
+    }
+
+    .foto{
+      border:none !important;
+      background:none !important;
+    }
+
+    .fotos{
+      display:grid !important;
+      grid-template-columns:repeat(6, 1fr) !important;
+      gap:8px !important;
+    }    
+
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <header class="header">
+
+    <div class="left">
+      <h1 onclick="irHome()" style="cursor:pointer;">
+        S.I.I.V.
+      </h1>
+    </div>
+
+    <div class="center">
+      <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+      <span class="logout" onclick="logout()"> SAIR ➜] </span>
+    </div>
+
+  </header>
+
+  <main class="main">
+
+      <!-- INFORMAÇÕES -->  
+      <section class="card">
+        <h2> INFORMAÇÕES </h2>
+        <div class="grid">
+
+          <div class="campo">
+            <label> ORDEM SERVOÇO Nº </label>
+            <input id="numeroOS" readonly>
+          </div>
+
+          <div class="campo">
+            <label>GARANTIA</label>
+            <input id="garantia" placeholder="N° OS ANTERIOR">
+          </div>
+
+          <div class="campo">
+            <label>NOTA FISCAL</label>
+            <input id="notaFiscal" placeholder="N° NOTA FISCAL">
+          </div>
+
+          <div class="campo">
+            <label>TRANSPORTE</label>
+            <select id="transporte">
+              <option value="">SELECIONAR</option>
+              <option value="cliente">CLIENTE</option>
+              <option value="velko">VELKO</option>
+              <option value="terceirizado">TERCEIRIZADO</option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CLIENTE -->
+      <section class="card">
+        <h2>DADOS CLIENTES</h2>
+        <div class="grid">
+
+          <div class="campo full">
+            <label>CLIENTE</label>
+            <input
+              id="cliente" placeholder="INFORMA O NOME DO CLIENTE">
+            <div id="listaClientes"></div>
+          </div>
+          <input type="hidden" id="clienteId">
+
+          <div class="campo full">
+            <label>NOME DO ESTABELECIMENTO</label>
+            <input id="nomeCliente" readonly 
+            placeholder="NOME DO ESTABELECIMENTO">
+          </div>
+
+          <div class="campo">
+            <label>CNPJ / CPF</label>
+            <input id="documento" readonly
+            placeholder="CNPJ/CPF DO CLIENTE">      
+
+        </div>
+      </section>
+
+      <!-- SOLICITANTE -->
+      <section class="card">
+        <h2>SOLICITANTE</h2>
+        <div class="grid">
+
+          <div class="campo">
+            <label>NOME DO SOLICITANTE</label>
+            <input id="nomeSolicitante" placeholder="NOME DO SOLICITANTE">
+          </div>
+
+          <div class="campo">
+            <label>TELEFONE</label>
+            <input id="telefoneSolicitante" placeholder="TELEFONE DO SOLICITANTE">
+          </div>
+
+          <div class="campo">
+            <label>E-MAIL</label>
+            <input id="emailSolicitante" placeholder="E-MAIL DO SOLICITANTE">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- EQUIPAMENTO -->
+      <section class="card">
+        <h2>EQUIPAMENTO</h2>
+        <div class="grid">
+          <div class="campo">
+            <label>FABRICANTE</label>
+            <select id="fabricante">
+              <option value="">SELECIONAR</option>
+              <option value="bitzer">BITZER</option>
+              <option value="bock">BOCK</option>
+              <option value="carrier">CARRIER</option>
+              <option value="copeland">COPERLAND</option>
+              <option value="dorin">DORIN</option>
+              <option value="mycom">MYCOM</option>
+              <option value="york">YORK</option>
+              <option value="trane">TRANE</option>
+              <option value="hitachi">HITACHI</option>
+              <option value="frascold">FRASCOLD</option>
+              <option value="refcomp">REFCOMP</option>
+              <option value="jehall">JEHALL</option>
+              <option value="daikin">DAIKIN</option>
+              <option value="sabroe">SABROE</option>
+              <option value="hanbell">HANBELL</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>MODELO</label>
+            <input id="modelo" placeholder="MODELO DO EQUIPAMENTO">
+          </div>
+
+          <div class="campo">
+            <label>TENSÃO</label>
+            <select id="tensao">
+              <option value="">SELECIONAR</option>
+              <option value="220">220V</option>
+              <option value="380">380V</option>
+              <option value="440">440V</option>
+              <option value="690">690V</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>NÚMERO DE SÉRIE</label>
+            <input id="numeroSerie" placeholder="N° SÉRIE DO EQUIPAMENTO">
+          </div>
+
+          <div class="campo">
+            <label>TIPO</label>
+            <select id="tipo">
+              <option value="">SELECIONAR</option>
+              <option value="pistao">PISTÃO</option>
+              <option value="parafuso">PARAFUSO</option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FOTOS -->
+      <section class="card">
+        <h2>FOTOS DO EQUIPAMENTO</h2>
+        <div class="fotos">
+
+          <!-- FOTO 1 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto1','img1',this)">
+                ✖
+              </button>
+              <label
+                for="foto1"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 1</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto1"
+                name="foto1"
+                onchange="preview(this,'img1')">
+              <img id="img1">
+            </div>
+
+          <!-- FOTO 2 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto2','img2',this)">
+                ✖
+              </button>
+              <label
+                for="foto2"
+                class="upload-box">
+
+                <div class="icone">📷</div>
+                <div class="texto">Foto 2</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto2"
+                name="foto2"
+                onchange="preview(this,'img2')">
+              <img id="img2">
+            </div>
+
+          <!-- FOTO 3 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto3','img3',this)">
+                ✖
+              </button>
+              <label
+                for="foto3"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 3</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto3"
+                name="foto3"
+                onchange="preview(this,'img3')">
+              <img id="img3">
+            </div>
+
+          <!-- FOTO 4 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto4','img4',this)">
+                ✖
+              </button>
+              <label
+                for="foto4"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 4</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto4"
+                name="foto4"
+                onchange="preview(this,'img4')">
+              <img id="img4">
+            </div>
+
+          <!-- FOTO 5 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto5','img5',this)">
+                ✖
+              </button>
+              <label
+                for="foto5"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 5</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto5"
+                name="foto5"
+                onchange="preview(this,'img5')">
+              <img id="img5">
+            </div>
+
+          <!-- FOTO 6 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto6','img6',this)">
+                ✖
+              </button>
+              <label
+                for="foto6"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 6</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto6"
+                name="foto6"
+                onchange="preview(this,'img6')">
+              <img id="img6">
+            </div>
+
+          <!-- FOTO 7 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto7','img7',this)">
+                ✖
+              </button>
+              <label
+                for="foto7"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 7</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto7"
+                name="foto7"
+                onchange="preview(this,'img7')">
+              <img id="img7">
+            </div>
+
+          <!-- FOTO 8 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto8','img8',this)">
+                ✖
+              </button>
+              <label
+                for="foto8"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 8</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto8"
+                name="foto8"
+                onchange="preview(this,'img8')">
+              <img id="img8">
+            </div>
+
+          <!-- FOTO 9 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto9','img9',this)">
+                ✖
+              </button>
+              <label
+                for="foto9"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 9</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto9"
+                name="foto9"
+                onchange="preview(this,'img9')">
+              <img id="img9">
+            </div>
+
+          <!-- FOTO 10 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto10','img10',this)">
+                ✖
+              </button>
+              <label
+                for="foto10"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 10</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto10"
+                name="foto10"
+                onchange="preview(this,'img10')">
+              <img id="img10">
+            </div>
+
+          <!-- FOTO 11 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto11','img11',this)">
+                ✖
+              </button>
+              <label
+                for="foto11"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 11</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto11"
+                name="foto11"
+                onchange="preview(this,'img11')">
+              <img id="img11">
+            </div>
+
+          <!-- FOTO 12 -->
+            <div class="foto">
+              <button
+                type="button"
+                class="btn-remover"
+                onclick="removerFoto('foto12','img12',this)">
+                ✖
+              </button>
+              <label
+                for="foto12"
+                class="upload-box">
+                <div class="icone">📷</div>
+                <div class="texto">Foto 12</div>
+                <div class="subtexto">
+                  Clique para selecionar
+                </div>
+              </label>
+              <input
+                type="file"
+                id="foto12"
+                name="foto12"
+                onchange="preview(this,'img12')">
+              <img id="img12">
+            </div>
+
+        </div>
+      </section>
+
+      <!-- CONTROLE -->
+      <section class="card controle-card">
+        <h2>CONTROLE</h2>
+        <div class="grid">
+
+          <div class="campo">
+            <label>DATA HORA DO RECEBIMENTO</label>
+            <input id="dataHoraRecebimento" type="datetime-local" readonly >
+          </div>
+          <div class="campo">
+            <label>DATA HORA DA LIBERAÇÃO</label>
+            <input id="dataHoraLiberacao" type="datetime-local" readonly >
+          </div>
+
+
+          <div class="campo">
+            <label>RECEBIDO POR</label>
+            <input id="recebidoPor" readonly>
+          </div>
+
+          <div class="campo">
+            <label>LIBERADO POR</label>
+            <input id="liberadoPor" placeholder="NOME DE QUEM LIBEROU O SERVIÇO">
+          </div>
+
+        </div>
+      </section>
+
+    <!-- Modal para visualizar foto ampliada -->
+    <div id="modalFoto" class="modal-foto" onclick="fecharModalFoto()">
+      <button
+        type="button"
+        class="btn-fechar-modal"
+        onclick="event.stopPropagation(); fecharModalFoto();">
+        ✖
+      </button>
+      <img
+        id="imagemModal"
+        onclick="event.stopPropagation()">
+    </div>
+
+  </main>
+
+  <footer class="footer-actions">
+    <button class="voltar" onclick="voltar()">⬅ VOLTAR</button>
+    <button class="salvar" onclick="salvar()">💾 SALVAR</button>
+    <button class="exportar" onclick="exportarPDF()"> 🖨️ EXPORTAR PDF </button>
+  </footer>
+
+  <script>
+
+// ================= AUTENTICAÇÃO =================
+    const token = localStorage.getItem("token");
+    const usuario = localStorage.getItem("usuario");
+
+    if(!token){
+      location.href = "../../index.html";
+    }
+
+    document.getElementById("usuario").textContent =
+      usuario ? `👋 Olá, ${usuario}` : "";
+
+// ================= VARIÁVEIS GLOBAIS =================
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const modo = params.get("modo");
+    const fotosRemovidas = [];
+
+// ================= MODO VISUALIZAÇÃO =================
+    // função modo de visualizacao
+    function ativarModoVisualizacao(){
+      document
+        .querySelectorAll("input, select")
+        .forEach(el => {
+
+          el.disabled = true;
+        });
+      document
+        .querySelector(".salvar")
+        .style.display = "none";
+    }
+
+// ================= FOTOS =================
+
+    function preview(input,id){
+
+      if(!input.files.length){
+        return;
+      }
+
+      const img =
+        document.getElementById(id);
+
+      img.src =
+        URL.createObjectURL(
+          input.files[0]
+        );
+
+      img.onclick = () => {
+        ampliarFoto(img.src);
+      };
+
+      img.style.display = "block";
+
+      const uploadBox =
+        input.parentElement.querySelector(
+          ".upload-box"
+        );
+
+      uploadBox.style.display = "none";
+
+      const btnExcluir =
+        input.parentElement.querySelector(
+          ".btn-remover"
+        );
+
+      if(btnExcluir){
+        btnExcluir.style.display = "flex";
+      }
+
+    }
+    // função removerFoto
+    function removerFoto(
+      inputId,
+      imgId,
+      botao
+    ){
+
+      const numero =
+        imgId.replace("img","");
+
+      if(!fotosRemovidas.includes(numero)){
+        fotosRemovidas.push(numero);
+      }
+
+      const input =
+        document.getElementById(inputId);
+
+      const img =
+        document.getElementById(imgId);
+
+      input.value = "";
+
+      img.src = "";
+      img.style.display = "none";
+
+      const uploadBox =
+        input.parentElement.querySelector(
+          ".upload-box"
+        );
+
+      uploadBox.style.display = "flex";
+
+      botao.style.display = "none";
+
+    }
+
+    // function carregarFoto-funcao para carregar as fotos
+    async function carregarFoto(numero){
+
+      try{
+
+        const res = await fetch(
+          `/api/recebimentos/${id}/foto${numero}`,
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+        const container =
+          document.getElementById(`img${numero}`)
+          .parentElement;
+
+        if(!res.ok){
+          const uploadBox =
+            container.querySelector(".upload-box");
+
+          if(uploadBox){
+            uploadBox.style.display = "flex";
+          }
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        const img =
+          document.getElementById(`img${numero}`);
+
+        img.src = url;
+
+        img.onclick = () => {
+          ampliarFoto(img.src);
+        };
+
+        img.style.display = "block";
+
+        const uploadBox =
+          container.querySelector(
+            ".upload-box"
+          );
+
+        if(uploadBox){
+          uploadBox.style.display = "none";
+        }
+
+        const btnExcluir =
+          container.querySelector(
+            ".btn-remover"
+          );
+
+        if(btnExcluir){
+          btnExcluir.style.display = "flex";
+        }
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+
+    // Function Modal para visualizar foto ampliada
+    function ampliarFoto(src){
+      const modal = document.getElementById("modalFoto");
+      const imagem = document.getElementById("imagemModal");
+      imagem.src = src;
+      modal.classList.add("ativo");
+    }
+    // Function Fechar foto modal
+    function fecharModalFoto(){
+      document
+        .getElementById("modalFoto")
+        .classList.remove("ativo");
+    }
+
+// ================= RECEBIMENTO =================
+    // function carregar recebimento
+    async function carregarRecebimento(){
+      try{ 
+        const res =
+          await fetch(
+            `/api/recebimentos/${id}`,
+            {
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+        if(!res.ok){
+          alert(
+            "Erro ao carregar recebimento"
+          );
+          return;
+        }
+
+        const recebimento =
+          await res.json();
+
+
+        document.getElementById(
+          "numeroOS"
+        ).value =
+          recebimento.numeroOS || "";
+
+        document.getElementById(
+          "garantia"
+        ).value =
+          recebimento.garantia || "";
+
+        document.getElementById(
+          "notaFiscal"
+        ).value =
+          recebimento.notaFiscal || "";
+
+        document.getElementById(
+          "transporte"
+        ).value =
+          recebimento.transporte || "";
+
+        document.getElementById(
+          "clienteId"
+        ).value =
+          recebimento.clienteId || "";
+
+        document.getElementById(
+          "cliente"
+        ).value =
+          recebimento.nomeFantasia ||
+          recebimento.razaoSocial ||
+          "";
+
+        document.getElementById(
+          "nomeCliente"
+        ).value =
+          recebimento.razaoSocial ||
+          recebimento.nomeFantasia ||
+          "";
+
+        document.getElementById(
+          "documento"
+        ).value =
+          recebimento.documento || "";
+
+        document.getElementById(
+          "nomeSolicitante"
+        ).value =
+          recebimento.nomeSolicitante || "";
+
+        document.getElementById(
+          "telefoneSolicitante"
+        ).value =
+          recebimento.telefoneSolicitante || "";
+
+        document.getElementById(
+          "emailSolicitante"
+        ).value =
+          recebimento.emailSolicitante || "";
+
+        document.getElementById(
+          "fabricante"
+        ).value =
+          recebimento.fabricante || "";
+
+        document.getElementById(
+          "modelo"
+        ).value =
+          recebimento.modelo || "";
+
+        document.getElementById(
+          "tensao"
+        ).value =
+          recebimento.tensao || "";
+
+        document.getElementById(
+          "numeroSerie"
+        ).value =
+          recebimento.numeroSerie || "";
+
+        document.getElementById(
+          "tipo"
+        ).value =
+          recebimento.tipo || "";
+
+
+        document.getElementById(
+          "dataHoraRecebimento"
+        ).value =
+          recebimento.dataHoraRecebimento || "";
+
+        document.getElementById(
+          "dataHoraLiberacao"
+        ).value =
+          recebimento.dataHoraLiberacao || "";
+
+
+        document.getElementById(
+          "recebidoPor"
+        ).value =
+          recebimento.recebidoPor || "";
+
+        document.getElementById(
+          "liberadoPor"
+        ).value =
+          recebimento.liberadoPor || "";
+
+        if(recebimento.foto1){ carregarFoto(1); }
+        if(recebimento.foto2){ carregarFoto(2); }
+        if(recebimento.foto3){ carregarFoto(3); }
+        if(recebimento.foto4){ carregarFoto(4); }
+        if(recebimento.foto5){ carregarFoto(5); }
+        if(recebimento.foto6){ carregarFoto(6); }
+
+        if(recebimento.foto7){ carregarFoto(7); }
+        if(recebimento.foto8){ carregarFoto(8); }
+        if(recebimento.foto9){ carregarFoto(9); }
+        if(recebimento.foto10){ carregarFoto(10); }
+        if(recebimento.foto11){ carregarFoto(11); }
+        if(recebimento.foto12){ carregarFoto(12); }
+
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+
+// ================= AÇÕES =================
+    // function salvar
+    async function salvar(){
+      const formData = new FormData();
+
+      // Obriga o usuário a selecionar um cliente
+      const clienteId = document.getElementById("clienteId").value;
+      if(!clienteId){
+        alert("Selecione um cliente.");
+        return;
+      };
+
+      formData.append(
+        "clienteId",
+        clienteId
+      );
+
+      formData.append(
+        "nomeFantasia",
+        document.getElementById("cliente").value
+      );
+
+      formData.append(
+        "razaoSocial",
+        document.getElementById("nomeCliente").value
+      );
+
+      formData.append(
+        "documento",
+        document.getElementById("documento").value
+      );
+
+      formData.append(
+        "garantia",
+        document.getElementById("garantia").value
+      );
+
+      formData.append(
+        "notaFiscal",
+        document.getElementById("notaFiscal").value
+      );
+
+      formData.append(
+        "transporte",
+        document.getElementById("transporte").value
+      );
+
+      formData.append(
+        "nomeSolicitante",
+        document.getElementById("nomeSolicitante").value
+      );
+
+      formData.append(
+        "telefoneSolicitante",
+        document.getElementById("telefoneSolicitante").value
+      );
+
+      formData.append(
+        "emailSolicitante",
+        document.getElementById("emailSolicitante").value
+      );
+
+      formData.append(
+        "fabricante",
+        document.getElementById("fabricante").value
+      );
+
+      formData.append(
+        "tipo",
+        document.getElementById("tipo").value
+      );
+
+      formData.append(
+        "modelo",
+        document.getElementById("modelo").value
+      );
+
+      formData.append(
+        "tensao",
+        document.getElementById("tensao").value
+      );
+
+      formData.append(
+        "numeroSerie",
+        document.getElementById("numeroSerie").value
+      );
+
+
+      formData.append(
+        "recebidoPor",
+        document.getElementById("recebidoPor").value
+      );
+
+      formData.append(
+        "dataHoraRecebimento",
+        document.getElementById(
+          "dataHoraRecebimento"
+        ).value
+      );
+
+      formData.append(
+        "dataHoraLiberacao",
+        document.getElementById(
+          "dataHoraLiberacao"
+        ).value
+      );
+
+      formData.append(
+        "liberadoPor",
+        document.getElementById("liberadoPor").value
+      );
+
+      formData.append(
+        "fotosRemovidas",
+        JSON.stringify(fotosRemovidas)
+      );
+
+      for(let i = 1; i <= 12; i++){
+        const foto =
+          document.getElementById(
+            `foto${i}`
+          );
+
+        if(
+          foto &&
+          foto.files &&
+          foto.files.length
+        ){
+
+          formData.append(
+            `foto${i}`,
+            foto.files[0]
+          );
+
+        }
+      }
+
+      try{
+        const url =
+        `/api/recebimentos/${id}`;
+
+        const metodo =
+        "PUT"; 
+
+        const res = await fetch(
+          url,
+          {
+            method: metodo,
+            headers:{
+              Authorization: token
+            },
+            body: formData
+          }
+        );
+
+        const data = await res.json();
+
+        if(!res.ok){
+          alert(data.erro || "Erro ao salvar");
+          return;
+        }
+
+        alert("✅ Recebimento atualizado!");
+
+        window.location.href =
+          "listaRecebimentos.html";
+      }
+      catch(err){
+        console.error(err);
+        alert(  "Erro ao comunicar com servidor" );
+      }
+
+    }
+    // function exportar PDF
+    function exportarPDF(){
+
+      const fotos =
+        document.querySelectorAll(".foto");
+
+      fotos.forEach(foto => {
+
+        const img =
+          foto.querySelector("img");
+
+        if(
+          !img.src ||
+          img.style.display === "none"
+        ){
+          foto.classList.add("ocultar-pdf");
+        }
+
+      });
+
+      window.print();
+
+      fotos.forEach(foto => {
+        foto.classList.remove("ocultar-pdf");
+      });
+
+    }
+
+// ================= CLIENTES =================
+    // function buscar clientes
+    async function buscarClientes(){
+
+      const termo =
+        document.getElementById("cliente")
+        .value
+        .trim()
+        .toLowerCase();
+
+      const lista =
+        document.getElementById("listaClientes");
+
+      lista.innerHTML = "";
+
+      if(termo.length < 2){
+        return;
+      }
+
+      try{
+
+        const res = await fetch(
+          "/api/clientes",
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+        if(!res.ok){
+          return;
+        }
+
+        const clientes = await res.json();
+
+        const encontrados =
+          clientes.filter(cliente => {
+
+            const nomePF =
+              (cliente.nomePF || "")
+              .toLowerCase();
+
+            const nomeFantasia =
+              (cliente.nomeFantasia || "")
+              .toLowerCase();
+
+            const razaoSocial =
+              (cliente.razaoSocial || "")
+              .toLowerCase();
+
+            return (
+              nomePF.includes(termo) ||
+              nomeFantasia.includes(termo) ||
+              razaoSocial.includes(termo)
+            );
+
+        });
+
+        encontrados.forEach(cliente => {
+
+          const item =
+            document.createElement("div");
+
+          item.className =
+            "itemCliente";
+
+          item.textContent =
+            cliente.nomePF ||
+            cliente.nomeFantasia ||
+            cliente.razaoSocial ||
+            "";
+
+          item.onclick = () =>
+            selecionarCliente(cliente);
+
+          lista.appendChild(item);
+        });
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    // function selecionar clientes
+    function selecionarCliente(cliente){
+      document.getElementById(
+        "clienteId"
+      ).value =
+        cliente.id;
+
+      document.getElementById(
+        "cliente"
+      ).value =
+        cliente.nomePF ||
+        cliente.nomeFantasia ||
+        cliente.razaoSocial ||
+        "";
+
+      document.getElementById(
+        "documento"
+      ).value =
+        cliente.documento || "";
+
+      document.getElementById(
+        "nomeCliente"
+      ).value =
+        cliente.razaoSocial ||
+        cliente.nomeFantasia ||
+        cliente.nomePF ||
+        "";
+
+      document.getElementById(
+        "nomeSolicitante"
+      ).value =
+        cliente.responsavel1 || "";
+
+      document.getElementById(
+        "telefoneSolicitante"
+      ).value =
+        cliente.telefoneResponsavel1 || "";
+
+      document.getElementById(
+        "emailSolicitante"
+      ).value =
+        cliente.emailResponsavel1 || "";
+
+
+      document.getElementById(
+        "listaClientes"
+      ).innerHTML = "";
+
+    }
+
+// ================= NAVEGAÇÃO =================
+    function voltar(){
+      location.href = "listaRecebimentos.html";
+    }
+    function irHome(){
+      location.href = "../../home.html";
+    }
+
+// ================= LOGOUT =================
+    function logout(){
+      const confirmar =
+        confirm("Deseja sair do sistema?");
+      if(!confirmar) return;
+      
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+
+
+      location.href = "../../index.html";
+    }
+
+// ================= EVENTOS =================
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        fecharModalFoto();
+      }
+    });
+
+// ================= INICIALIZAÇÃO =================
+    window.onload = () => {
+
+      document
+        .getElementById("cliente")
+        .addEventListener("input", buscarClientes);
+    
+      if(id){
+        carregarRecebimento().then(() => {
+          if(modo === "visualizar"){
+            ativarModoVisualizacao();
+          }
+        });
+      }
+
+    };
+
+  </script>
+
+</body>
+</html>

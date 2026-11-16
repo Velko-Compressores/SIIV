@@ -1,0 +1,459 @@
+ <!-- public/producao/inspecoes/listaInspecionados.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Inspecionados</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI",Roboto,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:white;
+}
+
+/* HEADER */
+
+.header{
+  background:#020617;
+  color:white;
+  padding:15px 30px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:center;
+}
+
+.left{
+  justify-self:start;
+}
+
+.center{
+  justify-self:center;
+  color:#cbd5e1;
+}
+
+.right{
+  justify-self:end;
+}
+
+.logout{
+  cursor:pointer;
+  color:#ef4444;
+}
+
+/* MAIN */
+
+main{
+  flex:1;
+  padding:30px;
+}
+
+h2{
+  margin-bottom:20px;
+  color:#0f172a;
+}
+
+.tabela-container{
+  width:100%;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  background:#020617;
+  color:white;
+  padding:10px;
+  text-align:center;
+}
+
+td{
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #e2e8f0;
+}
+
+tr:hover{
+  background:#f8fafc;
+}
+
+.btn-os{
+  min-width:110px;
+  height:34px;
+
+  border:none;
+  border-radius:6px;
+
+  background:#98b6f8;
+  color:white;
+
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.btn-os:hover{
+  background:#1d4ed8;
+}
+
+.sem-registros{
+  text-align:center;
+}
+
+    /* FOOTER */
+    .footer-actions{
+    display:flex;
+    gap:10px;
+    padding:25px;
+    background:white;
+    }
+
+    .footer-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    }
+
+    .voltar{
+    background:#334155;
+    color:white;
+    }
+
+    .voltar:hover{
+    background:#475569;
+    }
+
+    .exportar{
+    background:#e4af1f;
+    color:white;
+    }
+
+    .exportar:hover{
+    background:#ecc149;
+    }
+
+
+/* ================= EXPORTAR PDF ================= */
+
+    @media print{
+
+    /* Oculta elementos da tela */
+    .header,
+    .footer-actions,
+    .logout{
+        display:none !important;
+    }
+
+    /* Remove margens */
+    body,
+    main{
+        margin:0;
+        padding:0;
+        background:white;
+    }
+
+    /* Título */
+    h2{
+        text-align:center;
+        margin-bottom:12px;
+        font-size:18px;
+        color:black;
+    }
+
+    /* Tabela */
+    table{
+        width:100%;
+        border-collapse:collapse;
+        font-size:11px;
+    }
+
+    th,
+    td{
+        border:1px solid #d1d5db;
+        padding:4px 6px;
+        text-align:center;
+    }
+
+    th{
+        background:white !important;
+        color:black !important;
+    }
+
+    /* Botão da OS vira texto */
+    .btn-os{
+        background:none !important;
+        color:black !important;
+        border:none !important;
+        min-width:auto !important;
+        height:auto !important;
+        padding:0 !important;
+        margin:0 !important;
+        font-size:11px;
+        font-weight:bold;
+        pointer-events:none;
+    }
+
+    }
+
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1
+      onclick="irHome()"
+      style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span
+      class="logout"
+      onclick="logout()">
+      SAIR ➜
+    </span>
+  </div>
+
+</header>
+
+    <main>
+        <h2>🔍 INSPECIONADOS</h2>
+        <div class="tabela-container">
+            <table>
+            <thead>
+                <tr>
+                <th>OS</th>
+                <th>CLIENTE</th>
+                <th>FABRICANTE</th>
+                <th>MODELO</th>
+                <th>TENSÃO</th>
+                <th>Nº SÉRIE</th>
+                <th>INSPECIONADOR</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaInspecionados"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="footer-actions">
+        <button class="voltar" onclick="voltar()">⬅️ VOLTAR</button>
+        <button class="exportar" onclick="exportarPDF()">📄 EXPORTAR PDF</button>
+    </footer>
+
+<script>
+
+// ================= AUTENTICAÇÃO =================
+
+const token =
+  localStorage.getItem("token");
+
+if(!token){
+  window.location.href =
+    "../../index.html";
+}
+
+const usuario =
+  localStorage.getItem("usuario");
+
+document.getElementById("usuario")
+.textContent =
+  usuario
+    ? `👋 Olá, ${usuario}`
+    : "";
+
+// ================= CARREGAR =================
+    async function carregar(){
+
+  try{
+
+    const res =
+      await fetch(
+        "/api/inspecoes",
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+    if(!res.ok){
+
+      alert(
+        "Erro ao carregar inspeções."
+      );
+
+      return;
+    }
+
+    const inspecoes =
+      await res.json();
+
+    const finalizadas =
+      inspecoes.filter(
+        item =>
+          item.status === "FINALIZADA"
+      );
+
+    render(finalizadas);
+
+  }
+  catch(err){
+
+    console.error(err);
+
+  }
+
+}
+
+// ================= RENDER =================
+    function render(lista){
+
+  const tabela =
+    document.getElementById(
+      "tabelaInspecionados"
+    );
+
+  tabela.innerHTML = "";
+
+  lista.forEach(item => {
+
+    const tr =
+      document.createElement("tr");
+
+    tr.innerHTML = `
+
+      <td>
+
+        <button
+          class="btn-os"
+          onclick="visualizarInspecao(${item.recebimentoId})">
+
+          ${item.numeroOS || "-"} 📄
+
+        </button>
+
+      </td>
+
+      <td>${item.nomeFantasia || "-"}</td>
+
+      <td>${item.fabricante || "-"}</td>
+
+      <td>${item.modelo || "-"}</td>
+
+      <td>${item.tensao || "-"}</td>
+
+      <td>${item.numeroSerie || "-"}</td>
+
+      <td>${item.inspecionador || "-"}</td>
+
+    `;
+
+    tabela.appendChild(tr);
+
+  });
+
+  if(lista.length === 0){
+
+    tabela.innerHTML = `
+      <tr>
+        <td
+          colspan="7"
+          class="sem-registros">
+
+          Nenhuma inspeção finalizada encontrada
+
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+// ================= AÇÕES =================
+
+    function visualizarInspecao(id){
+
+    window.location.href =
+        `cadastroInspecao.html?id=${id}`;
+
+    }
+
+    function voltar(){
+
+  window.location.href =
+    "listaInspecao.html";
+
+}
+
+
+    function irHome(){
+
+  window.location.href =
+    "../../home.html";
+
+}
+
+    function logout(){
+
+  const confirmar =
+    confirm(
+      "⚠️ Deseja realmente sair do sistema?"
+    );
+
+  if(!confirmar){
+    return;
+  }
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("usuario");
+
+  window.location.href =
+    "../../index.html";
+
+}
+
+// Exportar PDF
+    function exportarPDF(){
+  window.print();
+}
+
+
+// ================= INICIALIZAÇÃO =================
+    window.addEventListener(
+  "load",
+  carregar
+);
+
+</script>
+
+</body>
+</html>

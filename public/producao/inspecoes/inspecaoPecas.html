@@ -1,0 +1,1540 @@
+<!-- public/producao/inspecoes/inspecaoPecas.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Lista de Peças</title>
+
+<style>
+        /* cabeçalho */
+    *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+    }
+
+    body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+    }
+
+    .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+    }
+
+    .left{
+    justify-self:start;
+    }
+
+    .center{
+    justify-self:center;
+    color:#cbd5f5;
+    }
+
+    .right{
+    justify-self:end;
+    }
+
+    .logout{
+    cursor:pointer;
+    color:#ef4444;
+    }
+
+    main{
+    flex:1;
+    background:white;
+    padding:30px;
+    }
+
+    /* bloco informacoes-os */
+
+    .informacoes-os{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    margin-bottom:15px;
+    }
+
+    h2{
+    margin-top:5px;
+    margin-bottom:20px;
+    font-size:24px;
+    font-weight:700;
+    color:#0f172a;
+    text-align:center;
+    }
+
+    .linha-equipamento{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:5px;
+    padding-top:15px;
+    }
+
+    .campo{
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    padding:8px 12px;
+    display:flex;
+    flex-direction:column;
+    }
+
+    .campo strong{
+    font-size:13px;
+    color:#0f172a;
+    margin-bottom:2px;
+    }
+
+    .campo span{
+    color:#64748b;
+    font-size:16px;
+    font-weight:600;
+    }
+
+    /* classes do grid */
+    .os{ grid-column:span 2; }
+    .cliente{ grid-column:span 10; }
+
+    .fabricante{ grid-column:span 3; }
+    .modelo{ grid-column:span 3; }
+    .tipo{ grid-column:span 2; }
+    .tensao{ grid-column:span 2; }
+    .serie{ grid-column:span 2; }
+
+    .desmontador,
+    .liberado,
+    .liberacao{
+    grid-column:span 4;
+    }
+
+    .inicio,
+    .fim,
+    .total,
+    .parado{
+    grid-column:span 3;
+    }
+
+
+    /* footer */
+
+    .footer-actions{
+    display:flex;
+    gap:10px;
+    padding:25px;
+    background:white;
+    }
+
+    .voltar,
+    .salvar{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    }
+
+    .voltar{
+    background:#334155;
+    color:white;
+    }
+
+    .voltar:hover{
+    background:#475569;
+    }
+
+    .salvar{
+    background:#22c55e;
+    color:white;
+    }
+
+    .salvar:hover{
+    background:#16a34a;
+    }
+
+    .exportar{
+        flex:1;
+        padding:12px;
+        border:none;
+        border-radius:10px;
+        cursor:pointer;
+        background:#f59e0b;
+        color:white;
+    }
+
+    .exportar:hover{
+        background:#d97706;
+    }
+
+
+
+    /* tabela */
+    .pecasMecanicas{
+        margin-top:15px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        padding:20px;
+    }
+
+    .gridPecas{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+    }
+
+    .pecasMecanicas h2{
+        grid-column:1 / -1;
+        margin-bottom:10px;
+    }
+
+
+    .pecasMecanicas-item{
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .pecasMecanicas-item label{
+        flex:1;
+        display:flex;
+        align-items:center;
+        gap:5px;
+    }
+
+    .quantidadePeca{
+        width:50px;
+        text-align:center;
+    }
+
+    /* peças elétricas */
+
+    .pecasEletricas{
+        margin-top:15px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        padding:20px;
+    }
+
+    .gridPecasEletricas{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+    }
+
+    .pecasEletricas h2{
+        margin-bottom:10px;
+    }
+
+    .pecasEletricas-item{
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .pecasEletricas-item label{
+        flex:1;
+        display:flex;
+        align-items:center;
+        gap:5px;
+    }
+
+    .quantidadePecaEletrica{
+        width:50px;
+        text-align:center;
+    }
+
+
+    /* ÓLEOS */
+
+    .oleos{
+        margin-top:15px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        padding:20px;
+    }
+
+    .gridOleos{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+    }
+
+    .oleos h2{
+        margin-bottom:10px;
+    }
+
+    .oleo-item{
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .oleo-item label{
+        flex:1;
+        display:flex;
+        align-items:center;
+        gap:5px;
+    }
+
+    .quantidadeOleo{
+        width:50px;
+        text-align:center;
+    }
+
+    /* RETÍFICAS */
+
+    .retificas{
+        margin-top:15px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        padding:20px;
+    }
+
+    .gridRetificas{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+    }
+
+
+    .retificas h2{
+        margin-bottom:10px;
+    }
+
+    .retifica-item{
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .retifica-item label{
+        flex:1;
+        display:flex;
+        align-items:center;
+        gap:5px;
+    }
+
+    .quantidadeRetifica{
+        width:50px;
+        text-align:center;
+    }
+
+
+
+</style>
+
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="left">
+            <h1 onclick="irHome()" style="cursor:pointer;">
+            S.I.I.V.
+            </h1>
+        </div>
+
+        <div class="center">
+            <span id="usuario"></span>
+        </div>
+
+        <div class="right">
+            <span class="logout" onclick="logout()">SAIR ➜]</span>
+        </div>
+    </header>
+
+
+    <main>
+        <section class="informacoes-os">
+            <h2>LISTA DE PEÇAS - COMPRESSORES SEMI-HERMÉTICO ALTERNATIVO PARA ORÇAMENTO</h2>
+            <div class="linha-equipamento">
+
+
+                <div class="campo os">
+                    <strong>OS:</strong>
+                    <span id="numeroOS">-</span>
+                </div>
+
+                <div class="campo cliente">
+                    <strong>CLIENTE:</strong>
+                    <span id="cliente">-</span>
+                </div>
+
+                <div class="campo fabricante">
+                    <strong>FABRICANTE:</strong>
+                    <span id="fabricante">-</span>
+                </div>
+
+                <div class="campo modelo">
+                    <strong>MODELO:</strong>
+                    <span id="modelo">-</span>
+                </div>
+
+                <div class="campo tipo">
+                    <strong>TIPO:</strong>
+                    <span id="tipo">-</span>
+                </div>
+
+                <div class="campo tensao">
+                    <strong>TENSÃO:</strong>
+                    <span id="tensao">-</span>
+                </div>
+
+                <div class="campo serie">
+                    <strong>Nº SÉRIE:</strong>
+                    <span id="numeroSerie">-</span>
+                </div>
+
+                <div class="campo desmontador">
+                    <strong>INSPECIONADOR:</strong>
+                    <span id="inspecionador">-</span>
+                </div>
+
+                <div class="campo liberado">
+                    <strong>LIBERADO POR:</strong>
+                    <span id="liberadoPor">-</span>
+                </div>
+
+                <div class="campo liberacao">
+                    <strong>DATA LIBERAÇÃO:</strong>
+                    <span id="dataLiberacao">-</span>
+                </div>  
+
+                <div class="campo inicio">
+                    <strong>INÍCIO:</strong>
+                    <span id="dataHoraInicio">-</span>
+                </div>
+
+                <div class="campo fim">
+                    <strong>FIM:</strong>
+                    <span id="dataHoraFim">-</span>
+                </div>
+
+                <div class="campo total">
+                    <strong>TEMPO TOTAL:</strong>
+                    <span id="tempoTotal">-</span>
+                </div>
+
+                <div class="campo parado">
+                    <strong>PAUSAS:</strong>
+                    <span id="tempoParado">-</span>
+                </div>
+
+
+            </div>
+        </section>
+
+        <section class="pecasMecanicas">
+            <h2>PEÇAS MECÂNICAS</h2>
+            <div class="gridPecas">
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ALOJAMENTO RESISTENCIA" >ALOJAMENTO DE RESISTÊNCIA</label> 
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ANEL ENCOSTO" >ANEL DE ENCOSTO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ANEL OLEO" >ANEL DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ANEL COMPRESSAO" >ANEL DE COMPRESSÃO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ANEL VEDACAO MOTOR" >ANEL DE VEDAÇÃO MOTOR</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ARRUELA FIXACAO ROTOR" >ARRUELA FIXAÇÃO ROTOR</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ARRUELA LISA VIRABEQUIM" >ARRUELA LISA VIRABEQUIM</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ARRUELA ONDULADA" >ARRUELA ONDULADA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="ARRUELA TRAVA PARAFUSO VIRABREQUIM" >ARRUELA TRAVA PARAFUSO VIRABREQUIM</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BIELA PARTIDA" >BIELA PARTIDA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="PISTAO COMPLETO" >PISTÃO COMPLETO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ BIELA PISTAO" >CJ BIELA PISTÃO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ BIELA PISTAO DIREITO" >CJ BIELA PISTÃO DIREITO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ BIELA PISTAO ESQUERDO" >CJ BIELA PISTÃO ESQUERDO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BOMBA OLEO" >BOMBA DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUCHA MANCAL TAMPA" >BUCHA MANCAL TAMPA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUCHA MANCAL CARTER" >BUCHA MANCAL CÁRTER</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUCHA MANCAL MOTOR" >BUCHA MANCAL MOTOR</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJÃO MOTOR" >BUJÃO MOTOR</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJAO MAGNETICO" >BUJÃO MAGNETICO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJAO 1-8" >BUJÃO 1/8'' NPT</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJAO 1-4" >BUJÃO 1/4'' NPT</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJAO 1-2" >BUJÃO 1/2'' NPT</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="BUJAO 3-4" >BUJÃO 3/4'' NPT</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ BUJAO M12" >CJ BUJÃO M12 C/ ARRUELA - CIC</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ RETORNO OLEO" >CJ RETORNO DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CAMISA" >CAMISA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CAMISA DIREITO" >CAMISA DIREITO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CAMISA ESQUERDO" >CAMISA ESQUERDO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CHAVETA ROTOR" >CHAVETA ROTOR</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="DISCO DINAMICO OLEO" >DISCO DINÂMICO DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="FILTRO SUCCAO" >FILTRO DE SUCÇÃO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="FILTRO OLEO" >FILTRO DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="FLANGE CEGA SUCCAO" >FLANGE CEGA SUCÇÃO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="FLANGE CEGA DESCARGA" >FLANGE CEGA DESCARGA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="CJ VEDACOES COMPLETO" >CJ VEDAÇÕES COMPLETO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="PLACA VALVULAS" >PLACA DE VÁLVULAS</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="PISTAO DIREITO" >PISTÃO DIREITO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="PISTÃO ESQUERDO" >PISTÃO ESQUERDO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="SOLENOIDE CONTR CAPACIDADE" >SOLENÓIDE CONTR. CAPACIDADE</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="TAMPAO FEMEA 1-4" >TAMPÃO FÊMEA 1/4 "" SAE</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA SCHRADER 1-4 X 1-8 " >VÁLVULA SCHRADER 1/4 "" X 1/8 "" NPT</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA T SCHRADER" >VÁLVULA "" T "" COM SCHRADER</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA SERVICO DESC" >VÁLVULA DE SERVIÇO DESC.</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA SERVICO SUC" >VÁLVULA DE SERVIÇO SUC.</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA DE SEGURANCA" >VÁLVULA DE SEGURANÇA</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VALVULA REG PRESS BOMBA OLEO" >VÁLVULA REG. PRESS. BOMBA DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VIRABREQUIM" >VIRABREQUIM</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="VISOR DE ÓLEO" >VISOR DE ÓLEO</label>
+                </div>
+
+                <div class="pecasMecanicas-item">
+                    <input type="number" class="quantidadePeca" min="1" value="">
+                    <label><input type="checkbox" value="OUTROS" >OUTROS</label>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="pecasEletricas">
+            <h2>PEÇAS ELÉTRICAS</h2>
+            <div class="gridPecasEletricas">
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="BOBINA SOLENOIDE">BOBINA DE SOLENÓIDE</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="BOIA ELETRONICA OLEO 280">BÓIA ELETRÔNICA DE ÓLEO 280</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="FLANGE ELETRICA">FLANGE DE ELÉTRICA</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="MODULO SE B1">MÓDULO - SE-B1</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="MODULO SE B2">MÓDULO - SE-B2</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="MODULO OUTRO">MÓDULO OUTRO</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="CJ ESTATOR ROTOR">CJ ESTATOR ROTOR</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="ESTATOR REBOBINADO">ESTATOR REBOBINADO</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="SENSOR TEMPERATURA">SENSOR DE TEMPERATURA CIC</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="RESISTENCIA CATER">RESISTÊNCIA DE CÁRTER</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="MONITORADOR OLC K1">MONITORADOR OLC K1</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="PRESSOSTATO DELTA PII">PRESSOSTATO DELTA PII</label>
+                </div>
+
+                <div class="pecasEletricas-item">
+                    <input type="number" class="quantidadePecaEletrica" min="1" value="">
+                    <label><input type="checkbox" value="OUTROS">OUTROS</label>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="oleos">
+            <h2>ÓLEO</h2>
+            <div class="gridOleos">
+                    
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="CP32RF"> CP-32RF </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="B5.2"> B-5.2 </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="BSE32"> BSE-32 </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="BSE55"> BSE-55 </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="CAPELA68"> CAPELA-68 </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="RENISOSP46"> RENISO SP-46 </label>
+                </div>
+
+                <div class="oleo-item">
+                    <input type="number" class="quantidadeOleo" min="1" value="">
+                    <label><input type="checkbox" value="OUTRO"> OUTRO </label>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="retificas">
+            <h2>RETÍFICA</h2>
+            <div class="gridRetificas">
+
+                <div class="retifica-item">
+                    <input type="number" class="quantidadeRetifica" min="1" value="">
+                    <label><input type="checkbox" value="CAMISA CILINDROS">CAMISA CILINDROS</label>
+                </div>
+
+                <div class="retifica-item">
+                    <input type="number" class="quantidadeRetifica" min="1" value="">
+                    <label><input type="checkbox" value="PLACA VALVULAS">PLACA DE VÁLVULAS</label>
+                </div>
+
+                <div class="retifica-item">
+                    <input type="number" class="quantidadeRetifica" min="1" value="">
+                    <label><input type="checkbox" value="VIRABREQUIM">VIRABREQUIM</label>
+                </div>                
+
+                <div class="retifica-item">
+                    <input type="number" class="quantidadeRetifica" min="1" value="">
+                    <label><input type="checkbox" value="APLICACAO ROSCA POSTICA">APLICAÇÃO DE ROSCA POSTIÇA</label>
+                </div>
+
+                <div class="retifica-item">
+                    <input type="number" class="quantidadeRetifica" min="1" value="">
+                    <label><input type="checkbox" value="OUTRO">OUTRO</label>
+                </div>                
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer class="footer-actions">
+        <button id="btnVoltar" class="voltar" onclick="voltar()">⬅️ VOLTAR</button>
+        <button id="btnSalvar" class="salvar" onclick="salvar()">💾 SALVAR</button>
+        <button id="btnExportar" class="exportar" onclick="exportarPDF()">📄 EXPORTAR PDF</button>
+    </footer>
+
+
+
+<script>
+
+    // ========== AUTENTICAÇÃO ==========
+    const token = localStorage.getItem("token");
+
+    if(!token){
+        window.location.href =
+            "../../index.html";
+    }
+
+    const usuario = localStorage.getItem("usuario");
+
+    document.getElementById("usuario").textContent =
+        usuario
+            ? `👋 Olá, ${usuario}`
+            : "";
+
+
+
+    // ========== VARIÁVEIS ==========
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const id = params.get("id");
+    let dadosInspecao = null;
+    let statusInspecao = "";
+
+
+    function formatarDataHora(data){
+
+        if(!data){
+            return "-";
+        }
+
+        return new Date(data)
+            .toLocaleString(
+                "pt-BR",
+                {
+                    day:"2-digit",
+                    month:"2-digit",
+                    year:"numeric",
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit"
+                }
+            );
+    }
+
+    function formatarDuracao(segundos){
+
+        segundos =
+            Number(segundos || 0);
+
+        const horas =
+            Math.floor(segundos / 3600);
+
+        const minutos =
+            Math.floor(
+                (segundos % 3600) / 60
+            );
+
+        const segundosRestantes =
+            segundos % 60;
+
+        return `${horas}h ${minutos}m ${segundosRestantes}s`;
+    }
+
+    async function carregarInspecao(){
+
+        try{
+
+            const res =
+                await fetch(
+                    `/api/inspecoes/${id}`,
+                    {
+                        headers:{
+                            Authorization:token
+                        }
+                    }
+                );
+
+            if(!res.ok){
+
+                alert(
+                    "Inspeção não encontrada."
+                );
+
+                voltar();
+
+                return;
+            }
+
+            const inspecao =
+                await res.json();
+
+            console.log(inspecao);
+
+            dadosInspecao =
+                inspecao;
+
+            statusInspecao =
+                inspecao.status || "";                
+
+            document.getElementById(
+                "numeroOS"
+            ).textContent =
+                inspecao.numeroOS || "-";
+
+            document.getElementById(
+                "cliente"
+            ).textContent =
+                inspecao.nomeFantasia || "-";
+
+            document.getElementById(
+                "fabricante"
+            ).textContent =
+                inspecao.fabricante || "-";
+
+            document.getElementById(
+                "modelo"
+            ).textContent =
+                inspecao.modelo || "-";
+
+            document.getElementById(
+                "tipo"
+            ).textContent =
+                inspecao.tipo || "-";
+
+            document.getElementById(
+                "tensao"
+            ).textContent =
+                inspecao.tensao || "-";
+
+            document.getElementById(
+                "numeroSerie"
+            ).textContent =
+                inspecao.numeroSerie || "-";
+
+            document.getElementById(
+                "inspecionador"
+            ).textContent =
+                inspecao.inspecionador || "-";
+
+            document.getElementById(
+                "liberadoPor"
+            ).textContent =
+                inspecao.liberadoPor || "-";
+
+            document.getElementById(
+                "dataLiberacao"
+            ).textContent =
+                formatarDataHora(
+                    inspecao.dataLiberacao
+                );
+
+            document.getElementById(
+                "dataHoraInicio"
+            ).textContent =
+                formatarDataHora(
+                    inspecao.dataHoraInicio
+                );
+
+            document.getElementById(
+                "dataHoraFim"
+            ).textContent =
+                formatarDataHora(
+                    inspecao.dataHoraFim
+                );
+
+            document.getElementById(
+                "tempoTotal"
+            ).textContent =
+                inspecao.tempoTotal || "-";
+
+            document.getElementById(
+                "tempoParado"
+            ).textContent =
+                formatarDuracao(
+                    inspecao.tempoPausadoTotal
+                );
+
+        }
+        catch(err){
+
+            console.error(err);
+
+            alert(
+                "Erro ao carregar inspeção."
+            );
+
+        }
+
+    }
+
+
+    // ========= NAVEGAÇÃO =========
+
+    function voltar(){
+        window.location.href =
+            `cadastroInspecao.html?id=${id}`;
+    }
+
+    function irHome(){
+        window.location.href =
+            "../../home.html";
+    }
+
+    function logout(){
+
+        const confirmar =
+            confirm(
+                "⚠️ Deseja realmente sair do sistema?"
+            );
+
+        if(!confirmar){
+            return;
+        }
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+
+        window.location.href =
+            "../../index.html";
+
+    }
+
+    async function salvar(){
+        if(statusInspecao === "FINALIZADA"){
+            alert(
+                "Esta inspeção já foi finalizada."
+            );
+            return;
+        }
+        try{
+            const itens = [];
+            // ===== PEÇAS MECÂNICAS =====
+            document
+                .querySelectorAll(".pecasMecanicas-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadePeca"
+                        );
+
+                    if (
+                        checkbox &&
+                        checkbox.checked
+                    ){
+
+                        itens.push({
+                            secao: "PECA_MECANICA",
+                            descricao: checkbox.value,
+                            quantidade:
+                                Number(
+                                    quantidade.value
+                                ) || 1,
+                            observacao: null
+                        });
+
+                    }
+
+                });
+
+            // ===== PEÇAS ELÉTRICAS =====
+            document
+                .querySelectorAll(".pecasEletricas-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadePecaEletrica"
+                        );
+
+                    if (
+                        checkbox &&
+                        checkbox.checked
+                    ){
+
+                        itens.push({
+                            secao: "PECA_ELETRICA",
+                            descricao: checkbox.value,
+                            quantidade:
+                                Number(
+                                    quantidade.value
+                                ) || 1,
+                            observacao: null
+                        });
+
+                    }
+
+                });
+
+            // ===== ÓLEOS =====
+            document
+                .querySelectorAll(".oleo-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadeOleo"
+                        );
+
+                    if (
+                        checkbox &&
+                        checkbox.checked
+                    ){
+
+                        itens.push({
+                            secao: "OLEO",
+                            descricao: checkbox.value,
+                            quantidade:
+                                Number(
+                                    quantidade.value
+                                ) || 1,
+                            observacao: null
+                        });
+
+                    }
+
+                });
+
+            // ===== RETÍFICAS =====
+            document
+                .querySelectorAll(".retifica-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadeRetifica"
+                        );
+
+                    if (
+                        checkbox &&
+                        checkbox.checked
+                    ){
+
+                        itens.push({
+                            secao: "RETIFICA",
+                            descricao: checkbox.value,
+                            quantidade:
+                                Number(
+                                    quantidade.value
+                                ) || 1,
+                            observacao: null
+                        });
+
+                    }
+
+                });
+
+            console.log("ITENS:", itens);
+
+            const resposta =
+                await fetch(
+                    `/api/inspecaoPecas/${id}`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                            Authorization: token
+                        },
+
+                        body: JSON.stringify(
+                            itens
+                        )
+                    }
+                );
+
+            const resultado =
+                await resposta.json();
+
+            if(!resposta.ok){
+
+                throw new Error(
+                    resultado.erro ||
+                    "Erro ao salvar."
+                );
+
+            }
+
+            alert(
+                "✅ Lista de peças salva com sucesso."
+            );
+
+        }
+        catch(err){
+
+            console.error(err);
+
+            alert(
+                "Erro ao salvar lista de peças."
+            );
+
+        }
+
+    }
+
+    async function carregarPecas(){
+
+        try{
+
+            const resposta =
+                await fetch(
+                    `/api/inspecaoPecas/${id}`,
+                    {
+                        headers:{
+                            Authorization: token
+                        }
+                    }
+                );
+
+            if(!resposta.ok){
+                throw new Error(
+                    "Erro ao carregar peças."
+                );
+            }
+
+            const pecas =
+                await resposta.json();
+
+            // ===== PEÇAS MECÂNICAS =====
+            document
+                .querySelectorAll(".pecasMecanicas-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadePeca"
+                        );
+
+                    const pecaSalva =
+                        pecas.find(
+                            p =>
+                                p.secao === "PECA_MECANICA" &&
+                                p.descricao === checkbox.value
+                        );
+
+                    if(pecaSalva){
+
+                        checkbox.checked = true;
+
+                        quantidade.value =
+                            pecaSalva.quantidade;
+
+                    }
+
+                });
+
+            // ===== PEÇAS ELÉTRICAS =====
+            document
+                .querySelectorAll(".pecasEletricas-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadePecaEletrica"
+                        );
+
+                    const pecaSalva =
+                        pecas.find(
+                            p =>
+                                p.secao === "PECA_ELETRICA" &&
+                                p.descricao === checkbox.value
+                        );
+
+                    if(pecaSalva){
+
+                        checkbox.checked = true;
+
+                        quantidade.value =
+                            pecaSalva.quantidade;
+
+                    }
+
+                });
+
+            // ===== ÓLEOS =====
+            document
+                .querySelectorAll(".oleo-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadeOleo"
+                        );
+
+                    const itemSalvo =
+                        pecas.find(
+                            p =>
+                                p.secao === "OLEO" &&
+                                p.descricao === checkbox.value
+                        );
+
+                    if(itemSalvo){
+
+                        checkbox.checked = true;
+
+                        quantidade.value =
+                            itemSalvo.quantidade;
+
+                    }
+
+                });
+
+            // ===== RETÍFICAS =====
+            document
+                .querySelectorAll(".retifica-item")
+                .forEach(item => {
+
+                    const checkbox =
+                        item.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+                    const quantidade =
+                        item.querySelector(
+                            ".quantidadeRetifica"
+                        );
+
+                    const itemSalvo =
+                        pecas.find(
+                            p =>
+                                p.secao === "RETIFICA" &&
+                                p.descricao === checkbox.value
+                        );
+
+                    if(itemSalvo){
+
+                        checkbox.checked = true;
+
+                        quantidade.value =
+                            itemSalvo.quantidade;
+
+                    }
+
+                });
+
+        }
+        catch(err){
+
+            console.error(err);
+
+            alert(
+                "Erro ao carregar lista de peças."
+            );
+
+        }
+
+    }
+
+    function aplicarPermissoesPecas(){
+
+        if(statusInspecao !== "FINALIZADA"){
+            return;
+        }
+
+        document
+            .querySelectorAll(
+                ".pecasMecanicas-item input"
+            )
+            .forEach(campo => {
+                campo.disabled = true;
+            });
+
+        document
+            .querySelectorAll(
+                ".pecasEletricas-item input"
+            )
+            .forEach(campo => {
+                campo.disabled = true;
+            });
+
+        document
+            .querySelectorAll(
+                ".oleo-item input"
+            )
+            .forEach(campo => {
+                campo.disabled = true;
+            });
+
+        document
+            .querySelectorAll(
+                ".retifica-item input"
+            )
+            .forEach(campo => {
+                campo.disabled = true;
+            });
+
+        const btnSalvar =
+            document.getElementById(
+                "btnSalvar"
+            );
+
+        if(btnSalvar){
+
+            btnSalvar.disabled = true;
+
+            btnSalvar.style.opacity =
+                "0.5";
+
+            btnSalvar.style.cursor =
+                "not-allowed";
+        }
+
+        console.log(
+            "Inspeção FINALIZADA. Tela bloqueada."
+        );
+    }
+
+
+    function exportarPDF(){
+        window.open(
+            `relatorioInspecaoPecas.html?id=${id}`,
+            "_blank"
+        );
+    }
+
+    window.onload = async () => {
+
+        if(!id){
+
+            alert(
+                "Inspeção não encontrada."
+            );
+
+            voltar();
+
+            return;
+        }
+
+        await carregarInspecao();
+
+        await carregarPecas();
+
+        aplicarPermissoesPecas();
+
+    };
+
+
+</script>
+
+
+
+
+
+</body>
+</html>

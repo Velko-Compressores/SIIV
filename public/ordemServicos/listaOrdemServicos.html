@@ -1,0 +1,366 @@
+<!-- public/ordemServicos/listaOrdemServicos.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Lista de O.S.</title>
+
+<style>
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+  }
+
+  /* HEADER */
+  .header {
+    background: #020617;
+    color: white;
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .left { justify-self: start; }
+  .center { justify-self: center; color: #cbd5f5; }
+  .right { justify-self: end; }
+
+  .logout {
+    cursor: pointer;
+    color: #ef4444;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #0f172a;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 15px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #020617;
+    color: white;
+    padding: 10px;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  tr:hover {
+    background: #f1f5f9;
+  }
+
+  td button {
+    cursor: pointer;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 20px;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .continuar {
+    background: #22c55e;
+    color: white;
+  }
+
+  .continuar:hover {
+    background: #16a34a;
+  }
+
+  td button {
+    margin: 2px;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  td button:hover {
+    opacity: 0.8;
+  }
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+
+</header>
+
+<main>
+  <h2>Ordens de Serviços</h2>
+
+  <input
+    id="busca"
+    placeholder="🔍 Buscar OS, cliente..."
+  >
+
+  <table>
+    <thead>
+      <tr>
+        <th>OS</th>
+        <th>Cliente</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody id="tabela"></tbody>
+  </table>
+
+  <div class="actions">
+    <button class="voltar" onclick="voltar()">
+      ⬅ Voltar
+    </button>
+  </div>
+
+</main>
+
+<script>
+
+  // 🔐 AUTH
+  const token = localStorage.getItem("token");
+
+  if (!token){
+    window.location.href = "../../index.html";
+  }
+
+  const usuario =
+    localStorage.getItem("usuario");
+
+  let recebimentos = [];
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+
+
+  // ✅ CARREGAR
+  async function carregar(){
+    try {
+      const res =
+        await fetch(
+          "/api/recebimentos",
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+        
+      if (!res.ok){
+        alert("Erro ao carregar ordem de Serviços");
+        return;
+      }
+
+      recebimentos =
+        await res.json();
+
+      render(recebimentos);
+
+    }
+    catch(err){
+      console.error(err);
+    }
+
+  }
+
+
+
+  // ✅ RENDER
+  function render(lista){
+
+    const tabela =
+      document.getElementById("tabela");
+
+    tabela.innerHTML = "";
+
+    lista.forEach(recebimento => {
+
+      const tr =
+        document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${recebimento.numeroOS || "-"}</td>
+        <td>${recebimento.nomeFantasia || "-"}</td>
+        <td>
+          <button onclick="verOs(${recebimento.id})">👁</button>
+        </td>
+      `;
+
+      tabela.appendChild(tr);
+
+    });
+
+    if(lista.length === 0){
+
+      tabela.innerHTML = `
+        <tr>
+          <td colspan="3" style="text-align:center;">
+            Nenhuma Ordem de Serviço encontrada
+          </td>
+        </tr>
+      `;
+
+    }
+
+  }
+
+
+  // ✅ BUSCAR
+  document.getElementById("busca")
+    .addEventListener("input", function(e){
+
+      const termo =
+        e.target.value.toLowerCase();
+
+      const filtrados =
+        recebimentos.filter(recebimento => {
+
+          return (
+
+            (recebimento.numeroOS || "")
+              .toLowerCase()
+              .includes(termo)
+
+            ||
+
+            (recebimento.nomeFantasia || "")
+              .toLowerCase()
+              .includes(termo)
+
+            ||
+
+            (recebimento.razaoSocial || "")
+              .toLowerCase()
+              .includes(termo)
+
+            ||
+
+            (recebimento.fabricante || "")
+              .toLowerCase()
+              .includes(termo)
+
+            ||
+
+            (recebimento.modelo || "")
+              .toLowerCase()
+              .includes(termo)
+
+          );
+
+        });
+
+      render(filtrados);
+
+  });
+
+  // ✅ AÇÕES
+  function verOs(id){
+      window.location.href =
+        `osVisualizacao.html?id=${id}`;
+  }
+
+
+  function voltar(){
+    window.location.href =
+      "../../home.html";
+  }
+
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+
+
+
+  // ✅ LOGOUT
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+
+
+  // ✅ INIT
+  window.addEventListener(
+    "load",
+    carregar
+  );
+
+</script>
+
+</body>
+</html>

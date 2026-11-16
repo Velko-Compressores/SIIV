@@ -1,0 +1,241 @@
+<!-- public/comercial/comercial.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>COMERCIAL</title>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+    color: #1e293b;
+  }
+
+  /* HEADER */
+.header {
+  background: #020617;
+  color: white;
+  padding: 15px 30px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.left {
+  justify-self: start;
+}
+
+.center {
+  justify-self: center;
+  font-size: 16px;
+  color: #cbd5f5;
+}
+
+.right {
+  justify-self: end;
+}
+
+.logout {
+  cursor: pointer;
+  color: #ef4444;
+}
+
+
+
+
+  /* MAIN */
+  main {
+    padding: 30px;
+  }
+
+  .title {
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+  }
+
+  .card span {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 5px;
+  }
+
+  .card strong {
+    font-size: 18px;
+    color: #0f172a;
+  }
+
+  /* cores por setor (visual bonito) */
+  .oficina { border-left: 6px solid #ef4444; }
+  .compressorNovo { border-left: 6px solid #22c55e; }
+  .compressorRemanufaturado { border-left: 6px solid #eab308; }
+  .motorRebobinado { border-left: 6px solid #ec4899; }
+  .pecaProcessada { border-left: 6px solid #06b6d4; }
+  .pecaNova { border-left: 6px solid #6366f1; }
+  .relatorios { border-left: 6px solid #a8f163; }
+
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">S.I.I.V.</h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+</header>
+
+<main>
+  <section class="grid">
+
+    <div class="card oficina" onclick="oficina()">
+      <strong> ⚙️ OFICINA </strong>
+    </div>     
+
+    <div class="card compressorNovo" onclick="compressorNovo()">
+      <strong> ⚙️ COMPRESSOR NOVO </strong>
+    </div> 
+
+    <div class="card compressorRemanufaturado" onclick="compressorRemanufaturado()">
+      <strong> ⚙️ COMPRESSOR REMANUFATURADO </strong>
+    </div> 
+
+    <div class="card motorRebobinado" onclick="motorRebobinado()">
+      <strong> ⚙️ MOTOR REBOBINADO </strong>
+    </div> 
+
+    <div class="card pecaProcessada" onclick="pecaProcessada()">
+      <strong> ⚙️ PEÇA PROCESSADA </strong>
+    </div> 
+
+    <div class="card pecaNova" onclick="pecaNova()">
+      <strong> ⚙️ PEÇA NOVA </strong>
+    </div> 
+
+    <div class="card relatorios" onclick="relatorios()">
+      <strong>📊 RELATÓRIOS</strong>
+    </div>
+  </section>
+</main>
+
+<script>
+
+  // 🔐 AUTH
+
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  if (!token){
+    window.location.href = "../index.html";
+  }
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "Olá";
+
+  // NAVEGAÇÃO
+  function solicitacaoCompra(){
+    window.location.href = "solicitacaoCompra.html";
+  }
+
+
+
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+  
+  function oficina() {
+    window.location.href = "telaOrcamento_v4.html";
+  }
+
+  function compressorNovo() {
+    alert("🚧 Módulo Compressor Novo em desenvolvimento.");
+  }
+
+  function compressorRemanufaturado() {
+    alert("🚧 Módulo Compressor Remanufaturado em desenvolvimento.");
+  }
+
+  function motorRebobinado() {
+    alert("🚧 Módulo Motor Rebobinado em desenvolvimento.");
+  }
+
+  function pecaProcessada() {
+    alert("🚧 Módulo Peça Processada em desenvolvimento.");
+  }
+
+  function pecaNova() {
+    alert("🚧 Módulo Peça Nova em desenvolvimento.");
+  }
+
+  function relatorios() {
+    alert("🚧 Módulo Relatórios em desenvolvimento.");
+  }
+
+
+
+
+</script>
+
+</body>
+</html>
+

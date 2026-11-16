@@ -1,0 +1,527 @@
+<!-- public/producao/inspecoes/relatorioInspecao.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lista de Peças</title>
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:"Segoe UI", sans-serif;
+    }
+
+    body{
+        background:#fff;
+        color:#000;
+        padding:10px;
+    }
+
+    .cabecalho{
+        display:flex;
+        align-items:flex-start;
+        align-items:center;
+        gap:30px;
+        margin-bottom:5px;
+        padding-bottom:5px;
+        border-bottom:1px solid #000;
+    }
+
+    .logo{
+        width:170px;
+        flex-shrink:0;
+    }
+
+    .logo img{
+        width:100%;
+        height:auto;
+        display:block;
+    }
+
+    .dadosCabecalho{
+        text-align:left;
+    }
+
+    .dadosCabecalho h1{
+        font-size:15.5px;
+        font-weight:500;
+        margin-bottom:8px;
+        line-height:1.3;
+        text-align:left;
+    }
+
+    .linhaCabecalho{
+        display:flex;
+        flex-wrap:wrap;
+        gap:9px;
+
+        font-size:13px;
+        line-height:1.5;
+        margin-bottom:4px;
+    }
+
+    .linhaCabecalho strong{
+        font-weight:400;
+    }
+
+    .linhaCabecalho span{
+        font-weight:400;
+    }
+
+     .campo{
+        display:flex;
+        align-items:center;
+        gap:3px;
+    }
+
+    .titulo-bloco{
+        font-size:15.5px;
+        font-weight:600;
+        text-align:left;
+        margin-top:10px;
+        margin-bottom:8px;
+    }
+
+
+    /* =====================================================
+    PROBLEMAS ENCONTRADOS | POSSÍVEIS CAUSAS DOS PROBLEMAS | 
+    RECOMENDAÇÕES IMPORTANTES
+    ===================================================== */
+
+    .problemasEncontradosRelatorio{
+        display:grid;
+        grid-template-columns:repeat(1,1fr);
+        gap:8px 30px;
+        padding-bottom:15px;
+        margin-bottom:15px;
+    }
+
+    .itemProblema{
+        display:flex;
+        align-items:flex-start;
+        gap:8px;
+        font-size:13px;
+    }
+
+    .checkProblema{
+        font-weight:bold;
+        min-width:20px;
+    }
+
+
+
+
+
+
+
+    /* =====================================================
+    RODAPÉ
+    ===================================================== */
+
+    .rodape{
+        position:fixed;
+        bottom:3mm;
+        left:3mm;
+        right:3mm;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        background:#fff;
+        font-size:13px;
+        padding-top: 10px;
+        border-top:1px solid #000;
+    }
+
+    .rodapeEsquerda{
+        display:flex;
+        flex-direction:column;
+        gap:2px;
+    }
+
+    .paginaNumero{
+        width:40px;
+        height:40px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#f58220 !important;
+        color:#fff !important;
+        font-size:16px;
+        font-weight:700;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+
+    .bitzer{
+        color:#008000;
+        font-weight:700;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+
+
+</style>
+
+</head>
+
+<body>
+
+    <div class="cabecalho">
+        <div class="logo">
+            <img src="../../imagens/Assinatura_v2.jpg" alt="Logo">
+        </div>
+
+        <div class="dadosCabecalho">
+            <h1>LISTA DE PEÇAS - COMPRESSOR SEMI-HERMÉTICO</h1>
+
+            <div class="linhaCabecalho">
+                <div class="campo">
+                    <strong>CLIENTE:</strong>
+                    <span id="cliente"></span>
+                </div>
+
+                <div class="campo">
+                    <strong> | </strong>
+                </div>           
+
+                <div class="campo">
+                    <strong>Nº SÉRIE:</strong>
+                    <span id="numeroSerie"></span>
+                </div>
+
+            </div>
+
+            <div class="linhaCabecalho">
+                <div class="campo">
+                    <strong>TIPO:</strong>
+                    <span id="tipo"></span>
+                </div>
+
+                <div class="campo">
+                    <strong> | </strong>
+                </div>   
+
+                <div class="campo">
+                    <strong>MODELO:</strong>
+                    <span id="modelo"></span>
+                </div>
+
+                <div class="campo">
+                    <strong> | </strong>
+                </div>   
+
+                <div class="campo">
+                    <strong>TENSÃO:</strong>
+                    <span id="tensao"></span>
+                </div>
+
+                <div class="campo">
+                    <strong> | </strong>
+                </div>   
+
+                <div class="campo">
+                    <strong>FABRICANTE:</strong>
+                    <span id="fabricante"></span>
+                </div>
+
+            </div>
+
+            <div class="linhaCabecalho">
+
+                <div class="campo">
+                    <strong>DATA INSPEÇÃO:</strong>
+                    <span id="dataLiberacao"></span>
+                </div>
+
+                <div class="campo">
+                    <strong>|  VERIFICADO POR:</strong>
+                    <span id="inspecionador"></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <h2 class="titulo-bloco">PEÇAS MECÂNICAS</h2>
+    <div
+        id="pecasMecanicasRelatorio"
+        class="problemasEncontradosRelatorio">
+    </div>
+
+    <h2 class="titulo-bloco">PEÇAS ELÉTRICAS</h2>
+    <div
+        id="pecasEletricasRelatorio"
+        class="problemasEncontradosRelatorio">
+    </div>
+
+    <h2 class="titulo-bloco">ÓLEO</h2>
+    <div
+        id="oleosRelatorio"
+        class="problemasEncontradosRelatorio">
+    </div>
+
+    <h2 class="titulo-bloco">RETÍFICA</h2>
+    <div
+        id="retificasRelatorio"
+        class="problemasEncontradosRelatorio">
+    </div>
+
+
+
+
+    <div class="rodape">
+        <div class="rodapeEsquerda">
+            <div>
+                VELKO COMPRESSORES LTDA. |
+                CNPJ - 12.382.134/0001-01 |
+                TEL. (21) 2594-6544 |
+                WWW.VELKO.COM.BR
+            </div>
+
+            <div>
+                SGT SILVA NUNES, 254 - GALPÃO - RAMOS - RJ |
+                <span class="bitzer">EMPRESA AUTORIZADA BITZER</span>
+            </div>
+        </div>
+        <div class="paginaNumero">
+            00
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+<script>
+
+    const params = new URLSearchParams(
+            window.location.search
+        );
+    const id = params.get("id");
+    const token =  localStorage.getItem("token");
+
+    function formatarDataHora(data){
+        if(!data){
+            return "-";
+        }
+
+        return new Date(data)
+            .toLocaleString("pt-BR");
+    }
+
+    
+function renderizarItens(
+    containerId,
+    itens
+){
+
+    const container =
+        document.getElementById(
+            containerId
+        );
+
+    if(!container){
+        return;
+    }
+
+    if(!itens.length){
+
+        container.innerHTML = `
+            <div class="itemProblema">
+                Nenhum item informado.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        itens.map(item => `
+
+            <div class="itemProblema">
+
+                <span class="checkProblema">
+                    ☑
+                </span>
+
+                <span>
+
+                    ${item.descricao}
+
+                    ${
+                        item.quantidade > 1
+                        ?
+                        ` (${item.quantidade}x)`
+                        :
+                        ""
+                    }
+
+                </span>
+
+            </div>
+
+        `).join("");
+}
+
+
+async function carregarListaPecas(){
+
+    const resposta =
+        await fetch(
+            `/api/inspecaoPecas/${id}`,
+            {
+                headers:{
+                    Authorization: token
+                }
+            }
+        );
+
+    if(!resposta.ok){
+        throw new Error(
+            "Erro ao carregar peças."
+        );
+    }
+
+    const pecas =
+        await resposta.json();
+
+    renderizarItens(
+        "pecasMecanicasRelatorio",
+        pecas.filter(
+            p =>
+                p.secao ===
+                "PECA_MECANICA"
+        )
+    );
+
+    renderizarItens(
+        "pecasEletricasRelatorio",
+        pecas.filter(
+            p =>
+                p.secao ===
+                "PECA_ELETRICA"
+        )
+    );
+
+    renderizarItens(
+        "oleosRelatorio",
+        pecas.filter(
+            p =>
+                p.secao ===
+                "OLEO"
+        )
+    );
+
+    renderizarItens(
+        "retificasRelatorio",
+        pecas.filter(
+            p =>
+                p.secao ===
+                "RETIFICA"
+        )
+    );
+}
+
+
+
+
+
+
+    async function carregarRelatorio(){
+        try{
+            const res =
+                await fetch(
+                    `/api/inspecoes/${id}`,
+                    {
+                        headers:{
+                            Authorization:token
+                        }
+                    }
+                );
+
+            const inspecao = await res.json();
+            await carregarListaPecas();
+
+
+
+            
+            document.getElementById(
+                "cliente"
+            ).textContent =
+                inspecao.nomeFantasia || "-";
+
+            document.getElementById(
+                "fabricante"
+            ).textContent =
+                inspecao.fabricante || "-";
+
+            document.getElementById(
+                "modelo"
+            ).textContent =
+                inspecao.modelo || "-";
+
+            document.getElementById(
+                "tipo"
+            ).textContent =
+                inspecao.tipo || "-";
+
+            document.getElementById(
+                "tensao"
+            ).textContent =
+                inspecao.tensao || "-";
+
+            document.getElementById(
+                "numeroSerie"
+            ).textContent =
+                inspecao.numeroSerie || "-";
+
+            document.getElementById(
+                "inspecionador"
+            ).textContent =
+                inspecao.inspecionador || "-";
+
+            document.getElementById(
+                "dataLiberacao"
+            ).textContent =
+                formatarDataHora(
+                    inspecao.dataLiberacao
+                );
+
+            setTimeout(() => {
+                window.print();
+            }, 1500);
+        }
+        catch(err){
+            console.error(err);
+            alert(
+                "Erro ao carregar relatório."
+            );
+        }
+    }
+
+
+
+
+
+
+
+
+    window.onload =  carregarRelatorio;
+
+</script>
+
+</body>
+
+</html>

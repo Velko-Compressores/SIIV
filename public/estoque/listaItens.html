@@ -1,0 +1,455 @@
+<!-- public/aumoxarifado/listaItens.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produtos do Estoque</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Roboto,sans-serif;
+}
+
+body{
+    background:#0f172a;
+}
+
+/* HEADER */
+.header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+}
+
+.left{
+    justify-self:start;
+}
+
+.center{
+    justify-self:center;
+    color:#cbd5f5;
+}
+
+.right{
+    justify-self:end;
+}
+
+.logout{
+    cursor:pointer;
+    color:#ef4444;
+}
+
+main{
+    max-width:1200px;
+    margin:30px auto;
+    background:white;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+h2{
+    margin-bottom:15px;
+    color:#0f172a;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#020617;
+    color:white;
+    padding:12px;
+    text-align:center;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:center;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+
+td:last-child{
+    text-align:center;
+}
+
+
+
+
+td button{
+    margin:2px;
+    padding:6px 10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+
+
+/* Paginação */
+
+  #paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 30px 0;
+  }
+
+  #paginacao button {
+    flex: unset;
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid #cbd5e1;
+    background: transparent;
+    color: #475569;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  #paginacao button:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  #paginacao button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  #infoPagina {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    min-width: 90px;
+    text-align: center;
+  }
+
+
+
+/* BOTÕES */
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 20px;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .continuar {
+    background: #22c55e;
+    color: white;
+  }
+
+  .continuar:hover {
+    background: #16a34a;
+  }
+
+  td button {
+    margin: 2px;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  td button:hover {
+    opacity: 0.8;
+  }
+
+
+
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="left">
+        <h1 onclick="irHome()" style="cursor:pointer;">
+            S.I.I.V.
+        </h1>
+    </div>
+
+    <div class="center">
+        <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+        <span class="logout" onclick="logout()">
+            SAIR ➜]
+        </span>
+    </div>
+</header>
+
+<main>
+
+<h2>PRODUTOS DO ESTOQUE</h2>
+
+<input
+    id="busca"
+    placeholder="🔍 Buscar produto..."
+>
+
+<table>
+<thead>
+<tr>
+    <th>PRODUTO</th>
+    <th>CATEGORIA</th>
+    <th>UNIDADE</th>
+    <th>ESTOQUE</th>
+    <th>AÇÕES</th>
+</tr>
+</thead>
+
+<tbody id="tabela"></tbody>
+
+</table>
+
+<div id="paginacao">
+    <button onclick="paginaAnterior()">
+        ◀ ANTERIOR
+    </button>
+
+    <span id="infoPagina"></span>
+
+    <button onclick="proximaPagina()">
+        PRÓXIMA ▶
+    </button>
+</div>
+
+<div class="actions">
+    <button class="voltar" onclick="voltar()">
+        ⬅ VOLTAR
+    </button>
+
+    <button class="continuar" onclick="novoProduto()">
+        ➕ NOVO PRODUTO
+    </button>
+</div>
+
+</main>
+
+<script>
+
+/* LOGIN */
+
+const token = localStorage.getItem("token");
+
+if(!token){
+    window.location.href="../../index.html";
+}
+
+const usuario = localStorage.getItem("usuario");
+
+document.getElementById("usuario").textContent =
+usuario ? `👋 Olá, ${usuario}` : "";
+
+/* DADOS EXEMPLO */
+const produtos = [
+    { id:1, nome:"Jogo de Juntas 4NFCY", categoria:"Peças Bitzer", unidade:"Kit", estoque:8 },
+    { id:2, nome:"Placa de Válvula 4NFCY", categoria:"Peças Bitzer", unidade:"Un", estoque:5 },
+    { id:3, nome:"Biela Completa 4PES", categoria:"Peças Bitzer", unidade:"Un", estoque:4 },
+    { id:4, nome:"Pistão 4PES", categoria:"Peças Bitzer", unidade:"Un", estoque:12 },
+    { id:5, nome:"Anel de Pistão 4PES", categoria:"Peças Bitzer", unidade:"Jogo", estoque:18 },
+    { id:6, nome:"Filtro de Óleo Bitzer", categoria:"Peças Bitzer", unidade:"Un", estoque:22 },
+    { id:7, nome:"Bomba de Óleo", categoria:"Peças Bitzer", unidade:"Un", estoque:3 },
+    { id:8, nome:"Visor de Óleo", categoria:"Peças Bitzer", unidade:"Un", estoque:15 },
+    { id:9, nome:"Retentor do Eixo", categoria:"Peças Bitzer", unidade:"Un", estoque:7 },
+    { id:10, nome:"Sensor de Temperatura", categoria:"Elétrica", unidade:"Un", estoque:10 },
+    { id:11, nome:"Pressostato Alta Pressão", categoria:"Elétrica", unidade:"Un", estoque:6 },
+    { id:12, nome:"Pressostato Baixa Pressão", categoria:"Elétrica", unidade:"Un", estoque:9 },
+    { id:13, nome:"Contator 32A", categoria:"Elétrica", unidade:"Un", estoque:14 },
+    { id:14, nome:"Relé Térmico", categoria:"Elétrica", unidade:"Un", estoque:11 },
+    { id:15, nome:"Separador de Óleo", categoria:"Refrigeração", unidade:"Un", estoque:4 },
+    { id:16, nome:"Filtro Secador", categoria:"Refrigeração", unidade:"Un", estoque:25 },
+    { id:17, nome:"Válvula Solenoide Danfoss", categoria:"Refrigeração", unidade:"Un", estoque:8 },
+    { id:18, nome:"Óleo Bitzer BSE32", categoria:"Lubrificantes", unidade:"Galão", estoque:13 },
+    { id:19, nome:"Óleo Bitzer B100", categoria:"Lubrificantes", unidade:"Galão", estoque:9 },
+    { id:20, nome:"Compressor Bitzer 4NES-14Y Novo", categoria:"Compressor Novo", unidade:"Un", estoque:2 },
+    { id:21, nome:"Compressor Bitzer 4PES-15Y Novo", categoria:"Compressor Novo", unidade:"Un", estoque:1 },
+    { id:22, nome:"Compressor Bitzer 6GE-34Y Novo", categoria:"Compressor Novo", unidade:"Un", estoque:2 },
+    { id:23, nome:"Compressor Bitzer 4NES-14Y Remanufaturado", categoria:"Compressor Remanufaturado", unidade:"Un", estoque:3 },
+    { id:24, nome:"Compressor Bitzer 4PES-15Y Remanufaturado", categoria:"Compressor Remanufaturado", unidade:"Un", estoque:2 },
+    { id:25, nome:"Compressor Bitzer 6GE-34Y Remanufaturado", categoria:"Compressor Remanufaturado", unidade:"Un", estoque:1 }
+];
+
+
+let paginaAtual = 1;
+const itensPorPagina = 10;
+let produtosFiltrados = [...produtos];
+
+function render(lista){
+
+    const tabela =
+    document.getElementById("tabela");
+
+    tabela.innerHTML = "";
+
+    const totalPaginas =
+    Math.ceil(lista.length / itensPorPagina);
+
+    const inicio =
+    (paginaAtual - 1) * itensPorPagina;
+
+    const fim =
+    inicio + itensPorPagina;
+
+    lista.slice(inicio,fim)
+    .forEach(produto => {
+
+        tabela.innerHTML += `
+        <tr>
+            <td>${produto.nome}</td>
+            <td>${produto.categoria}</td>
+            <td>${produto.unidade}</td>
+            <td>${produto.estoque}</td>
+            <td>
+                <button onclick="verProduto()">
+                    👁
+                </button>
+
+                <button onclick="editarProduto()">
+                    ✏️
+                </button>
+
+                <button onclick="excluirProduto()">
+                    🗑
+                </button>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById("infoPagina").textContent =
+    `Página ${paginaAtual} de ${totalPaginas}`;
+}
+
+function proximaPagina(){
+
+    const totalPaginas =
+    Math.ceil(produtosFiltrados.length / itensPorPagina);
+
+    if(paginaAtual < totalPaginas){
+        paginaAtual++;
+        render(produtosFiltrados);
+    }
+}
+
+function paginaAnterior(){
+
+    if(paginaAtual > 1){
+        paginaAtual--;
+        render(produtosFiltrados);
+    }
+}
+
+document.getElementById("busca")
+.addEventListener("input", function(e){
+
+    const termo =
+    e.target.value.toLowerCase();
+
+    produtosFiltrados =
+    produtos.filter(produto =>
+        produto.nome.toLowerCase().includes(termo) ||
+        produto.categoria.toLowerCase().includes(termo)
+    );
+
+    paginaAtual = 1;
+
+    render(produtosFiltrados);
+
+});
+
+/* NAVEGAÇÃO */
+
+function novoProduto(){
+    window.location.href =
+    "cadastrarItens.html";
+}
+
+function voltar(){
+    window.location.href =
+    "estoque.html";
+}
+
+function irHome(){
+    window.location.href =
+    "../../home.html";
+}
+
+/* PÁGINAS EM DESENVOLVIMENTO */
+function verProduto(){
+    alert("⚠️ Página em desenvolvimento");
+}
+
+function editarProduto(){
+    alert("⚠️ Página em desenvolvimento");
+}
+
+function excluirProduto(){
+    alert("⚠️ Página em desenvolvimento");
+}
+
+/* LOGOUT */
+function logout(){
+
+    const confirmar =
+    confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+    "../../index.html";
+}
+
+/* INIT */
+
+render(produtosFiltrados);
+
+</script>
+
+</body>
+</html>

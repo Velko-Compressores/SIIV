@@ -1,0 +1,1208 @@
+<!-- public/producao/desmontagens/listaDesmontagem.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Lista de Desmontagem</title>
+
+<style>
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+  }
+
+  /* HEADER */
+  .header {
+    background: #020617;
+    color: white;
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .left { justify-self: start; }
+  .center { justify-self: center; color: #cbd5f5; }
+  .right { justify-self: end; }
+  .logout { cursor: pointer; color: #ef4444; }
+
+  main {
+    flex: 1;
+    background: white;
+    padding: 30px;
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #0f172a;
+  }
+
+  h3{
+    margin:25px 0 10px;
+    color:#0f172a;
+  }  
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #020617;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+
+  tr:hover {
+    background: #f1f5f9;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+  }
+
+  td button{
+    cursor:pointer;
+    margin:2px;
+    padding:6px 8px;
+    font-size:12px;
+
+    border:none;
+    border-radius:6px;
+  }
+
+  td button:hover {
+    opacity: 0.8;
+  }
+
+  td select{
+    width:100%;
+    padding:6px;
+    border:1px solid #cbd5e1;
+    border-radius:6px;
+    text-align:center;
+  }
+
+  .btn-os{
+    min-width:110px;
+    height:34px;
+    border:none;
+    border-radius:6px;
+    background:#98b6f8;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-os:hover{
+    background:#1d4ed8;
+  }
+
+  .btn-iniciar{
+    min-width:110px;
+    height:34px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#2563eb;  
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-iniciar:hover{
+    opacity:.9;
+  }
+
+
+  .btn-salvar{
+    background:#22c55e;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    min-width:110px;
+    height:34px;
+
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-salvar:hover{
+    opacity:.9;
+  }
+
+  .btn-finalizar{
+    min-width:110px;
+    height:34px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#22c55e;   
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-finalizar:hover{
+    opacity:.9;
+  }
+
+
+  .area-producao{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .area-cronometro{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .btn-pause{
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:none;
+    border-radius:6px;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:16px;
+    padding:0;
+    line-height:1;
+
+  }
+
+  .btn-pause:hover{
+    opacity:.9;
+  }
+
+  .cronometro{
+    font-size:16px;
+    font-weight:bold;
+    color:#2563eb;
+    background:#dbeafe;
+    padding:6px 10px;
+    border-radius:8px;
+  }
+
+  select:disabled{
+    border:none;
+    background:transparent;
+    color:#0f172a;
+    font-weight:bold;
+    cursor:default;
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    padding:0;
+  }
+
+  .prioridade-urgente{
+    color: #e2e8f0;
+    background:#fecaca;
+    border-left:6px solid #dc2626;
+    font-weight:bold;
+    animation:piscarUrgente 1.5s infinite;
+  }
+
+  .tabela-container{
+    width:100%;
+    overflow-x:auto;
+  }
+
+
+  .footer-actions{
+    display:flex;
+    gap:10px;
+    padding:25px;
+    background:white;
+  }
+
+  .footer-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+  }
+
+  .voltar{
+    background:#334155;
+    color:white;
+  }
+
+  .voltar:hover{
+    background:#475569;
+  }
+
+  .inspecao{
+    background:#357baa;
+    color:white;
+  }
+
+  .inspecao:hover{
+    background:#3d86b6;
+  }
+
+  .sem-registros{
+    text-align:center;
+  }
+
+  .desmontados{
+    background:#1bb453;
+    color:white;
+  }
+
+  .desmontados:hover{
+    background:#16a34a;
+  }
+
+
+
+  @keyframes piscarUrgente{
+    0%{
+      background:#fecaca;
+    }
+
+    50%{
+      background:#ef4444;
+    }
+
+    100%{
+      background:#fecaca;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <header class="header">
+
+    <div class="left">
+      <h1 onclick="irHome()" style="cursor:pointer;">
+        S.I.I.V.
+      </h1>
+    </div>
+
+    <div class="center">
+      <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+      <span class="logout" onclick="logout()"> SAIR ➜] </span>
+    </div>
+
+  </header>
+
+  <main>
+    <h2>FILA DE DESMONTAGEM</h2>
+
+    <h3>
+      🗂️ AGUARDANDO
+      (<span id="totalAguardando">0</span>)
+    </h3>
+    <div class="tabela-container">
+      <table>
+        <thead>
+          <tr>
+            <th>OS</th>
+            <th>CLIENTE</th>
+            <th>FABRICANTE</th>
+            <th>MODELO</th>
+            <th>TENSÃO</th>
+            <th>Nº SÉRIE</th>
+            <th>DESMONTADOR</th>
+            <th>PRIORIDADE</th>
+            <th>AÇÕES</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaAguardando"></tbody>
+      </table>
+    </div>
+    <br><br>
+
+    <h3>
+      🛠️ EM PROCESSO
+      (<span id="totalExecucao">0</span>)
+    </h3>
+    <div class="tabela-container">
+      <table>
+        <thead>
+          <tr>
+            <th>OS</th>
+            <th>CLIENTE</th>
+            <th>FABRICANTE</th>
+            <th>MODELO</th>
+            <th>TENSÃO</th>
+            <th>Nº SÉRIE</th>
+            <th>DESMONTADOR</th>
+            <th>PRIORIDADE</th>
+            <th>AÇÕES</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaExecucao"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="footer-actions">
+    <button class="voltar" onclick="voltar()"> ⬅️ VOLTAR </button>
+    <button class="desmontados" onclick="irListaDesmontados()"> 📦 DESMONTADOS </button>
+    <button class="inspecao" onclick="irListaInspecao()"> ➡️ INSPEÇÃO </button>
+  </footer>
+
+<script>
+
+
+// ================= AUTENTICAÇÃO =================
+  const token = localStorage.getItem("token");
+  if (!token){
+    window.location.href = "../../index.html";
+  }
+
+  const usuario = localStorage.getItem("usuario");
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+// ================= VARIÁVEIS GLOBAIS =================
+  let desmontagens = [];
+
+// ================= CARREGAMENTO =================
+  async function carregar(){
+    try{
+      const res =
+        await fetch(
+          "/api/desmontagens",
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      if(!res.ok){
+
+        alert(
+          "Erro ao carregar desmontagens."
+        );
+
+        return;
+      }
+
+      desmontagens =
+        await res.json();
+
+      render(desmontagens);
+
+    }
+    catch(err){
+
+      console.error(err);
+
+    }
+  }
+
+// ================= RENDERIZAÇÃO =================
+  // Divide registros por status
+  function render(lista){
+
+    const aguardando =
+      lista.filter(item =>
+        item.status === "AGUARDANDO"
+    );     
+
+    const execucao =
+      lista.filter(item =>
+        item.status === "EM DESMONTAGEM"
+    );
+
+    renderTabela(
+      ordenarPrioridade(aguardando),
+      "tabelaAguardando"
+    );
+
+    renderTabela(
+      ordenarPrioridade(execucao),
+      "tabelaExecucao"
+    );
+
+    document.getElementById(
+      "totalAguardando"
+    ).textContent = aguardando.length;
+
+    document.getElementById(
+      "totalExecucao"
+    ).textContent = execucao.length;
+
+
+  }
+  // Ordenar por prioridade
+  function ordenarPrioridade(lista){
+    return lista.sort((a, b) => {
+      const prioridadeA =
+        parseInt(a.prioridade) || 99;
+      const prioridadeB =
+        parseInt(b.prioridade) || 99;
+      return prioridadeA - prioridadeB;
+    });
+  }
+  // Monta as tabelas
+  function renderTabela(
+    lista,
+    tabelaId
+  ){
+
+    const tabela =
+      document.getElementById(
+        tabelaId
+      );
+
+    tabela.innerHTML = "";
+
+    lista.forEach(desmontagem => {
+
+      const tr =
+        document.createElement("tr");
+
+          
+    if(
+      desmontagem.prioridade === "1º" &&
+      desmontagem.status === "AGUARDANDO"
+    ){
+      tr.classList.add("prioridade-urgente");
+    }      
+      
+
+      let botaoAcao = "";
+      let cronometroHtml = "";
+
+      if(desmontagem.status === "AGUARDANDO"){
+
+        botaoAcao = `
+          <button
+            class="btn-salvar"
+            onclick="salvarProgramacao(${desmontagem.id})"
+          > SALVAR 💾
+          </button>
+
+          <button
+            class="btn-iniciar"
+            onclick="iniciarDesmontagem(${desmontagem.id})"
+          > INICIAR ▶️
+          </button>
+
+        `;
+
+      }
+      else if(
+        desmontagem.status ===
+        "EM DESMONTAGEM"
+      ){
+
+        const inicio =
+          new Date(
+            desmontagem.dataHoraInicio
+          );
+
+          let referenciaTempo;
+
+          if(
+            desmontagem.cronometroPausado &&
+            desmontagem.dataHoraPausa
+          ){
+
+            referenciaTempo =
+              new Date(
+                desmontagem.dataHoraPausa
+              );
+
+          }else{
+
+            referenciaTempo =
+              new Date();
+
+          }
+
+        const diff =
+          (referenciaTempo - inicio) -
+          ((desmontagem.tempoPausadoTotal || 0) * 1000);
+
+        const horas =
+          Math.floor(
+            diff / 1000 / 60 / 60
+          );
+
+        const minutos =
+          Math.floor(
+            (diff / 1000 / 60) % 60
+          );
+
+        const segundos =
+          Math.floor(
+            (diff / 1000) % 60
+          );
+
+        const iconeCronometro =
+          desmontagem.cronometroPausado
+            ? "▶️"
+            : "⏸️";          
+
+        cronometroHtml = `
+          <div class="area-cronometro">
+
+            <button
+              type="button"
+              class="btn-pause"
+              onclick="toggleCronometro(${desmontagem.id})"
+              id="btn-cronometro-${desmontagem.id}"
+            >
+              ${iconeCronometro}
+            </button>
+
+
+            <span
+              class="cronometro"
+              id="cronometro-${desmontagem.id}"
+              data-inicio="${desmontagem.dataHoraInicio}"
+              data-pausado="${desmontagem.tempoPausadoTotal || 0}"
+            > ⏱️
+              ${String(horas).padStart(2,"0")}:
+              ${String(minutos).padStart(2,"0")}:
+              ${String(segundos).padStart(2,"0")}
+            </span>
+
+          </div>
+        `;
+
+        botaoAcao = `
+          <div class="area-producao">
+            <button
+              class="btn-finalizar"
+              onclick="finalizarDesmontagem(${desmontagem.id})"
+            > FINALIZAR ✅
+            </button>
+
+            ${cronometroHtml}
+          </div>
+        `;
+      
+      }
+
+    
+      tr.innerHTML = `
+        <td>
+          <button
+            class="btn-os"
+            onclick="visualizarDesmontagem(${desmontagem.id})"
+          >
+            ${desmontagem.numeroOS || "-"} 📄
+          </button>
+        </td>
+        <td>${desmontagem.nomeFantasia || "-"}</td>
+        <td>${desmontagem.fabricante || "-"}</td>
+        <td>${desmontagem.modelo || "-"}</td>
+        <td>${desmontagem.tensao || "-"}</td>
+        <td>${desmontagem.numeroSerie || "-"}</td>
+
+
+        <td>
+          <select
+            id="desmontador-${desmontagem.id}"
+            ${
+              desmontagem.status !== "AGUARDANDO"
+                ? "disabled"
+                : ""
+            }
+          >
+
+            <option
+              value=""
+              ${!desmontagem.desmontador ? "selected" : ""}
+            >
+              Selecione
+            </option>
+
+            <option
+              value="RENATO"
+              ${desmontagem.desmontador === "RENATO" ? "selected" : ""}
+            >
+              RENATO
+            </option>
+
+            <option
+              value="WALLACE"
+              ${desmontagem.desmontador === "WALLACE" ? "selected" : ""}
+            >
+              WALLACE
+            </option>
+
+            <option
+              value="ANDRE"
+              ${desmontagem.desmontador === "ANDRE" ? "selected" : ""}
+            >
+              ANDRE
+            </option>
+
+            <option
+              value="DANIEL"
+              ${desmontagem.desmontador === "DANIEL" ? "selected" : ""}
+            >
+              DANIEL
+            </option>
+
+            <option
+              value="LUCAS"
+              ${desmontagem.desmontador === "LUCAS" ? "selected" : ""}
+            >
+              LUCAS
+            </option>
+
+          </select>
+        </td>
+
+        <td>
+          <select
+            id="prioridade-${desmontagem.id}"
+            ${
+              desmontagem.status !== "AGUARDANDO"
+                ? "disabled"
+                : ""
+            }
+          >
+
+            <option
+              value=""
+              ${!desmontagem.prioridade ? "selected" : ""}
+            >
+              Selecione
+            </option>
+
+            <option
+              value="1º"
+              ${desmontagem.prioridade === "1º" ? "selected" : ""}
+            >
+              1º
+            </option>
+
+            <option
+              value="2º"
+              ${desmontagem.prioridade === "2º" ? "selected" : ""}
+            >
+              2º
+            </option>
+
+            <option
+              value="3º"
+              ${desmontagem.prioridade === "3º" ? "selected" : ""}
+            >
+              3º
+            </option>
+
+            <option
+              value="4º"
+              ${desmontagem.prioridade === "4º" ? "selected" : ""}
+            >
+              4º
+            </option>
+
+            <option
+              value="5º"
+              ${desmontagem.prioridade === "5º" ? "selected" : ""}
+            >
+              5º
+            </option>
+
+          </select>
+
+        </td>
+
+        <td>
+          ${botaoAcao}
+        </td>
+      `;
+      tabela.appendChild(tr);
+    });
+
+    if(lista.length === 0){
+      tabela.innerHTML = `
+        <tr>
+          <td colspan="9" class="sem-registros">
+            Nenhum registro encontrado
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+// ================= AÇÕES =================
+  // Abrir ficha de desmontagem
+  function visualizarDesmontagem(id){
+
+    window.location.href =
+      `cadastroDesmontagem.html?id=${id}`;
+
+  }
+  // Salvar programação
+  async function salvarProgramacao(id){
+
+    const desmontagem =
+      desmontagens.find(
+        d => d.id === id
+      );
+
+    const desmontador =
+      document.getElementById(
+        `desmontador-${id}`
+      ).value;
+
+    const prioridade =
+      document.getElementById(
+        `prioridade-${id}`
+      ).value;
+
+
+    const programacao = {
+      recebimentoId: desmontagem.recebimentoId,
+
+      numeroOS: desmontagem.numeroOS,
+      nomeFantasia: desmontagem.nomeFantasia,
+      fabricante: desmontagem.fabricante,
+      modelo: desmontagem.modelo,
+
+      tensao: desmontagem.tensao,
+      numeroSerie: desmontagem.numeroSerie,
+      tipo: desmontagem.tipo,
+
+      desmontador,
+      prioridade,
+      liberadoPor: usuario,
+
+      dataLiberacao:
+        new Date().toISOString()
+    };
+
+    try{
+
+      const res =
+        await fetch(
+          "/api/desmontagens/programacao",
+          {
+            method: "POST",
+
+            headers:{
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                token
+            },
+
+            body:
+              JSON.stringify(
+                programacao
+              )
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao salvar programação"
+        );
+
+        return;
+      }
+
+      await carregar();
+
+      alert(
+        "✅ Programação salva com sucesso!"
+      );
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com o servidor."
+      );
+
+    }
+
+  }
+  // Iniciar desmontagem
+  async function iniciarDesmontagem(id){
+
+    const desmontagem =
+      desmontagens.find(
+        d => d.id === id
+      );
+
+
+    const desmontador =
+      document.getElementById(
+        `desmontador-${id}`
+      )?.value || "";
+
+    const prioridade =
+      document.getElementById(
+        `prioridade-${id}`
+      )?.value || "";
+
+    if(
+      !desmontador ||
+      !prioridade
+    ){
+      alert(
+        "Defina desmontador e prioridade antes de iniciar."
+      );
+      return;
+    }
+
+    const confirmar =
+      confirm(
+        "Deseja iniciar esta desmontagem?"
+      );
+
+    if(!confirmar){
+      return;
+    }
+
+
+    try{
+
+      const res = await fetch(
+        `/api/desmontagens/iniciar/${id}`,
+        {
+          method: "PUT",
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao iniciar desmontagem"
+        );
+
+        return;
+      }
+
+      await carregar();
+
+      alert(
+        "✅ Desmontagem iniciada com sucesso!"
+      );
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com o servidor."
+      );
+    }
+  }
+  // Finalizar desmontagem
+  async function finalizarDesmontagem(id){
+
+    const confirmar =
+      confirm(
+        "Deseja finalizar esta desmontagem?"
+      );
+
+    if(!confirmar){
+      return;
+    }
+
+    try{
+
+      const res = await fetch(
+        `/api/desmontagens/finalizar/${id}`,
+        {
+          method:"PUT",
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      const data =
+        await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao finalizar desmontagem"
+        );
+
+        return;
+      }
+
+      await carregar();
+
+      alert(
+        "✅ Desmontagem finalizada com sucesso!"
+      );
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor."
+      );
+
+    }
+
+  }
+  // Pausar ou retomar cronômetro
+  async function toggleCronometro(id){
+
+    const desmontagem =
+      desmontagens.find(
+        d => d.id === id
+      );
+
+      if(!desmontagem){
+        return;
+      }
+
+    try{
+
+      let res;
+
+      if(desmontagem.cronometroPausado){
+
+        res = await fetch(
+          `/api/desmontagens/retomar/${id}`,
+          {
+            method:"PUT",
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      }else{
+
+        res = await fetch(
+          `/api/desmontagens/pausar/${id}`,
+          {
+            method:"PUT",
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      }
+
+      const data =
+        await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao alterar cronômetro."
+        );
+
+        return;
+      }
+
+      await carregar();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor."
+      );
+
+    }
+
+  }
+
+// ================= CRONÔMETRO =================
+  function atualizarCronometros(){
+
+    const cronometros =
+      document.querySelectorAll(
+        "[id^='cronometro-']"
+      );
+
+    cronometros.forEach(el => {
+
+      const id =
+        el.id.replace(
+          "cronometro-",
+          ""
+        );
+
+    const desmontagem =
+      desmontagens.find(
+        d => d.id == id
+      );
+
+      if(
+        desmontagem &&
+        desmontagem.cronometroPausado
+      ){
+        return;
+      }
+
+
+
+      const inicio =
+        new Date(
+          el.dataset.inicio
+        );
+
+      const agora =
+        new Date();
+
+      const segundosPausados =
+        desmontagem?.tempoPausadoTotal || 0;
+
+      const diff =
+        (agora - inicio) -
+        (segundosPausados * 1000);
+
+      const horas =
+        Math.floor(
+          diff / 1000 / 60 / 60
+        );
+
+      const minutos =
+        Math.floor(
+          (diff / 1000 / 60) % 60
+        );
+
+      const segundos =
+        Math.floor(
+          (diff / 1000) % 60
+        );
+
+      el.innerHTML = `
+        ⏱️
+        ${String(horas).padStart(2,"0")}:
+        ${String(minutos).padStart(2,"0")}:
+        ${String(segundos).padStart(2,"0")}
+      `;
+
+    });
+
+  }
+
+// ================= NAVEGAÇÃO =================
+  // Voltar para home de inspecao
+  function voltar(){
+    window.location.href =
+      "desmontagemInspecao.html";
+  }
+
+// Abrir lista desmontagens finalizadas
+  function irListaDesmontados(){
+    window.location.href =
+      "listaDesmontados.html";
+  }
+
+  // Abrir lista de inspeção
+  function irListaInspecao(){
+    window.location.href = "../inspecoes/listaInspecao.html";
+  }
+  // Ir para Home
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+
+
+
+  // ================= LOGOUT =================
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+// ================= INICIALIZAÇÃO =================
+  window.addEventListener(
+    "load",
+    async () => {
+
+      await carregar();
+
+      atualizarCronometros();
+
+      setInterval(
+        atualizarCronometros,
+        1000
+      );
+
+    }
+  );
+
+</script>
+
+</body>
+</html>

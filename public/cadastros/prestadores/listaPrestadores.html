@@ -1,0 +1,363 @@
+<!-- public/cadastros/prestadores/listaPrestadores.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Prestadores de Serviços</title>
+
+<style>
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+  }
+
+  /* HEADER */
+  .header {
+    background: #020617;
+    color: white;
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .left { justify-self: start; }
+  .center { justify-self: center; color: #cbd5f5; }
+  .right { justify-self: end; }
+
+  .logout {
+    cursor: pointer;
+    color: #ef4444;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #0f172a;
+  }
+
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 15px;
+  }
+
+  table {
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  th {
+    background:#020617;
+    color:white;
+    padding:10px;
+  }
+
+  td {
+    padding:10px;
+    border-bottom:1px solid #e2e8f0;
+  }
+
+  tr:hover {
+    background:#f1f5f9;
+  }
+
+  td button {
+    cursor: pointer;
+  }
+
+  .actions {
+    display:flex;
+    gap:10px;
+    padding-top:20px;
+  }
+
+  button {
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .continuar {
+    background: #22c55e;
+    color: white;
+  }
+
+  .continuar:hover {
+    background: #16a34a;
+  }
+  
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">S.I.I.V.</h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+</header>
+
+<main>
+
+<h2>Prestadores de Serviços</h2>
+
+<input id="busca" placeholder="🔍 Buscar prestador...">
+
+<table>
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>CNPJ</th>
+      <th>Cidade</th>
+      <th>Telefone</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody id="tabela"></tbody>
+</table>
+
+<div class="actions">
+  <button class="voltar" onclick="voltar()">⬅ Voltar</button>
+  <button class="continuar" onclick="novo()">➕ Novo Prestador</button>
+</div>
+
+</main>
+
+<script>
+
+  // 🔐 AUTH
+  const token = localStorage.getItem("token");
+
+  if (!token){
+    window.location.href = "../../index.html";
+  }
+
+  const usuario = localStorage.getItem("usuario");
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+  let prestadores = [];
+
+  // ✅ CARREGAR
+  async function carregar(){
+
+    try {
+
+      const res = await fetch("/api/prestadores", {
+        headers: {
+          Authorization: token
+        }
+      });
+
+      if (!res.ok){
+        alert("Erro ao carregar prestadores");
+        return;
+      }
+
+      prestadores = await res.json();
+
+      render(prestadores);
+
+    } catch(err){
+
+      console.error(err);
+      alert("Erro ao carregar dados");
+
+    }
+
+  }
+
+  // ✅ RENDER
+  function render(lista){
+
+    const tabela = document.getElementById("tabela");
+
+    tabela.innerHTML = "";
+
+    lista.forEach(prestador => {
+
+      const tr = document.createElement("tr");
+
+      const nome =
+        prestador.nomeFantasia ||
+        prestador.razaoSocial ||
+        "-";
+
+      tr.innerHTML = `
+        <td>${nome}</td>
+        <td>${prestador.documento|| "-"}</td>
+        <td>${prestador.cidade || "-"}</td>
+        <td>${prestador.telefone || "-"}</td>
+        <td>
+          <button onclick="ver(${prestador.id})">👁</button>
+          <button onclick="editar(${prestador.id})">✏️</button>
+          <button onclick="del(${prestador.id})">🗑</button>
+        </td>
+      `;
+
+      tabela.appendChild(tr);
+
+    });
+
+    if(lista.length === 0){
+
+      tabela.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center;">
+            Nenhum prestador encontrado
+          </td>
+        </tr>
+      `;
+
+    }
+
+  }
+
+  // ✅ BUSCA
+  document.getElementById("busca").addEventListener("input", e => {
+
+    const termo = e.target.value.toLowerCase();
+
+    
+    const filtro = prestadores.filter(prestador => {
+
+      return (
+        (prestador.nomeFantasia || "").toLowerCase().includes(termo) ||
+        (prestador.razaoSocial || "").toLowerCase().includes(termo) ||
+        (prestador.documento || "").toLowerCase().includes(termo) ||
+        (prestador.cidade || "").toLowerCase().includes(termo) ||
+        (prestador.telefone || "").toLowerCase().includes(termo)
+      );
+
+    });
+
+    render(filtro);
+
+  });
+
+  // ✅ NOVO
+  function novo(){
+    window.location.href = "cadastroPrestadores.html";
+  }
+
+  // ✅ VISUALIZAR
+  function ver(id){
+    window.open(
+      `cadastroPrestadores.html?id=${id}&modo=visualizar`,
+      "_blank"
+    );
+  }
+
+  // ✅ EDITAR
+  function editar(id){
+    window.location.href =
+      `cadastroPrestadores.html?id=${id}`;
+  }
+
+  // ✅ EXCLUIR
+  async function del(id){
+
+    const confirmar = confirm(
+      "⚠️ Deseja realmente excluir este prestador?"
+    );
+
+    if (!confirmar) return;
+
+    try {
+
+      const res = await fetch(`/api/prestadores/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok){
+        alert(data.erro || "Erro ao excluir");
+        return;
+      }
+
+      alert("✅ Prestador excluído com sucesso!");
+
+      carregar();
+
+    } catch(err){
+
+      console.error(err);
+
+      alert("Erro de conexão com servidor");
+
+    }
+
+  }
+
+  function voltar(){
+    window.location.href = "../cadastros.html";
+  }
+
+  function irHome(){
+    window.location.href = "../../home.html";
+  }
+
+  function logout(){
+
+    const confirmar = confirm(
+      "⚠️ Deseja realmente sair do sistema?"
+    );
+
+    if (!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href = "../../index.html";
+
+  }
+
+  window.onload = carregar;
+
+</script>
+
+</body>
+</html>

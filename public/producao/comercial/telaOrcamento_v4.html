@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Orçamento</title>
+
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+  }
+
+  .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left{justify-self:start;}
+  .center{justify-self:center;color:#cbd5f5;}
+  .right{justify-self:end;}
+
+  .logout{
+    cursor:pointer;
+    color:#ef4444;
+  }
+
+  main{
+    flex:1;
+    background:white;
+    padding:30px;
+  }
+
+  /* Estilo dos cards das secoes baseado no padrão fornecido */
+  .informacoes-os,
+  .bloco-tabelas,
+  .bloco-totais,
+  .bloco-observacoes {
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    margin-bottom:15px;
+  }
+
+  h2{
+    margin-top:5px;
+    margin-bottom:15px;
+    font-size:medium;
+    color:#0f172a;
+    text-transform: uppercase;
+  }
+
+  /* Grid para o bloco de informacoes */
+  .linha-equipamento{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:5px;
+    padding-top:15px;
+  }
+
+  /* Estilo dos inputs/campos mapeados */
+  .campo{
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    padding:8px 12px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .campo strong{
+    font-size:13px;
+    color:#0f172a;
+    margin-bottom:2px;
+  }
+
+  .campo span{
+    color:#64748b; 
+    font-size:16px;
+    font-weight:600;
+    line-height:1.2;
+  }
+
+  /* Mapeamento de colunas do grid (12 colunas) */
+  .orcamento-num { grid-column: span 3; }
+  .data-hora { grid-column: span 3; }
+  .fone { grid-column: span 3; }
+  .atendente { grid-column: span 3; }
+
+  .cliente-nome { grid-column: span 12; }
+
+  /* Estilização das tabelas de Serviços e Peças */
+  .tabela-dados {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .tabela-dados th {
+    background: #020617;
+    color: white;
+    text-align: left;
+    padding: 10px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .tabela-dados td {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 10px;
+    color: #475569;
+  }
+
+  .tabela-dados tr:hover td {
+    background: #f8fafc;
+  }
+
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+
+  /* Lista de observações */
+  .lista-obs {
+    list-style: none;
+  }
+
+  .lista-obs li {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+    padding-left: 15px;
+    position: relative;
+  }
+
+  .lista-obs li::before {
+    content: "•";
+    color: #64748b;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+  }
+
+  .alerta-obs {
+    color: #dc2626 !important;
+    font-weight: 600;
+  }
+
+  /* Rodapé de Ações */
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+  .salvar,
+  .exportar,
+  .voltar{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .exportar{
+    background:#f59e0b;
+    color:white;
+  }
+
+  .exportar:hover{
+    background:#d97706;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  /* Estilo de Impressão nativo do seu sistema */
+  @media print {
+    header,
+    .header,
+    .footer-actions,
+    .salvar,
+    .exportar,
+    .voltar {
+        display:none !important;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    body {
+        font-size: 11px;
+        zoom: 0.90;
+    }
+
+    .campo {
+        border:none !important;
+        padding:2px 4px !important;
+        border-radius:0 !important;
+        background:transparent !important;
+    }
+
+    .informacoes-os,
+    .bloco-tabelas,
+    .bloco-totais,
+    .bloco-observacoes {
+      border: none !important;
+      padding: 0 !important;
+      margin-bottom: 10px !important;
+    }
+
+    .tabela-dados th {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-bottom: 2px solid #0f172a;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+
+</header>
+
+
+<main class="main">
+
+  <!-- Bloco Inicial: Dados do Orçamento e Cliente -->
+  <section class="informacoes-os">
+    <h2> Detalhes do Orçamento </h2>    
+    <div class="linha-equipamento">
+      <div class="campo orcamento-num">
+        <strong>ORÇAMENTO:</strong>
+        <span> - </span>
+      </div>
+      <div class="campo data-hora">
+        <strong>DATA/HORA:</strong>
+        <span> - </span>
+      </div>
+      <div class="campo fone">
+        <strong>FONE:</strong>
+        <span> - </span>
+      </div>
+      <div class="campo atendente">
+        <strong>ATENDENTE:</strong>
+        <span> - </span>
+      </div>
+
+      <div class="campo cliente-nome">
+        <strong>CLIENTE:</strong>
+        <span> - </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bloco Tabelas de Serviços e Peças -->
+  <section class="bloco-tabelas">
+    <h2> Serviços Prestar </h2>
+    <table class="tabela-dados">
+      <thead>
+        <tr>
+          <th>DESCRIÇÃO</th>
+          <th class="text-center" style="width: 80px;">QTD</th>
+          <th class="text-right" style="width: 120px;">VL UNIT</th>
+          <th class="text-right" style="width: 100px;">DESC</th>
+          <th class="text-right" style="width: 140px;">VL TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SERVICO PORTA LD</td>
+          <td class="text-center">1</td>
+          <td class="text-right">140,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">140,00</td>
+        </tr>
+        <tr>
+          <td>SERVICO ELETRICO</td>
+          <td class="text-center">1</td>
+          <td class="text-right">120,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">120,00</td>
+        </tr>
+        <tr>
+          <td>SERVICO PORTA LE</td>
+          <td class="text-center">1</td>
+          <td class="text-right">140,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">140,00</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2> Peças Aplicadas </h2>
+    <table class="tabela-dados">
+      <thead>
+        <tr>
+          <th style="width: 100px;">CÓDIGO</th>
+          <th>DESCRIÇÃO</th>
+          <th class="text-center" style="width: 80px;">QTD</th>
+          <th class="text-right" style="width: 120px;">VL UNIT</th>
+          <th class="text-right" style="width: 100px;">DESC</th>
+          <th class="text-right" style="width: 140px;">VL TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5425072</td>
+          <td>MANIVELA REGULA VIDRO PRETA DIR/ESQU</td>
+          <td class="text-center">2</td>
+          <td class="text-right">15,04</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">30,08</td>
+        </tr>
+        <tr>
+          <td>5436381</td>
+          <td>MAQUINA VIDRO LD</td>
+          <td class="text-center">1</td>
+          <td class="text-right">253,73</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">253,73</td>
+        </tr>
+        <tr>
+          <td>5436382</td>
+          <td>MAQUINA VIDRO LE</td>
+          <td class="text-center">1</td>
+          <td class="text-right">253,73</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">253,73</td>
+        </tr>
+        <tr>
+          <td>5437080</td>
+          <td>CANALETA PORTA</td>
+          <td class="text-center">8</td>
+          <td class="text-right">11,15</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">89,20</td>
+        </tr>
+        <tr>
+          <td>5438761</td>
+          <td>GRAFITE SPRAY 300ML</td>
+          <td class="text-center">1</td>
+          <td class="text-right">21,51</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">21,51</td>
+        </tr>
+        <tr>
+          <td>5439953</td>
+          <td>MACANETA EXTERNA C/ CHAVE LD</td>
+          <td class="text-center">1</td>
+          <td class="text-right">217,71</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">217,71</td>
+        </tr>
+        <tr>
+          <td>5440019</td>
+          <td>LAMPADA H4 24V</td>
+          <td class="text-center">2</td>
+          <td class="text-right">23,33</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">46,66</td>
+        </tr>
+        <tr>
+          <td>5442180</td>
+          <td>PARAFUSO PHILLIPS 612 CABECA PANELA</td>
+          <td class="text-center">10</td>
+          <td class="text-right">0,50</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">5,00</td>
+        </tr>
+        <tr>
+          <td>5442948</td>
+          <td>SILICONE CINZA</td>
+          <td class="text-center">2</td>
+          <td class="text-right">12,50</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">25,00</td>
+        </tr>
+        <tr>
+          <td>5444240</td>
+          <td>FAROL PRINCIPAL LD COM GUARDA PO</td>
+          <td class="text-center">1</td>
+          <td class="text-right">281,70</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">281,70</td>
+        </tr>
+        <tr>
+          <td>6235149</td>
+          <td>MANOPLA ALAVANCA CAMBIO 8 MARCHAS SEM TAMPA</td>
+          <td class="text-center">1</td>
+          <td class="text-right">112,86</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">112,86</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Bloco Fechamento e Resumo Financeiro -->
+  <section class="bloco-totais">
+    <h2> Totais do Orçamento </h2>
+    <table class="tabela-dados" style="margin-bottom: 15px;">
+      <thead>
+        <tr>
+          <th>TIPO</th>
+          <th class="text-right">BRUTO</th>
+          <th class="text-right">DESCONTO</th>
+          <th class="text-right">PERCENTUAL</th>
+          <th class="text-right">LÍQUIDO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>SERVIÇOS</strong></td>
+          <td class="text-right">400,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">400,00</td>
+        </tr>
+        <tr>
+          <td><strong>PEÇAS</strong></td>
+          <td class="text-right">1.337,18</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">1.337,18</td>
+        </tr>
+        <tr style="background: #f8fafc; font-weight: bold; color: #0f172a;">
+          <td>TOTAL Geral</td>
+          <td class="text-right">1.737,18</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right">0,00</td>
+          <td class="text-right" style="color: #16a34a; font-size: 16px;">1.737,18</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="linha-equipamento" style="padding-top: 5px;">
+      <div class="campo" style="grid-column: span 12;">
+        <strong>CONDIÇÃO DE PARCELAMENTO:</strong>
+        <span>1 PGTO — 1 x 1.737,18 em 03/01/2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Observações e Termos Legais -->
+  <section class="bloco-observacoes">
+    <h2> Observações Importantes </h2>
+    <ul class="lista-obs">
+      <li>Pode haver alteração de valor.</li>
+      <li>(*) Serviços/Peças não aplicadas a pedido do cliente.</li>
+      <li class="alerta-obs">***** ORÇAMENTO SEM VALOR FISCAL - EXIJA A NOTA FISCAL *****</li>
+      <li><strong>PRAZO DE VALIDADE:</strong> O presente orçamento possui validade de 7 dias.</li>
+      <li class="alerta-obs">ATENÇÃO: Orçamento feito com o veículo montado. Poderá haver alterações de valores e peças adicionais após a desmontagem completa.</li>
+      <li>AUTORIZO A EXECUÇÃO DOS SERVIÇOS CONSTANTES DESTE ORÇAMENTO NOS PREÇOS ACIMA ESPECIFICADOS.</li>
+    </ul>
+  </section>
+
+  <!-- Botões de Ação Padronizados -->
+  <div class="footer-actions">
+    <button class="voltar" onclick="history.back()"> 🠈 VOLTAR</button>
+    <button class="exportar" onclick="window.print()"> 🖨 EXPORTAR PDF</button>
+    <button class="salvar">✔ SALVAR</button>
+  </div>
+
+</main>
+
+
+<script>
+
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  if (!token){
+    window.location.href = "../index.html";
+  }
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "Olá";
+
+  // NAVEGAÇÃO
+  function solicitacaoCompra(){
+    window.location.href = "solicitacaoCompra.html";
+  }
+
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+  
+
+</script>
+
+
+</body>
+</html>
+
+

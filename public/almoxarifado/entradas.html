@@ -1,0 +1,385 @@
+<!-- public/aumoxarifado/entradas.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro de Produto</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Roboto,sans-serif;
+}
+
+body{
+    background:#0f172a;
+}
+
+/* HEADER */
+
+.header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+}
+
+.left{justify-self:start;}
+.center{justify-self:center;color:#cbd5f5;}
+.right{justify-self:end;}
+
+.logout{
+    cursor:pointer;
+    color:#ef4444;
+}
+
+/* CONTEÚDO */
+
+main{
+    max-width:900px;
+    margin:30px auto;
+    background:white;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+h2{
+    margin-top:25px;
+    margin-bottom:15px;
+    color:#0f172a;
+    font-size:18px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+label{
+    font-size:13px;
+    color:#475569;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+    font-size:14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+}
+
+textarea{
+    min-height:150px;
+    resize:vertical;
+}
+
+/* BOTÕES */
+
+.actions{
+    display:flex;
+    gap:10px;
+    padding-top:25px;
+}
+
+button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.voltar{
+    background:#334155;
+    color:white;
+}
+
+.voltar:hover{
+    background:#475569;
+}
+
+.salvar{
+    background:#22c55e;
+    color:white;
+}
+
+.salvar:hover{
+    background:#16a34a;
+}
+
+@media(max-width:768px){
+
+    main{
+        margin:10px;
+        padding:20px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="left">
+        <h1 onclick="irHome()" style="cursor:pointer;">
+            S.I.I.V.
+        </h1>
+    </div>
+
+    <div class="center">
+        <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+        <span class="logout" onclick="logout()">
+            SAIR ➜]
+        </span>
+    </div>
+
+</header>
+
+<main>
+
+    <h2>DADOS DO PRODUTO</h2>
+
+    <div class="grid">
+
+        <div class="campo">
+            <label>CÓDIGO</label>
+            <input type="text" placeholder="Ex.: ALM-001">
+        </div>
+
+        <div class="campo">
+            <label>ITEM</label>
+            <input type="text" placeholder="Nome do item">
+        </div>
+
+        <div class="campo">
+            <label>CLASSIFICAÇÃO</label>
+            <select>
+                <option>SELECIONAR</option>
+                <option>CONSUMO</option>
+                <option>PERMANENTE</option>
+                <option>LIMPEZA</option>
+                <option>ESCRITÓRIO</option>
+                <option>INFROMÁTICA</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="campo" style="margin-top:15px;">
+        <label>DESCRIÇÃO</label>
+        <textarea placeholder="Descrição detalhada do item"></textarea>
+    </div>
+
+    <h2>INFORMAÇÕES COMPLEMENTARES</h2>
+
+    <div class="grid">
+
+        <div class="campo">
+            <label>CATEGORIA</label>
+            <input type="text" placeholder="Categoria">
+        </div>
+
+        <div class="campo">
+            <label>MARCA</label>
+            <input type="text" placeholder="Marca">
+        </div>
+
+        <div class="campo">
+            <label>UNIDADE DE MEDIDA</label>
+            <select>
+                <option>SELECIONAR</option>
+                <option>UNIDADE</option>
+                <option>CAIXA</option>
+                <option>PACOTE</option>
+                <option>KG</option>
+                <option>LITRO</option>
+                <option>ROLO</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label>N° NOTA FISCAL</label>
+            <input type="number">
+        </div>
+
+        <div class="campo">
+            <label>QUANTIDADE</label>
+            <input type="number">
+        </div>
+
+        <div class="campo">
+            <label>VALOR UNITÁRIO</label>
+            <input type="number">
+        </div>
+
+        <div class="campo">
+            <label>VALOR TOTAL</label>
+            <input type="text" placeholder="Valor total...">
+        </div>
+
+        <div class="campo">
+            <label>FORMA DE PAGAMENTO</label>
+            <select>
+                <option>SELECIONAR</option>
+                <option>DINHEIRO</option>
+                <option>CARTÃO</option>
+                <option>BOLETO</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label>PARCELAS</label>
+            <input type="text" placeholder="N° de parcelas...">
+        </div>
+
+        <div class="campo">
+            <label>COMPRADOR</label>
+            <input type="text" placeholder="Nome do comprador...">
+        </div>
+
+
+    </div>
+
+
+    <h2>OBSERVAÇÕES</h2>
+
+    <div class="campo">
+        <label>Observações Gerais</label>
+        <textarea placeholder="Informações adicionais"></textarea>
+    </div>
+
+    <h2>CONTROLE</h2>
+
+    <div class="grid">
+
+        <div class="campo">
+            <label>Data/Hora Cadastro</label>
+            <input id="dataHora" type="datetime-local">
+        </div>
+
+        <div class="campo">
+            <label>Cadastrado Por</label>
+            <input id="cadastradoPor" readonly>
+        </div>
+
+    </div>
+
+    <div class="actions">
+
+        <button class="voltar" onclick="voltar()">
+            ⬅ Voltar
+        </button>
+
+        <button class="salvar" onclick="salvar()">
+            💾 Salvar
+        </button>
+
+    </div>
+
+</main>
+
+<script>
+
+// TOKEN
+
+const token = localStorage.getItem("token");
+
+if(!token){
+    window.location.href="../../index.html";
+}
+
+// USUÁRIO
+
+const usuario = localStorage.getItem("usuario");
+
+document.getElementById("usuario").textContent =
+usuario ? `👋 Olá, ${usuario}` : "";
+
+document.getElementById("cadastradoPor").value =
+usuario || "";
+
+// DATA
+
+const agora = new Date();
+
+const ano = agora.getFullYear();
+const mes = String(agora.getMonth()+1).padStart(2,"0");
+const dia = String(agora.getDate()).padStart(2,"0");
+const hora = String(agora.getHours()).padStart(2,"0");
+const minuto = String(agora.getMinutes()).padStart(2,"0");
+
+document.getElementById("dataHora").value =
+`${ano}-${mes}-${dia}T${hora}:${minuto}`;
+
+// HOME
+
+function irHome(){
+    window.location.href="../../home.html";
+}
+
+// VOLTAR
+
+function voltar(){
+    window.location.href="almoxarifado.html";
+}
+
+// SALVAR
+
+function salvar(){
+    alert("✅ Cadastro em desenvolvimento");
+}
+
+// LOGOUT
+
+function logout(){
+
+    const confirmar =
+    confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href="../../index.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2365 @@
+
+<!-- public/producao/inspecoes/cadastroInspecao.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Cadastro Inspecao</title>
+
+<style>
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+  }
+
+
+  .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left{justify-self:start;}
+  .center{justify-self:center;color:#cbd5f5;}
+  .right{justify-self:end;}
+
+  .logout{
+    cursor:pointer;
+    color:#ef4444;
+  }
+
+  main{
+    flex:1;
+    background:white;
+    padding:30px;
+  }
+
+  /* Stylo dos cards das secoes */
+  .informacoes-os,
+  .blocoFotosRecebimento,
+  .blocoFotosDesmontagem{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    margin-bottom:15px;
+  }
+
+  h2{
+    margin-top:5px;
+    margin-bottom:20px;
+    font-size:24px;
+    font-weight:700;
+    color:#0f172a;
+    text-align:center;
+  }
+
+  
+  /* Grid para o bloco de informacoes-os */
+  .linha-equipamento{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:5px;
+    padding-top:15px;
+  }
+
+  /* Stylo dos inputs das informacoes-os */
+  .campo{
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    padding:8px 12px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .campo strong{
+    font-size:13px;
+    color:#0f172a;
+    margin-bottom:2px;
+  }
+
+  .campo span{
+    color:#64748b; 
+    font-size:16px;
+    font-weight:600;
+    line-height:1.2;
+  }
+
+  /* Linha 1 */
+  .os{ grid-column:span 2; }
+  .cliente{ grid-column:span 10; }
+
+    /* Linha 2 */
+  .fabricante{ grid-column:span 3; }
+  .modelo{ grid-column:span 3; }
+  .tipo{ grid-column:span 2; }
+  .tensao{ grid-column:span 2; }
+  .serie{ grid-column:span 2; }
+
+  /* Linha 3 */
+  .desmontador,
+  .liberado,
+  .liberacao{
+    grid-column:span 4;
+  }
+
+  /* Linha 4 */
+  .inicio,
+  .fim,
+  .total,
+  .parado{
+    grid-column:span 3;
+  }
+
+  /* BLOCO FOTOS RECEBIMENTO */
+  .fotosRecebimentoGrid{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:150px;
+  }
+
+  .fotoRecebimento{
+      width:13cm;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      position:relative;
+  }
+
+  .fotosRecebimentoGrid img{
+      width:13cm;
+      height:9cm;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #cbd5e1;
+      cursor:pointer;
+      background:#f8fafc;
+      margin-bottom:12px;
+  }
+
+  /* BLOCO FOTOS DESMONTAGEM */
+  .blocoFotosDesmontagem{
+    padding:20px;
+    border-bottom:2px solid #e2e8f0;
+  }
+
+  .fotosDesmontagemGrid{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:150px;
+  }
+
+  .fotoDesmontagem{
+      width:13cm;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      position:relative;
+  }
+
+  .fotoDesmontagem img{
+      width:13cm;
+      height:9cm;
+      object-fit:cover;
+      border-radius:12px;
+      display:none;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      margin-bottom:12px;
+  }
+
+  .upload-vazio{
+      width:13cm;
+      height:9cm;
+      position:relative;
+      margin-bottom:12px;
+      border:2px dashed #94a3b8;
+      border-radius:12px;
+      background:#f8fafc;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+  }
+
+  .upload-vazio:hover{
+      background:#e2e8f0;
+  }
+
+  .icone-upload{
+      font-size:48px;
+      opacity:0.8;
+  }
+
+  .texto-upload{
+      font-size:16px;
+      font-weight:700;
+      color:#64748b;
+  }
+
+
+  /* MODAL FOTO - FOTO RECEBIMENTO */
+  .modal-foto{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+  }
+
+  .modal-foto img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:12px;
+  }
+
+  .modal-foto.ativo{
+    display:flex;
+  }
+
+  .fechar-foto{
+    position:absolute;
+    top:20px;
+    right:30px;
+    color:white;
+    font-size:32px;
+    font-weight:bold;
+    cursor:pointer;
+    z-index:10000;
+  }
+
+  .fechar-foto:hover{
+    color:#ef4444;
+  }
+
+
+  .comentario-foto{
+      width:13cm;
+      margin-top:0;
+  }
+
+  .comentario-foto label{
+      display:block;
+      margin-bottom:6px;
+      font-weight:600;
+      color:#0f172a;
+      font-size:14px;
+  }
+
+  .comentario-foto textarea{
+      width:100%;
+      min-height:120px;
+      padding:10px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      resize:vertical;
+      font-size:14px;
+      background:#ffffff;
+  }
+
+  .comentario-foto textarea:focus{
+      outline:none;
+      border-color:#3b82f6;
+  }
+
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+  .salvar,
+  .visualizar,
+  .exportar,
+  .voltar,
+  .listapecas{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .listapecas{
+    background:#22a5c5;
+    color:white;
+  }
+
+  .listapecas:hover{
+    background:#2bb5d8;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .exportar{
+    background:#f59e0b;
+    color:white;
+  }
+
+  .exportar:hover{
+    background:#d97706;
+  }
+
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+
+  .visualizar{
+      background:#2563eb;
+      color:white;
+  }
+
+  .visualizar:hover{
+      background:#1d4ed8;
+  }
+
+
+  .check-inspecao{
+      position:absolute;
+      top:10px;
+      left:10px;
+      background:white;
+      padding:4px 8px;
+      border-radius:6px;
+      z-index:999;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,.15);
+  }
+
+  .check-inspecao input{
+      width:24px;
+      height:24px;
+      cursor:pointer;
+  }
+
+
+  .numero-foto{
+      position:absolute;
+      top:10px;
+      right:55px;
+
+      background:#f58220;
+      color:white;
+
+      padding:6px 10px;
+
+      border-radius:6px;
+
+      font-size:14px;
+      font-weight:700;
+
+      z-index:999;
+
+      box-shadow:
+        0 2px 4px rgba(0,0,0,.15);
+  }
+
+
+
+
+  .btn-remover{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:34px;
+      height:34px;
+      border:none;
+      border-radius:50%;
+      background:#ef4444;
+      color:white;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      z-index:1000;
+      display:none;
+  }
+
+  .btn-remover:hover{
+      background:#dc2626;
+  }
+
+
+  button:disabled{
+    background:#94a3b8 !important;
+    color:#e2e8f0 !important;
+    cursor:not-allowed !important;
+    opacity:0.7;
+  }
+
+  .blocoProblemas{
+    background:#fff;
+    border:1px solid #dbe2ea;
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+
+  .blocoProblemas h2{
+    margin-bottom:15px;
+  }
+
+  .gridProblemas{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+
+  .gridProblemas label{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:5px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  .gridProblemas input[type="checkbox"]{
+    width:18px;
+    height:18px;
+  }
+
+
+  #statusPdf{
+      margin-top:10px;
+      color:#f58220;
+      font-weight:600;
+      font-size:14px;
+  }
+
+
+
+  @media(max-width:900px){
+    .gridProblemas{
+      grid-template-columns:repeat(2,1fr);
+    }
+  }
+
+  @media(max-width:600px){
+    .gridProblemas{
+      grid-template-columns:1fr;
+    }
+  }
+
+
+
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+
+</header>
+
+ <main class="main">
+
+  <section class="informacoes-os">
+    <h2> RELATÓRIO DE INSPEÇÃO DE COMPRESSOR SEMI-HERMÉTICO </h2>    
+    <div class="linha-equipamento">
+
+      <div class="campo os">
+        <strong>OS:</strong>
+        <span id="numeroOS">-</span>
+      </div>
+
+      <div class="campo cliente">
+        <strong>CLIENTE:</strong>
+        <span id="cliente">-</span>
+      </div>
+
+      <div class="campo fabricante">
+        <strong>FABRICANTE:</strong>
+        <span id="fabricante">-</span>
+      </div>
+
+      <div class="campo modelo">
+        <strong>MODELO:</strong>
+        <span id="modelo">-</span>
+      </div>
+
+      <div class="campo tipo">
+        <strong>TIPO:</strong>
+        <span id="tipo">-</span>
+      </div>
+
+      <div class="campo tensao">
+        <strong>TENSÃO:</strong>
+        <span id="tensao">-</span>
+      </div>
+
+      <div class="campo serie">
+        <strong>Nº SÉRIE:</strong>
+        <span id="numeroSerie">-</span>
+      </div>
+
+      <div class="campo desmontador">
+        <strong>INSPECIONADOR:</strong>
+        <span id="inspecionador">-</span>
+      </div>
+
+      <div class="campo liberado">
+        <strong>LIBERADO POR:</strong>
+        <span id="liberadoPor">-</span>
+      </div>
+
+      <div class="campo liberacao">
+        <strong>DATA LIBERAÇÃO:</strong>
+        <span id="dataLiberacao">-</span>
+      </div>  
+
+      <div class="campo inicio">
+        <strong>INÍCIO:</strong>
+        <span id="dataHoraInicio">-</span>
+      </div>
+
+      <div class="campo fim">
+        <strong>FIM:</strong>
+        <span id="dataHoraFim">-</span>
+      </div>
+
+      <div class="campo total">
+        <strong>TEMPO TOTAL:</strong>
+        <span id="tempoTotal">-</span>
+      </div>
+
+      <div class="campo parado">
+        <strong>PAUSAS:</strong>
+        <span id="tempoParado">-</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOTOS FOTOS RECEBIMENTO -->
+  <section class="blocoFotosRecebimento">
+    <h2>FOTOS DO RECEBIMENTO DO COMPRESSOR</h2>
+    <div class="fotosRecebimentoGrid">
+      <!-- FOTO 1 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg1" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento1" > </label>
+          <div class="numero-foto">FOTO 1</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento1">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento1"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 2 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg2" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento2" > </label>
+          <div class="numero-foto">FOTO 2</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento2">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento2"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 3 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg3" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento3" > </label>
+          <div class="numero-foto">FOTO 3</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento3">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento3"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 4 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg4" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento4" > </label>
+          <div class="numero-foto">FOTO 4</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento4">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento4"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 5 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg5" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento5" > </label>
+          <div class="numero-foto">FOTO 5</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento5">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento5"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 6 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg6" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento6" > </label>
+          <div class="numero-foto">FOTO 6</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento6">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento6"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 7 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg7" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento7" > </label>
+          <div class="numero-foto">FOTO 7</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento7">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento7"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 8 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg8" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento8" > </label>
+          <div class="numero-foto">FOTO 8</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento8">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento8"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 9 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg9" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento9" > </label>
+          <div class="numero-foto">FOTO 9</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento9">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento9"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 10 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg10" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento10" > </label>
+          <div class="numero-foto">FOTO 10</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento10">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento10"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 11 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg11" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento11" > </label>
+          <div class="numero-foto">FOTO 11</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento11">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento11"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      <!-- FOTO 12 -->
+      <div class="fotoRecebimento">
+          <img id="recebimentoImg12" class="imagemRecebimento" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkRecebimento12" > </label>
+          <div class="numero-foto">FOTO 12</div>
+          <div class="comentario-foto">
+              <label for="comentarioRecebimento12">
+                  Observações:
+              </label>
+              <textarea id="comentarioRecebimento12"  rows="4"  placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+    </div>
+  </section>
+    
+  <!-- FOTOS FOTOS DESMONTAGEM -->  
+  <section class="blocoFotosDesmontagem">
+    <h2>FOTOS DA DESMONTAGEM DO COMPRESSOR</h2>
+    <div class="fotosDesmontagemGrid">
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes1" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem1"></label>
+          <div class="numero-foto">FOTO 1</div>         
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem1"> Observações: </label>
+              <textarea id="comentarioDesmontagem1" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes2" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem2"></label>  
+          <div class="numero-foto">FOTO 2</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem2"> Observações: </label>
+              <textarea id="comentarioDesmontagem2" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes3" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem3"></label>
+          <div class="numero-foto">FOTO 3</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem3"> Observações: </label>
+              <textarea id="comentarioDesmontagem3" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+      
+      <div class="fotoDesmontagem">
+          <img id="imgDes4" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem4"></label>
+          <div class="numero-foto">FOTO 4</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem4"> Observações: </label>
+              <textarea id="comentarioDesmontagem4" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes5" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem5"></label>
+          <div class="numero-foto">FOTO 5</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem5"> Observações: </label>
+              <textarea id="comentarioDesmontagem5" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes6" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem6"></label>
+          <div class="numero-foto">FOTO 6</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem6"> Observações: </label>
+              <textarea id="comentarioDesmontagem6" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes7" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem7"></label>
+          <div class="numero-foto">FOTO 7</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem7"> Observações: </label>
+              <textarea id="comentarioDesmontagem7" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes8" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem8"></label>
+          <div class="numero-foto">FOTO 8</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem8"> Observações: </label>
+              <textarea id="comentarioDesmontagem8" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes9" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem9"></label>
+          <div class="numero-foto">FOTO 9</div> 
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem9"> Observações: </label>
+              <textarea id="comentarioDesmontagem9" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes10" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem10"></label>
+          <div class="numero-foto">FOTO 10</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem10"> Observações: </label>
+              <textarea id="comentarioDesmontagem10" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes11" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem11"></label>
+          <div class="numero-foto">FOTO 11</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem11"> Observações: </label>
+              <textarea id="comentarioDesmontagem11" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes12" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem12"></label>
+          <div class="numero-foto">FOTO 12</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem12"> Observações: </label>
+              <textarea id="comentarioDesmontagem12" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes13" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem13"></label>
+          <div class="numero-foto">FOTO 13</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem13"> Observações: </label>
+              <textarea id="comentarioDesmontagem13" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes14" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem14"></label>
+          <div class="numero-foto">FOTO 15</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem14"> Observações: </label>
+              <textarea id="comentarioDesmontagem14" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes15" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem15"></label>
+          <div class="numero-foto">FOTO 15</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem15"> Observações: </label>
+              <textarea id="comentarioDesmontagem15" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes16" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem16"></label>
+          <div class="numero-foto">FOTO 16</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem16"> Observações: </label>
+              <textarea id="comentarioDesmontagem16" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes17" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem17"></label>
+          <div class="numero-foto">FOTO 17</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem17"> Observações: </label>
+              <textarea id="comentarioDesmontagem17" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes18" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem18"></label>
+          <div class="numero-foto">FOTO 18</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem18"> Observações: </label>
+              <textarea id="comentarioDesmontagem18" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes19" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem19"></label>
+          <div class="numero-foto">FOTO 19</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem19"> Observações: </label>
+              <textarea id="comentarioDesmontagem19" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes20" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem20"></label>
+          <div class="numero-foto">FOTO 20</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem20"> Observações: </label>
+              <textarea id="comentarioDesmontagem20" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes21" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem21"></label>
+          <div class="numero-foto">FOTO 21</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem21"> Observações: </label>
+              <textarea id="comentarioDesmontagem21" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes22" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem22"></label>
+          <div class="numero-foto">FOTO 22</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem22"> Observações: </label>
+              <textarea id="comentarioDesmontagem22" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes23" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem23"></label>
+          <div class="numero-foto">FOTO 23</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem23"> Observações: </label>
+              <textarea id="comentarioDesmontagem23" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+      <div class="fotoDesmontagem">
+          <img id="imgDes24" class="imagemDesmontagem" style="display:none;" >
+          <label class="check-inspecao"> <input type="checkbox" id="checkDesmontagem24"></label>
+          <div class="numero-foto">FOTO 24</div>
+          <div class="comentario-foto">
+              <label for="comentarioDesmontagem24"> Observações: </label>
+              <textarea id="comentarioDesmontagem24" rows="4" placeholder="Digite observações sobre esta foto..." ></textarea>
+          </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROBLEMAS ENCONTRADOS -->  
+<section class="blocoProblemas" id="blocoProblemasEncontrados">
+  <h2>PRINCIPAIS PROBLEMAS ENCONTRADOS</h2>
+  <div class="gridProblemas">
+    <label><input type="checkbox" value="ESTATOR QUEIMADO" > ESTATOR QUEIMADO </label>
+    <label><input type="checkbox" value="ESTATOR BAIXA RESISTENCIA ISOLAMENTO" > ESTATOR COM BAIXA RESISTÊNCIA DE ISOLAMENTO </label>
+    <label><input type="checkbox" value="FLANGE ELETRICA DANIFICADA FALTANDO COMPONENTES" > FLANGE DE ELÉTRICA DANIFICADA FALTANDO COMPONENTES </label>
+    <label><input type="checkbox" value="FLANGE ELETRICA BAIXA RESISTENCIA ISOLAMENTEO" > FLANGE ELÉTRICA COM BAIXA RESISTÊNCIA DE ISOLAMENTEO </label>
+    <label><input type="checkbox" value="CONJUNTO MECANICO QUEBRA TOTAL" > CONJUNTO MECÂNICO COM QUEBRA TOTAL </label>
+    <label><input type="checkbox" value="DESGASTE CONJUNTO BIELAS" > DESGASTE DO CONJUNTO DE BIELAS </label>
+    <label><input type="checkbox" value="DESGASTE PISTOES" > DESGASTE DOS PISTÕES </label>
+    <label><input type="checkbox" value="DESGASTE TAMPA MANCAL" > DESGASTE DA TAMPA MANCAL (ALOJAMENTO DA TAMPA DE ÓLEO) </label>
+    <label><input type="checkbox" value="FOLGA PINOS ALOJAMENTO PINOS PISTOES" > FOLGA DOS PINOS E ALOJAMENTO DOS PINOS DOS PISTÕES </label>
+    <label><input type="checkbox" value="PLACA VALVULAS FALHA VEDACAO SUJIDADE ACENTUADA" > PLACA DE VÁLVULAS COM FALHA DE VEDAÇÃO E SUJIDADE ACENTUADA </label>
+    <label><input type="checkbox" value="PLACA VALVULAS PALHETAS QUEBRADAS" > PLACA DE VÁLVULAS COM PALHETAS QUEBRADAS </label>
+    <label><input type="checkbox" value="FILTRO SUCCAO DANIFICADO" > FILTRO DE SUCÇÃO DANIFICADO </label>    
+    <label><input type="checkbox" value="FILTRO OLEO DANIFICADO" > FILTRO DE ÓLEO DANIFICADO </label>
+    <label><input type="checkbox" value="CAMISAS COM OVALIZAÇÃO MAIOR" > CAMISAS COM OVALIZAÇÃO MAIOR QUE 0,3MM (TODAS) </label>    
+    <label><input type="checkbox" value="CAMISAS RANHURA LINEAR PROFUNDA" > CAMISAS COM RANHURA LINEAR PROFUNDA </label>
+    <label><input type="checkbox" value="EIXO VIRABREQUIM QUEBRADO" > EIXO VIRABREQUIM QUEBRADO </label>
+    <label><input type="checkbox" value="EIXO VIRABREQUIM DANIFICADO" > EIXO VIRABREQUIM DANIFICADO (COLO AMASSADO POR IMPACTO) </label>
+    <label><input type="checkbox" value="EIXO VIRABREQUIM DESGASTE COLOS MOVENTES" > EIXO VIRABREQUIM COM DESGASTE NOS COLOS MOVENTES </label>
+    <label><input type="checkbox" value="BUCHAS ANEIS ENCOSTO DESGASTE" > BUCHAS E ANÉIS DE ENCOSTO COM DESGASTE </label>
+    <label><input type="checkbox" value="BOMBA OLEO DANIFICADA" > BOMBA DE ÓLEO DANIFICADA </label>
+  </div>
+</section>
+
+<!-- CAUSAS MECÂNICAS -->
+<section class="blocoProblemas" id="blocoCausasMecanicas">
+  <h2>POSSÍVEIS CAUSAS DOS PROBLEMAS | MECÂNICOS</h2>
+  <div class="gridProblemas">
+    <label><input type="checkbox" value="TRABALHO COMPRESSOR SUPERAQUECIMENTO ALTO">TRABALHO DO COMPRESSOR COM SUPERAQUECIMENTO ALTO</label>
+    <label><input type="checkbox" value="TRABALHO COMPRESSOR SUPERAQUECIMENTO BAIXO">TRABALHO DO COMPRESSOR COM SUPERAQUECIMENTO BAIXO</label>
+    <label><input type="checkbox" value="TRABALHO COMPRESSOR SUB-RESFRIAMENTO ALTO">TRABALHO DO COMPRESSOR COM SUB-RESFRIAMENTO ALTO</label>
+    <label><input type="checkbox" value="TRABALHO COMPRESSOR SUB-RESFRIAMENTO BAIXO">TRABALHO DO COMPRESSOR COM SUB-RESFRIAMENTO BAIXO</label>
+    <label><input type="checkbox" value="TRABALHO COMPRESSOR ALTA PRESSAO TEMPERATURA DESCARGA">TRABALHO DO COMPRESSOR ALTA PRESSÃO E TEMPERATURA DE DESCARGA</label>
+    <label><input type="checkbox" value="GOLPE LIQUIDO">GOLPE DE LÍQUIDO</label>
+    <label><input type="checkbox" value="FALTA INJECAO LIQUIDO SISTEMA CIC">FALTA DE INJEÇÃO DE LÍQUIDO DO SISTEMA CIC</label>
+    <label><input type="checkbox" value="VALVULA SOLENOIDE SISTEMA SIC DANDO PASSAGEM">VÁLVULA SOLENÓIDE DO SISTEMA SIC DANDO PASSAGEM</label>
+    <label><input type="checkbox" value="FALHA LUBRIFICACAO">FALHA DE LUBRIFICAÇÃO</label>
+    <label><input type="checkbox" value="FALHA SISTEMA PROTECAO BAIXA PRESSAO DE OLEO">FALHA DO SISTEMA DE PROTEÇÃO DE BAIXA PRESSÃO DE ÓLEO DELTA PII OU P.O</label>
+    <label><input type="checkbox" value="FALHA RESISTENCIA CARTER">FALHA DA RESISTÊNCIA DE CARTER / PARTIDA COM ÓLEO FRIO</label>
+    <label><input type="checkbox" value="FFILTRO OLEO PARCIALMENTE ENTUPIDO">FILTRO DE ÓLEO PARCIALMENTE ENTUPIDO</label>
+    <label><input type="checkbox" value="FALTA OLEO LUBRIFICANTE">FALTA DE ÓLEO LUBRIFICANTE</label>
+    <label><input type="checkbox" value="OLEO LUBRIFICANTE DEGRADADO BAIXA VICOSIDADE">ÓLEO LUBRIFICANTE DEGRADADO COM ACIDEZ E BAIXA VISCOSIDADE</label>
+    <label><input type="checkbox" value="SISTEMA SUJO">SISTEMA SUJO</label>
+    <label><input type="checkbox" value="FILTRO SUCCAO ENTUPIDO PERDA CARGA">FILTRO DE SUCÇÃO ENTUPIDO OU PERDA DE CARGA</label>
+  </div>
+</section>
+
+<!-- CAUSAS ELÉTRICAS -->
+<section class="blocoProblemas" id="blocoCausasEletricas">
+  <h2>POSSÍVEIS CAUSAS DOS PROBLEMAS | ELÉTRICOS</h2>
+  <div class="gridProblemas">
+    <label><input type="checkbox" value="FALTA FASE PARTIDA COMPRESSOR">FALTA DE FASE NA PARTIDA DO COMPRESSOR</label>
+    <label><input type="checkbox" value="FALTA FASE FUNCIONAMENTO">FALTA DE FASE NO FUNCIONAMENTO</label>
+    <label><input type="checkbox" value="FALTA CHAVES CONTATORAS">FALHA DAS CHAVES CONTATORAS</label>
+    <label><input type="checkbox" value="FALHA TEMPORIZADOR PW">FALHA NO TEMPORIZADOR PW</label>
+    <label><input type="checkbox" value="FALHA FALTA  MODULO SEGURANCA">FALHA OU FALTA DE MÓDULO DE SEGURANÇA INT69/SEB1/SEB2</label>
+    <label><input type="checkbox" value="PICO TENSAO">PICO TENSÃO</label>
+    <label><input type="checkbox" value="FALHA ISOLAMENTO ESTATOR">FALHA DE ISOLAMENTO DO ESTATOR</label>
+    <label><input type="checkbox" value="UMIDADE CONTAMINACAO SISTEMA">UMIDADE E CONTAMINAÇÃO DO SISTEMA</label>
+    <label><input type="checkbox" value="MAL CONTATO CONEXOES ELETRICAS">MAL CONTATO DAS CONEXÕES ELÉTRICAS</label>
+  </div>
+</section>
+
+
+<!-- RECOMENDAÇÕES IMPORTANTES -->
+<section class="blocoProblemas" id="blocoRecomendacoes">
+  <h2>RECOMENDAÇÕES IMPORTANTES PARA INSTALAÇÃO DO COMPRESSOR</h2>
+  <div class="gridProblemas">
+    <label><input type="checkbox" value="SUBSTITUIR CONTATORAS COMPRESSOR">SUBSTITUIR SE NECESSÁRIO, AS CONTATORAS DO COMPRESSOR</label>
+    <label><input type="checkbox" value="REALIZAR PROCEDIMENTO INSPECAO REAPERTO CONEXOES ELETRICAS">REALIZAR PROCEDIMENTO DE INSPEÇÃO E REAPERTO DAS CONEXÕES ELÉTRICAS</label>
+    <label><input type="checkbox" value="REALIZAR PROCEDIMENTO TESTES DISPOSITIVOS PROTECAO">REALIZAR PROCEDIMENTO DE TESTE DOS DISPOSITIVOS DE PROTEÇÃO</label>
+    <label><input type="checkbox" value="TESTAR FUNCIONAMENTO DO SISTEMA CIC">TESTAR O FUNCIONAMENTO DO SISTEMA CIC</label>
+    <label><input type="checkbox" value="VERIFICAR AJUSTAR PRESSOES CORTE PRESSOSTATOS">VERIFICAR E AJUSTAR AS PRESSÕES DE CORTE DOS PRESSOSTATOS DE ALTA/BAIXA</label>
+    <label><input type="checkbox" value="SUBSTITUIR CARGA TOTAL OLEO LUBRIFICANTE">SUBSTITUIR A CARGA TOTAL DE ÓLEO LUBRIFICANTE</label>
+    <label><input type="checkbox" value="SUBSTITUIR CUNJUNTO FILTRO SECADORES">SUBSTITUIR O CONJUNTO DE FILTRO SECADORES</label>
+    <label><input type="checkbox" value="MEDIR PERDA CARGA FILTRO SUCCAO">MEDIR SE HÁ PERDA DE CAGA DOS FILTROS DE SUCÇÃO COMPRESSOR E RACK</label>
+    <label><input type="checkbox" value="AJUSTE SUPERAQUECIMENTO TOTAL">AJUSTE DO SUPERAQUECIMENTO TOTAL PARA VALORES ENTRE 10 E 20 K</label>
+    <label><input type="checkbox" value="COLETAR OLEO LUBRIFICANTE ANALISE FISICO QUIMICA">COLETAR O ÓLEO LUBRIFICANTE PARA ÁNALISE FISICO-QUÍMICA APÓS 200 HORAS DE FUNCIONAMENTO.</label>
+  </div>
+</section>
+
+<!-- OBSERVAÇÕES GERAIS -->
+<section class="blocoProblemas" id="blocoObservacoesGerais">
+  <h2>OBSERVAÇÕES GERAIS</h2>
+  <textarea
+    id="observacoesGerais"
+    rows="8"
+    style="
+      width:100%;
+      min-height:200px;
+      padding:12px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      resize:vertical;
+      font-size:14px;
+    "
+    placeholder="Digite informações adicionais para o relatório..."
+  ></textarea>
+</section>
+
+
+
+  <!-- MODAL FOTOS -->
+  <div id="modalFoto" class="modal-foto" onclick="fecharFoto()">
+    <span class="fechar-foto" onclick="fecharFoto()"> ✖ </span>
+    <img id="imagemExpandida" onclick="event.stopPropagation()">
+  </div>
+
+    <!-- SLOT FOTOS VAZIO -->
+  <input
+    type="file"
+    id="inputUploadFoto"
+    accept="image/*"
+    style="display:none"
+  >
+
+
+
+
+</main>
+
+<footer class="footer-actions">
+  <button id="btnVoltar" class="voltar" onclick="voltar()"> ⬅️ VOLTAR </button>
+  <button id="btnSalvar" class="salvar" onclick="salvar()"> 💾 SALVAR </button>
+  <button id="btnVisualizarRelatorio" class="visualizar" onclick="visualizarRelatorio()">👁️ VISUALIZAR RELATÓRIO</button>
+  <button id="btnListaPecas" class="listapecas" onclick="listaPecas()"> 📝 LISTA DE PEÇAS </button>
+  <button id="btnExportarPdf" class="exportar" onclick="exportarPDF()"> 📄 EXPORTAR PDF </button>
+  <div id="statusPdf"></div>
+</footer>
+
+
+<script>
+
+  // ========== AUTENTICAÇÃO ============================================
+  const token = localStorage.getItem("token");
+
+  if (!token){
+    window.location.href = "../../index.html";
+  }
+
+  const usuario =
+    localStorage.getItem("usuario");
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+
+  // ============= VARIÁVEIS GLOBAIS =========================================
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  let statusInspecao = "";
+  let situacaoInspecao = "";
+
+  let dadosInspecao = null;
+  let slotFotoAtual = null;
+
+  let fotosRecebimentoSelecionadas = [];
+  let fotosDesmontagemSelecionadas = [];
+
+  let fotosNovasInspecao = {};
+
+  // =============== FORMATAR DATA E HORA =============================
+  function formatarDataHora(data){
+
+    if(!data){
+      return "-";
+    }
+
+    return new Date(data).toLocaleString(
+      "pt-BR",
+      {
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }
+    );
+
+  }
+
+  function formatarDuracao(segundos){
+
+    segundos = Number(segundos || 0);
+
+    const horas =
+      Math.floor(segundos / 3600);
+
+    const minutos =
+      Math.floor(
+        (segundos % 3600) / 60
+      );
+
+    const segundosRestantes =
+      segundos % 60;
+
+    return `${horas}h ${minutos}m ${segundosRestantes}s`;
+  }
+
+
+  // =============== CARREGAMENTO DO INSPECÃO =============================
+  async function carregarInspecao(){
+
+    try{
+
+      const res =
+        await fetch(
+          `/api/inspecoes/${id}`,
+          {
+            headers:{
+              Authorization:token
+            }
+          }
+        );
+
+      if(!res.ok){
+
+        alert(
+          "Inspeção não encontrada."
+        );
+
+        voltar();
+
+        return;
+      }
+
+      const inspecao =
+        await res.json();
+
+      dadosInspecao = inspecao;
+
+      console.log(inspecao);
+
+      document.getElementById(
+        "numeroOS"
+      ).textContent =
+        inspecao.numeroOS || "-";
+
+      document.getElementById(
+        "cliente"
+      ).textContent =
+        inspecao.nomeFantasia || "-";
+
+      document.getElementById(
+        "fabricante"
+      ).textContent =
+        inspecao.fabricante || "-";
+
+      document.getElementById(
+        "modelo"
+      ).textContent =
+        inspecao.modelo || "-";
+
+      document.getElementById(
+        "tipo"
+      ).textContent =
+        inspecao.tipo || "-";
+
+      document.getElementById(
+        "tensao"
+      ).textContent =
+        inspecao.tensao || "-";
+
+      document.getElementById(
+        "numeroSerie"
+      ).textContent =
+        inspecao.numeroSerie || "-";
+
+      document.getElementById(
+        "inspecionador"
+      ).textContent =
+        inspecao.inspecionador || "-";
+
+      document.getElementById(
+        "liberadoPor"
+      ).textContent =
+        inspecao.liberadoPor || "-";
+
+      document.getElementById(
+        "dataLiberacao"
+      ).textContent =
+        formatarDataHora(
+          inspecao.dataLiberacao
+        );        
+
+      document.getElementById(
+        "dataHoraInicio"
+      ).textContent =
+        formatarDataHora(
+          inspecao.dataHoraInicio
+        );
+
+      document.getElementById(
+        "dataHoraFim"
+      ).textContent =
+        formatarDataHora(
+          inspecao.dataHoraFim
+        );
+
+      document.getElementById(
+        "tempoTotal"
+      ).textContent =
+        inspecao.tempoTotal || "-";
+
+      document.getElementById(
+        "tempoParado"
+      ).textContent =
+        formatarDuracao(
+          inspecao.tempoPausadoTotal
+        );
+
+
+      statusInspecao =
+        inspecao.status || "";
+
+      situacaoInspecao =
+        inspecao.situacao || "";
+
+      fotosRecebimentoSelecionadas =
+        inspecao.fotosRecebimentoSelecionadas
+          ? inspecao.fotosRecebimentoSelecionadas.split(",")
+          : [];
+
+      fotosDesmontagemSelecionadas =
+        inspecao.fotosDesmontagemSelecionadas
+          ? inspecao.fotosDesmontagemSelecionadas.split(",")
+          : [];
+
+
+      fotosRecebimentoSelecionadas.forEach(numero => {
+        const check =
+          document.getElementById(
+            `checkRecebimento${numero}`
+          );
+        if(check){
+          check.checked = true;
+        }
+      });
+
+      fotosDesmontagemSelecionadas.forEach(numero => {
+        const check =
+          document.getElementById(
+            `checkDesmontagem${numero}`
+          );
+        if(check){
+          check.checked = true;
+        }
+      });
+
+
+
+      // OBSERVAÇÕES RECEBIMENTO
+      for(let i = 1; i <= 12; i++){
+        const campo =
+          document.getElementById(
+            `comentarioRecebimento${i}`
+          );
+
+        if(campo){
+
+          campo.value =
+            inspecao[
+              `comentarioRecebimento${i}`
+            ] || "";
+        }
+      }
+
+      // OBSERVAÇÕES DESMONTAGEM
+      for(let i = 1; i <= 24; i++){
+        const campo =
+          document.getElementById(
+            `comentarioDesmontagem${i}`
+          );
+
+        if(campo){
+
+          campo.value =
+            inspecao[
+              `comentarioDesmontagem${i}`
+            ] || "";
+        }
+      }
+
+      // PROBLEMAS ENCONTRADOS
+      if(inspecao.problemasEncontrados){
+        let problemas = [];
+        try{
+          problemas =
+            JSON.parse(
+              inspecao.problemasEncontrados
+            );
+        }catch{
+          problemas = [];
+        }
+        document
+          .querySelectorAll(
+            ".blocoProblemas input[type='checkbox']"
+          )
+          .forEach(check => {
+            check.checked =
+              problemas.includes(
+                check.value
+              );
+          });
+      }
+
+
+
+      // CAUSAS MECÂNICAS
+      if(inspecao.causasMecanicas){
+          let causas = [];
+          try{
+              causas =
+                  JSON.parse(
+                      inspecao.causasMecanicas
+                  );
+          }catch{
+              causas = [];
+          }
+          document
+              .querySelectorAll(
+                  "#blocoCausasMecanicas input[type='checkbox']"
+              )
+              .forEach(check => {
+
+                  check.checked =
+                      causas.includes(
+                          check.value
+                      );
+              });
+      }
+
+
+      // CAUSAS ELÉTRICAS
+      if(inspecao.causasEletricas){
+          let causas = [];
+          try{
+              causas =
+                  JSON.parse(
+                      inspecao.causasEletricas
+                  );
+          }catch{
+              causas = [];
+          }
+          document
+              .querySelectorAll(
+                  "#blocoCausasEletricas input[type='checkbox']"
+              )
+              .forEach(check => {
+
+                  check.checked =
+                      causas.includes(
+                          check.value
+                      );
+              });
+      }
+
+
+      // RECOMENDAÇÕES
+      if(inspecao.recomendacoesInstalacao){
+          let recomendacoes = [];
+          try{
+
+              recomendacoes =
+                  JSON.parse(
+                      inspecao.recomendacoesInstalacao
+                  );
+          }catch{
+              recomendacoes = [];
+          }
+          document
+              .querySelectorAll(
+                  "#blocoRecomendacoes input[type='checkbox']"
+              )
+              .forEach(check => {
+
+                  check.checked =
+                      recomendacoes.includes(
+                          check.value
+                      );
+              });
+      }
+
+      // OBSERVAÇÕES GERAIS
+      document.getElementById(
+          "observacoesGerais"
+      ).value =
+          inspecao.observacoesGerais || "";
+
+
+    }
+    catch(err){
+      console.error(err);
+    }
+
+    console.log(
+      "Status:",
+      statusInspecao
+    );
+
+    console.log(
+      "Situação:",
+      situacaoInspecao
+    );
+
+    console.log(
+      "Fotos Recebimento:",
+      fotosRecebimentoSelecionadas
+    );
+
+    console.log(
+      "Fotos Desmontagem:",
+      fotosDesmontagemSelecionadas
+    );
+
+
+
+  }
+
+  // ============== CONTROLE DE PERMISSÕES ================================
+  function aplicarPermissoesInspecao(){
+
+    const btnSalvar =
+      document.getElementById("btnSalvar");
+
+    const btnListaPecas =
+      document.getElementById("btnListaPecas");
+
+    const btnExportar =
+      document.getElementById("btnExportarPdf");
+
+    // AGUARDANDO
+    if(statusInspecao === "AGUARDANDO"){
+
+      document
+        .querySelectorAll("textarea")
+        .forEach(campo => { campo.disabled = true; });
+
+      btnSalvar.disabled = true;
+      btnListaPecas.disabled = true;
+      btnExportar.disabled = true;
+
+      document
+        .querySelectorAll( ".blocoProblemas input[type='checkbox']" )
+        .forEach(check => { check.disabled = true; });
+
+
+      alert(
+        "⚠️ Esta OS está aguardando liberação.\n\n" +
+        "Volte para a Lista de Inspeções e inicie a inspeção para continuar."
+      );
+
+    }
+
+    // EM INSPEÇÃO
+    if(statusInspecao === "EM INSPEÇÃO"){
+
+      document
+        .querySelectorAll("textarea")
+        .forEach(campo => { campo.disabled = false; });
+
+      btnSalvar.disabled = false;
+      btnListaPecas.disabled = false;
+      btnExportar.disabled = false;
+
+      document
+        .querySelectorAll( ".blocoProblemas input[type='checkbox']" )
+        .forEach(check => { check.disabled = false; });
+
+    }
+
+    // FINALIZADA
+    if(statusInspecao === "FINALIZADA"){
+
+      document
+        .querySelectorAll("textarea")
+        .forEach(campo => { campo.disabled = true; });
+
+      btnSalvar.disabled = true;
+      btnListaPecas.disabled = false;
+      btnExportar.disabled = false;
+
+      const inputUpload =
+          document.getElementById(
+              "inputUploadFoto"
+          );
+
+      if(inputUpload){
+          inputUpload.disabled = true;
+      }
+
+      document
+          .querySelectorAll(
+              "input[type='checkbox']"
+          )
+          .forEach(check => {
+              check.disabled = true;
+          });
+
+      document
+          .querySelectorAll(
+              ".upload-vazio"
+          )
+          .forEach(upload => {
+
+              upload.style.pointerEvents =
+                  "none";
+
+              upload.style.opacity =
+                  "0.5";
+
+          });
+    }
+  }
+
+  // ================ FOTOS DO RECEBIMENTO ================================
+  async function carregarFotosRecebimento(){
+
+    document
+      .querySelectorAll(".fotoRecebimento")
+      .forEach(div => {
+        div.style.display = "none";
+      });
+
+    for(let i = 1; i <= 12; i++){
+
+      const nomeArquivo =
+        dadosInspecao?.[`fotoRecebimento${i}`];
+
+      if(!nomeArquivo){
+        continue;
+      }
+
+      const img =
+        document.getElementById(
+          `recebimentoImg${i}`
+        );
+
+      if(!img){
+        continue;
+      }
+
+      try{
+
+        const res =
+          await fetch(
+            `/api/desmontagens/${id}/foto-recebimento/${i}`,
+            {
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+
+        if(res.ok){
+
+          const blob =
+            await res.blob();
+
+          img.src =
+            URL.createObjectURL(blob);
+
+          img.style.display =
+            "block";
+
+          img.parentElement.style.display =
+            "block";
+
+          img.onclick = () =>{
+            ampliarFoto(img.src);
+          };
+
+        }
+
+      }
+      catch(err){
+
+        console.error(
+          `Erro ao carregar foto recebimento ${i}`,
+          err
+        );
+
+      }
+
+    }
+
+  }
+
+  // ================== FOTOS DA DESMONTAGEM ==============================
+  async function carregarFotosDesmontagem(){
+
+  document
+    .querySelectorAll(".fotoDesmontagem")
+    .forEach(div => {
+      div.style.display = "flex";
+    });
+
+  for(let i = 1; i <= 24; i++){
+      const nomeArquivo =
+        dadosInspecao?.[`foto${i}`];
+      const img =
+        document.getElementById(
+          `imgDes${i}`
+        );
+      if(!img){
+        continue;
+      }
+      if(!nomeArquivo){
+
+          const container =
+            img.parentElement;
+
+          container.style.display =
+            "flex";
+
+          img.style.display = "none";
+    
+          if(
+            !container.querySelector(".upload-vazio")
+          ){
+
+            const upload =
+              document.createElement("div");
+
+            upload.className =
+              "upload-vazio";
+            upload.innerHTML =
+              `
+              <div class="icone-upload">
+                📷
+              </div>
+
+              <div class="texto-upload">
+                ADICIONAR FOTO
+              </div>
+              `;
+            upload.onclick = () =>
+              selecionarFoto(i);
+            
+
+            const comentario =
+              container.querySelector(".comentario-foto");
+
+            container.insertBefore(
+              upload,
+              comentario
+            );
+
+          }          
+
+          continue;
+      }
+
+    if(!img){
+      continue;
+    }
+
+    try{
+
+      const res =
+        await fetch(
+          `/api/inspecoes/${id}/foto${i}`,
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+
+      if(res.ok){
+
+        const blob =
+          await res.blob();
+
+        const uploadVazio =
+          img.parentElement.querySelector(
+            ".upload-vazio"
+          );
+
+        if(uploadVazio){
+          uploadVazio.remove();
+        }         
+
+        img.src =
+          URL.createObjectURL(blob);
+
+        img.style.display =
+          "block";
+
+        let btnRemover =
+            img.parentElement.querySelector(
+                ".btn-remover"
+            );
+
+
+        if(!btnRemover){
+            btnRemover =
+                document.createElement("button");
+            btnRemover.className =
+                "btn-remover";
+            btnRemover.innerHTML = "✖";
+            btnRemover.onclick = (e) => {
+                e.stopPropagation();
+                removerFotoInspecao(i);
+            };
+            img.parentElement.appendChild(
+                btnRemover
+            );
+        }
+
+        btnRemover.style.display =
+            statusInspecao === "EM INSPEÇÃO"
+                ? "block"
+                : "none";
+
+
+        img.parentElement.style.display =
+          "block";
+
+        img.onclick = () =>{
+          ampliarFoto(img.src);
+        };
+
+      }
+
+    }
+    catch(err){
+
+      console.error(
+        `Erro ao carregar foto desmontagem ${i}`,
+        err
+      );
+
+    }
+
+  }
+
+}
+
+  async function removerFotoInspecao(numero){
+
+      if(statusInspecao === "FINALIZADA"){
+          return;
+      }
+
+      const confirmar =
+          confirm(
+              `Remover Foto ${numero}?`
+          );
+
+      if(!confirmar){
+          return;
+      }
+
+      try{
+
+          const resposta =
+              await fetch(
+                  `/api/inspecoes/${id}/foto/${numero}`,
+                  {
+                      method:"DELETE",
+                      headers:{
+                          Authorization:token
+                      }
+                  }
+              );
+
+          const resultado =
+              await resposta.json();
+
+          if(!resposta.ok){
+
+              alert(
+                  resultado.erro ||
+                  "Erro ao remover foto."
+              );
+
+              return;
+          }
+
+          alert(
+              "✅ Foto removida."
+          );
+
+          location.reload();
+
+      }
+      catch(err){
+
+          console.error(err);
+
+          alert(
+              "Erro ao remover foto."
+          );
+
+      }
+
+  }
+
+  function selecionarFoto(numero){
+
+      if(statusInspecao === "FINALIZADA"){
+          return;
+      }
+
+      slotFotoAtual = numero;
+
+      const input =
+        document.getElementById(
+          "inputUploadFoto"
+        );
+
+      input.onchange = function(event){
+
+          const arquivo =
+            event.target.files[0];
+
+          if(!arquivo){
+              return;
+          }
+
+          fotosNovasInspecao[numero] =
+            arquivo;
+
+          const img =
+            document.getElementById(
+              `imgDes${numero}`
+            );
+
+          img.src =
+            URL.createObjectURL(
+              arquivo
+            );
+
+          img.style.display =
+            "block";
+
+          const uploadVazio =
+            img.parentElement.querySelector(
+              ".upload-vazio"
+            );
+
+          if(uploadVazio){
+              uploadVazio.remove();
+          }
+
+          img.onclick = () =>{
+              ampliarFoto(img.src);
+          };
+
+      };
+
+      input.click();
+  }
+
+
+  // =================== MODAL DE VISUALIZAÇÃO ===============================
+  function ampliarFoto(src){
+    const modal =
+      document.getElementById("modalFoto");
+
+    const imagem =
+      document.getElementById("imagemExpandida");
+
+    imagem.src = src;
+
+    modal.classList.add("ativo");
+
+  }
+
+  function fecharFoto(){
+
+    document
+      .getElementById("modalFoto")
+      .classList.remove("ativo");
+
+  }
+
+
+  // ====================== NAVEGAÇÃO ================================
+  function voltar(){
+    window.location.href =
+      "listaInspecao.html";
+  }
+
+  function visualizarRelatorio(){
+
+      if(!id){
+          alert("Inspeção não encontrada.");
+          return;
+      }
+
+      window.open(
+          `visualizarRelatorioInspecao.html?id=${id}`,
+          "_blank"
+      );
+  }
+
+
+  async function listaPecas(){
+
+      if(!id){
+          alert(
+              "Inspeção não encontrada."
+          );
+          return;
+      }
+
+      if(statusInspecao === "FINALIZADA"){
+
+          window.location.href =
+              `inspecaoPecas.html?id=${id}`;
+
+          return;
+      }
+
+      const salvou =
+          await salvar();
+
+      if(!salvou){
+          return;
+      }
+
+      window.location.href =
+          `inspecaoPecas.html?id=${id}`;
+  }
+
+
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+  // ======================= EXPORTAR PDF ==============================
+  async function exportarPDF(){
+
+      const btn =
+          document.getElementById(
+              "btnExportarPdf"
+          );
+
+      const status =
+          document.getElementById(
+              "statusPdf"
+          );
+
+      btn.disabled = true;
+
+      btn.textContent =
+          "Gerando PDF...";
+
+      status.textContent =
+          "⏳ Gerando PDF... Por favor aguarde.";
+
+      try{
+
+          if(!id){
+              throw new Error(
+                  "Inspeção não encontrada."
+              );
+          }
+
+          const resposta =
+              await fetch(
+                  `/api/relatorios/${id}/pdf`,
+                  {
+                      headers:{
+                          Authorization: token
+                      }
+                  }
+              );
+
+          if(!resposta.ok){
+              throw new Error(
+                  `Erro ${resposta.status}`
+              );
+          }
+
+          const blob =
+              await resposta.blob();
+
+          const url =
+              window.URL.createObjectURL(blob);
+
+          window.open(
+              url,
+              "_blank"
+          );
+
+          status.textContent =
+              "✅ PDF gerado com sucesso.";
+
+      }
+      catch(err){
+
+          console.error(err);
+
+          status.textContent =
+              "❌ Erro ao gerar PDF.";
+
+          alert(
+              err.message ||
+              "Erro ao gerar PDF."
+          );
+      }
+      finally{
+
+          btn.disabled = false;
+
+          btn.textContent =
+              "Exportar PDF";
+
+          setTimeout(() => {
+
+              status.textContent = "";
+
+          }, 3000);
+
+      }
+  }
+
+
+  // ======================= INICIALIZAÇÃO ===============================
+
+  window.onload = async () => {
+
+    if (!id) {
+      alert("OS não informada.");
+      voltar();
+      return;
+    }
+
+    await carregarInspecao();
+    await carregarFotosRecebimento();
+    await carregarFotosDesmontagem();
+
+    aplicarPermissoesInspecao();
+  };
+
+  async function salvarFotosInspecao(){
+
+      if(statusInspecao === "FINALIZADA"){
+          return false;
+      }
+
+      const formData =
+        new FormData();
+
+      let possuiFoto = false;
+
+      for(let i = 1; i <= 24; i++){
+
+          if(fotosNovasInspecao[i]){
+
+              possuiFoto = true;
+
+              formData.append(
+                `foto${i}`,
+                fotosNovasInspecao[i]
+              );
+
+          }
+
+      }
+
+      if(!possuiFoto){
+          return true;
+      }
+
+      const resposta =
+        await fetch(
+          `/api/inspecoes/${id}/fotos`,
+          {
+              method:"POST",
+              headers:{
+                  Authorization:token
+              },
+              body:formData
+          }
+        );
+
+      if(!resposta.ok){
+
+          const erro =
+            await resposta.json();
+
+          throw new Error(
+            erro.erro ||
+            "Erro ao salvar fotos"
+          );
+
+      }
+
+      return true;
+  }
+
+  async function salvar(){
+
+    if(statusInspecao === "FINALIZADA"){
+        alert(
+            "Esta inspeção já foi finalizada."
+        );
+        return false;
+    }
+
+    try{
+
+      await salvarFotosInspecao();
+      const dados = {};
+
+      // RECEBIMENTO
+      for(let i = 1; i <= 12; i++){
+
+        dados[`comentarioRecebimento${i}`] =
+          document.getElementById(
+            `comentarioRecebimento${i}`
+          ).value.trim();
+
+      }
+
+      // DESMONTAGEM
+      for(let i = 1; i <= 24; i++){
+
+        dados[`comentarioDesmontagem${i}`] =
+          document.getElementById(
+            `comentarioDesmontagem${i}`
+          ).value.trim();
+      }
+
+
+      // FOTOS RECEBIMENTO SELECIONADAS
+      dados.fotosRecebimentoSelecionadas =
+        [];
+      for(let i = 1; i <= 12; i++){
+        const check =
+          document.getElementById(
+            `checkRecebimento${i}`
+          );
+        if(check?.checked){
+          dados
+            .fotosRecebimentoSelecionadas
+            .push(i);
+        }
+      }
+      // FOTOS DESMONTAGEM SELECIONADAS
+      dados.fotosDesmontagemSelecionadas =
+        [];
+      for(let i = 1; i <= 24; i++){
+        const check =
+          document.getElementById(
+            `checkDesmontagem${i}`
+          );
+
+        if(check?.checked){
+          dados
+            .fotosDesmontagemSelecionadas
+            .push(i);
+        }
+      }
+
+      dados.fotosRecebimentoSelecionadas =
+        dados.fotosRecebimentoSelecionadas.join(",");
+
+      dados.fotosDesmontagemSelecionadas =
+        dados.fotosDesmontagemSelecionadas.join(",");
+
+
+      
+
+      // PROBLEMAS ENCONTRADOS
+      dados.problemasEncontrados =
+        JSON.stringify(
+          [...document.querySelectorAll(
+            "#blocoProblemasEncontrados input[type='checkbox']:checked"
+          )].map(item => item.value)
+        );
+
+      dados.causasMecanicas =
+        JSON.stringify(
+          [...document.querySelectorAll(
+              "#blocoCausasMecanicas input[type='checkbox']:checked"
+            ) ].map(item => item.value)
+        );
+
+      dados.causasEletricas =
+        JSON.stringify(
+          [...document.querySelectorAll(
+              "#blocoCausasEletricas input[type='checkbox']:checked"
+            )].map(item => item.value)
+        );
+
+      dados.recomendacoesInstalacao =
+          JSON.stringify(
+              [...document.querySelectorAll(
+                  "#blocoRecomendacoes input[type='checkbox']:checked"
+              )]
+              .map(item => item.value)
+          );
+
+      dados.observacoesGerais =
+          document.getElementById(
+              "observacoesGerais"
+          ).value.trim();
+
+
+
+
+      const resposta =
+        await fetch(
+          `/api/inspecoes/observacoes/${id}`,
+          {
+            method:"PUT",
+
+            headers:{
+              "Content-Type":"application/json",
+              Authorization:token
+            },
+
+            body:JSON.stringify(dados)
+          }
+        );
+
+      const resultado =
+        await resposta.json();
+
+      if(!resposta.ok){
+
+        alert(
+          resultado.erro ||
+          "Erro ao salvar observações."
+        );
+
+        return false;
+      }
+
+      alert(
+        "✅ Alterações salvas com sucesso."
+      );
+
+      return true;
+    }
+
+    catch(err){
+      console.error(err);
+      alert(
+        "Erro ao salvar observações."
+      );
+      return false;
+    }
+
+  }
+
+
+
+</script>
+
+
+</body>
+</html>
+
+

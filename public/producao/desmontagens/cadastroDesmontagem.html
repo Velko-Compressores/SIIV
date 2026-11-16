@@ -1,0 +1,1605 @@
+
+<!-- public/producao/desmontagens/cadastroDesmontagem.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Desmontagem</title>
+
+<style>
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+  }
+
+
+  .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left{justify-self:start;}
+  .center{justify-self:center;color:#cbd5f5;}
+  .right{justify-self:end;}
+
+  .logout{
+    cursor:pointer;
+    color:#ef4444;
+  }
+
+  main{
+    flex:1;
+    background:white;
+    padding:30px;
+  }
+
+  /* Stylo dos cards das secoes */
+  .informacoes-os,
+  .blocoFotosRecebimento,
+  .blocoFotosDesmontagem{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    margin-bottom:15px;
+  }
+
+  h2{
+    margin-top:5px;
+    margin-bottom:15px;
+    font-size:medium;
+    color:#0f172a;
+  }
+
+  
+  /* Grid para o bloco de informacoes-os */
+  .linha-equipamento{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:5px;
+    padding-top:15px;
+  }
+
+  /* Stylo dos inputs das informacoes-os */
+  .campo{
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    padding:8px 12px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .campo strong{
+    font-size:13px;
+    color:#0f172a;
+    margin-bottom:2px;
+  }
+
+  .campo span{
+    color:#64748b; 
+    font-size:16px;
+    font-weight:600;
+    line-height:1.2;
+  }
+
+  /* Linha 1 */
+  .os{ grid-column:span 2; }
+  .cliente{ grid-column:span 10; }
+
+    /* Linha 2 */
+  .fabricante{ grid-column:span 3; }
+  .modelo{ grid-column:span 3; }
+  .tipo{ grid-column:span 2; }
+  .tensao{ grid-column:span 2; }
+  .serie{ grid-column:span 2; }
+
+  /* Linha 3 */
+  .desmontador,
+  .liberado,
+  .liberacao{
+    grid-column:span 4;
+  }
+
+  /* Linha 4 */
+  .inicio,
+  .fim,
+  .total,
+  .parado{
+    grid-column:span 3;
+  }
+
+  /* BLOCO FOTOS RECEBIMENTO */
+
+  .fotosRecebimentoGrid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:5px;
+  }
+
+  .fotosRecebimentoGrid img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+    border-radius:12px;
+    border:1px solid #cbd5e1;
+    cursor:pointer;
+    background:#f8fafc;
+  }
+
+
+  /* BLOCO FOTOS DESMONTAGEM */
+
+  .blocoFotosDesmontagem{
+    padding:20px;
+    border-bottom:2px solid #e2e8f0;
+  }
+
+  .blocoFotosDesmontagem h3{
+    color:#0f172a;
+    margin-bottom:20px;
+  }
+
+  .fotosDesmontagemGrid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+  }
+
+  .fotoDesmontagem{
+    position:relative;
+    height:140px;
+  }
+
+  .fotoDesmontagem input[type="file"]{
+    display:none;
+  }
+
+  .uploadBoxDesmontagem{
+    border:2px dashed #cbd5e1;
+    border-radius:12px;
+    background:#f8fafc;
+    height:140px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.2s;
+    text-align:center;
+    padding:10px;
+  }
+
+  .uploadBoxDesmontagem:hover{
+    background:#eff6ff;
+    border-color:#3b82f6;
+  }
+
+  .uploadBloqueado{
+    opacity:.5;
+    cursor:not-allowed;
+    pointer-events:none;
+  }
+
+  .uploadBoxDesmontagem .icone{
+    font-size:28px;
+    margin-bottom:5px;
+  }
+
+  .uploadBoxDesmontagem .texto{
+    font-size:12px;
+    color:#475569;
+  }
+
+  .uploadBoxDesmontagem .subtexto{
+    font-size:10px;
+    color:#94a3b8;
+    margin-top:4px;
+  }
+
+  .fotoDesmontagem img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+    border-radius:12px;
+    display:none;
+    position:absolute;
+    top:0;
+    left:0;
+  }
+
+  .btn-remover{
+    position:absolute;
+    top:5px;
+    right:5px;
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:50%;
+    background:#dc2626;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    display:none;
+    z-index:10;
+  }
+
+  .btn-remover:hover{
+    background:#b91c1c;
+  }
+
+  /* MODAL FOTO - FOTO RECEBIMENTO */
+  .modal-foto{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+  }
+
+  .modal-foto img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:12px;
+  }
+
+  .modal-foto.ativo{
+    display:flex;
+  }
+
+  .fechar-foto{
+    position:absolute;
+    top:20px;
+    right:30px;
+    color:white;
+    font-size:32px;
+    font-weight:bold;
+    cursor:pointer;
+    z-index:10000;
+  }
+
+  .fechar-foto:hover{
+    color:#ef4444;
+  }
+
+
+
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+  .salvar,
+  .exportar,
+  .voltar{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .exportar{
+    background:#f59e0b;
+    color:white;
+  }
+
+  .exportar:hover{
+    background:#d97706;
+  }
+
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  .fotoRecebimento{
+    position:relative;
+  }
+
+
+
+    @media print {
+
+      header,
+      .header,
+      .topbar,
+      .navbar,
+      .menu,
+      .cabecalho,
+      footer,
+      .footer-actions,
+      .salvar,
+      .exportar,
+      .voltar{
+          display:none !important;
+      }
+
+
+
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    body {
+        font-size: 11px;
+        zoom: 0.90;
+    }
+
+    .campo{
+        border:none !important;
+        padding:2px 4px !important;
+        border-radius:0 !important;
+        background:transparent !important;
+    }
+
+
+    .fotosRecebimentoGrid img{
+        height:90px !important;
+        object-fit:cover;
+    }
+
+
+    .fotoDesmontagem{
+        height:90px !important;
+    }
+
+    .fotoDesmontagem img{
+        height:90px !important;
+        object-fit:cover;
+    }
+
+
+
+    /* Fotos da desmontagem */
+    .fotos-desmontagem {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+    }
+
+    .foto-box {
+        height: 95px;
+    }
+
+    .foto-box img {
+        max-height: 80px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    /* Reduz apenas os espaços */
+    h1,h2,h3,h4,p {
+        margin: 2px 0;
+    }
+
+    section,
+    .card,
+    .bloco {
+        margin-bottom: 4px;
+        padding: 4px;
+    }
+
+    .nao-imprimir {
+        display: none !important;
+    }
+}
+
+
+
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+
+</header>
+
+ <main class="main">
+
+  <section class="informacoes-os">
+    <h2> DESMONTAGEM DE COMPRESSOR SEMI-HERMÉTICO </h2>    
+    <div class="linha-equipamento">
+
+      <div class="campo os">
+        <strong>OS:</strong>
+        <span id="numeroOS">-</span>
+      </div>
+
+      <div class="campo cliente">
+        <strong>CLIENTE:</strong>
+        <span id="cliente">-</span>
+      </div>
+
+      <div class="campo fabricante">
+        <strong>FABRICANTE:</strong>
+        <span id="fabricante">-</span>
+      </div>
+
+      <div class="campo modelo">
+        <strong>MODELO:</strong>
+        <span id="modelo">-</span>
+      </div>
+
+      <div class="campo tipo">
+        <strong>TIPO:</strong>
+        <span id="tipo">-</span>
+      </div>
+
+      <div class="campo tensao">
+        <strong>TENSÃO:</strong>
+        <span id="tensao">-</span>
+      </div>
+
+      <div class="campo serie">
+        <strong>Nº SÉRIE:</strong>
+        <span id="numeroSerie">-</span>
+      </div>
+
+      <div class="campo desmontador">
+        <strong>DESMONTADOR:</strong>
+        <span id="desmontador">-</span>
+      </div>
+
+      <div class="campo liberado">
+        <strong>LIBERADO POR:</strong>
+        <span id="liberadoPor">-</span>
+      </div>
+
+      <div class="campo liberacao">
+        <strong>DATA LIBERAÇÃO:</strong>
+        <span id="dataLiberacao">-</span>
+      </div>  
+
+      <div class="campo inicio">
+        <strong>INÍCIO:</strong>
+        <span id="dataHoraInicio">-</span>
+      </div>
+
+      <div class="campo fim">
+        <strong>FIM:</strong>
+        <span id="dataHoraFim">-</span>
+      </div>
+
+      <div class="campo total">
+        <strong>TEMPO TOTAL:</strong>
+        <span id="tempoTotal">-</span>
+      </div>
+
+      <div class="campo parado">
+        <strong>PAUSAS:</strong>
+        <span id="tempoParado">-</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOTOS FOTOS RECEBIMENTO -->
+  <section class="blocoFotosRecebimento">
+    <h2>FOTOS DO RECEBIMENTO DO COMPRESSOR</h2>
+    <div class="fotosRecebimentoGrid">
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg1" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg2" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg3" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg4" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg5" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg6" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg7" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg8" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg9" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg10" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg11" style="display:none;" >
+      </div>
+
+      <div class="fotoRecebimento">
+        <img id="recebimentoImg12" style="display:none;" >
+      </div>
+
+    </div>
+  </section>
+    
+  <!-- FOTOS FOTOS DESMONTAGEM -->  
+  <section class="blocoFotosDesmontagem">
+    <h2>FOTOS DA DESMONTAGEM DO COMPRESSOR</h2>
+    <div class="fotosDesmontagemGrid">
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes1" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 1</div>
+          <div class="subtexto">
+            Clique para selecionar
+          </div>
+        </label>
+        <input type="file" id="fotoDes1" onchange="previewFotoDesmontagem(this,'imgDes1')" >
+        <img id="imgDes1">
+        <button type="button" class="btn-remover" id="btnRemover1"  onclick="removerFoto(1)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes2" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 2</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes2" onchange="previewFotoDesmontagem(this,'imgDes2')" >
+        <img id="imgDes2">
+        <button type="button" class="btn-remover" id="btnRemover2"  onclick="removerFoto(2)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes3" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 3</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes3" onchange="previewFotoDesmontagem(this,'imgDes3')" >
+        <img id="imgDes3">
+        <button type="button" class="btn-remover" id="btnRemover3"  onclick="removerFoto(3)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes4" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 4</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes4" onchange="previewFotoDesmontagem(this,'imgDes4')" >
+        <img id="imgDes4">
+        <button type="button" class="btn-remover" id="btnRemover4"  onclick="removerFoto(4)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes5" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 5</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes5" onchange="previewFotoDesmontagem(this,'imgDes5')" >
+        <img id="imgDes5">
+        <button type="button" class="btn-remover" id="btnRemover5"  onclick="removerFoto(5)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes6" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 6</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes6" onchange="previewFotoDesmontagem(this,'imgDes6')" >
+        <img id="imgDes6">
+        <button type="button" class="btn-remover" id="btnRemover6"  onclick="removerFoto(6)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes7" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 7</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes7" onchange="previewFotoDesmontagem(this,'imgDes7')" >
+        <img id="imgDes7">
+        <button type="button" class="btn-remover" id="btnRemover7"  onclick="removerFoto(7)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes8" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 8</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes8" onchange="previewFotoDesmontagem(this,'imgDes8')" >
+        <img id="imgDes8">
+        <button type="button" class="btn-remover" id="btnRemover8"  onclick="removerFoto(8)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes9" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 9</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes9" onchange="previewFotoDesmontagem(this,'imgDes9')" >
+        <img id="imgDes9">
+        <button type="button" class="btn-remover" id="btnRemover9"  onclick="removerFoto(9)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes10" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 10</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes10" onchange="previewFotoDesmontagem(this,'imgDes10')" >
+        <img id="imgDes10">
+        <button type="button" class="btn-remover" id="btnRemover10"  onclick="removerFoto(10)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes11" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 11</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes11" onchange="previewFotoDesmontagem(this,'imgDes11')" >
+        <img id="imgDes11">
+        <button type="button" class="btn-remover" id="btnRemover11"  onclick="removerFoto(11)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes12" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 12</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes12" onchange="previewFotoDesmontagem(this,'imgDes12')" >
+        <img id="imgDes12">        
+        <button type="button" class="btn-remover" id="btnRemover12"  onclick="removerFoto(12)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes13" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 13</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes13" onchange="previewFotoDesmontagem(this,'imgDes13')" >
+        <img id="imgDes13">
+        <button type="button" class="btn-remover" id="btnRemover13"  onclick="removerFoto(13)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes14" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 14</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes14" onchange="previewFotoDesmontagem(this,'imgDes14')" >
+        <img id="imgDes14">
+        <button type="button" class="btn-remover" id="btnRemover14"  onclick="removerFoto(14)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes15" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 15</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes15" onchange="previewFotoDesmontagem(this,'imgDes15')" >
+        <img id="imgDes15">
+        <button type="button" class="btn-remover" id="btnRemover15"  onclick="removerFoto(15)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes16" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 16</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes16" onchange="previewFotoDesmontagem(this,'imgDes16')" >
+        <img id="imgDes16">
+        <button type="button" class="btn-remover" id="btnRemover16"  onclick="removerFoto(16)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes17" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 17</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes17" onchange="previewFotoDesmontagem(this,'imgDes17')" >
+        <img id="imgDes17">
+        <button type="button" class="btn-remover" id="btnRemover17"  onclick="removerFoto(17)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes18" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 18</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes18" onchange="previewFotoDesmontagem(this,'imgDes18')" >
+        <img id="imgDes18">
+        <button type="button" class="btn-remover" id="btnRemover18"  onclick="removerFoto(18)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes19" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 19</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes19" onchange="previewFotoDesmontagem(this,'imgDes19')" >
+        <img id="imgDes19">
+        <button type="button" class="btn-remover" id="btnRemover19"  onclick="removerFoto(19)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes20" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 20</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes20" onchange="previewFotoDesmontagem(this,'imgDes20')" >
+        <img id="imgDes20">
+        <button type="button" class="btn-remover" id="btnRemover20"  onclick="removerFoto(20)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes21" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 21</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes21" onchange="previewFotoDesmontagem(this,'imgDes21')" >
+        <img id="imgDes21">
+        <button type="button" class="btn-remover" id="btnRemover21"  onclick="removerFoto(21)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes22" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 22</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes22" onchange="previewFotoDesmontagem(this,'imgDes22')" >
+        <img id="imgDes22">
+        <button type="button" class="btn-remover" id="btnRemover22"  onclick="removerFoto(22)" > 
+          ✖ 
+        </button>
+      </div>
+
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes23" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 23</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes23" onchange="previewFotoDesmontagem(this,'imgDes23')" >
+        <img id="imgDes23">
+        <button type="button" class="btn-remover" id="btnRemover23"  onclick="removerFoto(23)" > 
+          ✖ 
+        </button>
+      </div>
+
+      <div class="fotoDesmontagem">
+        <label for="fotoDes24" class="uploadBoxDesmontagem" >
+          <div class="icone">📷</div>
+          <div class="texto">Foto 24</div>
+          <div class="subtexto">Clique para selecionar</div>
+        </label>
+        <input type="file" id="fotoDes24" onchange="previewFotoDesmontagem(this,'imgDes24')" >
+        <img id="imgDes24">
+        <button type="button" class="btn-remover" id="btnRemover24"  onclick="removerFoto(24)" > 
+          ✖ 
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODAL FOTOS -->
+  <div id="modalFoto" class="modal-foto" onclick="fecharFoto()">
+    <span class="fechar-foto" onclick="fecharFoto()"> ✖ </span>
+    <img id="imagemExpandida" onclick="event.stopPropagation()">
+  </div>
+
+</main>
+
+<footer class="footer-actions">
+  <button class="voltar" onclick="voltar()"> ⬅️ VOLTAR </button>
+  <button id="btnSalvar" class="salvar" onclick="salvarFotosDesmontagem()"> 💾 SALVAR </button>
+  <button id="btnExportar" class="exportar" onclick="exportarPDF()" style="display:none;"> 📄 EXPORTAR PDF </button>
+</footer>
+
+
+<script>
+
+  // ========== AUTENTICAÇÃO ============================================
+  const token = localStorage.getItem("token");
+
+  if (!token){
+    window.location.href = "../../index.html";
+  }
+
+  const usuario =
+    localStorage.getItem("usuario");
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+
+  // ============= VARIÁVEIS GLOBAIS =========================================
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  let statusDesmontagem = "";
+
+  // =============== CARREGAMENTO DO RECEBIMENTO =============================
+  async function carregarRecebimento(){
+
+    try{
+
+      const res = await fetch(
+        `/api/recebimentos/${id}`,
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      if(!res.ok){
+
+        alert(
+          "Erro ao carregar dados do recebimento"
+        );
+
+        return;
+      }
+
+      const recebimento =
+        await res.json();
+
+      document.getElementById(
+        "numeroOS"
+      ).textContent =
+        recebimento.numeroOS || "-";
+
+      document.getElementById(
+        "fabricante"
+      ).textContent =
+        recebimento.fabricante || "-";
+
+      document.getElementById(
+        "modelo"
+      ).textContent =
+        recebimento.modelo || "-";
+
+      document.getElementById(
+        "tipo"
+      ).textContent =
+        recebimento.tipo || "-";        
+
+      document.getElementById(
+        "tensao"
+      ).textContent =
+        recebimento.tensao || "-";
+
+      document.getElementById(
+        "numeroSerie"
+      ).textContent =
+        recebimento.numeroSerie || "-";
+
+      document.getElementById(
+        "cliente"
+      ).textContent =
+        recebimento.nomeFantasia || "-";
+
+    }
+    catch(err){
+
+      console.error(
+        "Erro ao carregar recebimento:",
+        err
+      );
+
+    }
+
+  }
+
+  // =============== CARREGAMENTO DA DESMONTAGEM ============================
+  async function carregarDesmontagem(){
+
+    try{
+
+      const res = await fetch(
+        `/api/desmontagens/${id}`,
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+      
+      if(!res.ok){
+
+        alert(
+          "Esta desmontagem ainda não foi programada."
+        );
+
+        voltar();
+        
+        return;
+      }
+
+
+      const desmontagem =
+        await res.json();
+
+      statusDesmontagem = 
+        desmontagem.status || "";  
+
+      document.getElementById(
+        "desmontador"
+      ).textContent =
+        desmontagem.desmontador || "-";
+
+      document.getElementById(
+        "liberadoPor"
+      ).textContent =
+        desmontagem.liberadoPor || "-";
+
+        // INÍCIO
+        document.getElementById(
+          "dataHoraInicio"
+        ).textContent =
+          desmontagem.dataHoraInicio
+            ? new Date(
+                desmontagem.dataHoraInicio
+              ).toLocaleString("pt-BR")
+            : "-";
+
+        // FIM
+        document.getElementById(
+          "dataHoraFim"
+        ).textContent =
+          desmontagem.dataHoraFim
+            ? new Date(
+                desmontagem.dataHoraFim
+              ).toLocaleString("pt-BR")
+            : "-";
+
+        // TEMPO TOTAL
+        document.getElementById(
+          "tempoTotal"
+        ).textContent =
+          desmontagem.tempoTotal || "-";
+
+        const segundosPausados =
+          desmontagem.tempoPausadoTotal || 0;
+
+        const horasPausadas =
+          Math.floor(
+            segundosPausados / 3600
+          );
+
+        const minutosPausados =
+          Math.floor(
+            (segundosPausados % 3600) / 60
+          );
+
+        document.getElementById(
+          "tempoParado"
+        ).textContent =
+          `${horasPausadas}h ${minutosPausados}min`;
+                  
+
+      if(desmontagem.dataLiberacao){
+
+        const dataFormatada =
+          new Date(
+            desmontagem.dataLiberacao
+          ).toLocaleString(
+            "pt-BR"
+          );
+
+        document.getElementById(
+          "dataLiberacao"
+        ).textContent =
+          dataFormatada;
+
+      }else{
+
+        document.getElementById(
+          "dataLiberacao"
+        ).textContent =
+          "-";
+
+      }
+
+
+
+    }
+    catch(err){
+
+      console.error(
+        "Erro ao carregar desmontagem:",
+        err
+      );
+
+    }
+
+  }
+
+  // ============== CONTROLE DE PERMISSÕES ================================
+  function aplicarPermissoesDesmontagem(){
+
+    // AGUARDANDO
+    if(statusDesmontagem === "AGUARDANDO"){
+
+      document
+        .querySelectorAll(".fotoDesmontagem")
+        .forEach(bloco => {
+
+          const input =
+            bloco.querySelector(
+              'input[type="file"]'
+            );
+
+          const label =
+            bloco.querySelector(
+              ".uploadBoxDesmontagem"
+            );
+
+          input.disabled = true;
+
+          if(label){
+            label.classList.add(
+              "uploadBloqueado"
+            );
+          }
+
+        });
+
+      alert(
+        "⚠️ Esta desmontagem ainda não foi iniciada.\n\nRetorne à fila e clique em INICIAR ▶️."
+      );
+
+    }
+
+    if(statusDesmontagem === "EM DESMONTAGEM"){
+
+      document.getElementById(
+        "btnSalvar"
+      ).style.display = "block";
+
+      document.getElementById(
+        "btnExportar"
+      ).style.display = "none";
+
+    }
+
+    // FINALIZADA
+    if(statusDesmontagem === "FINALIZADA"){
+
+      document
+        .querySelectorAll(".fotoDesmontagem")
+        .forEach(bloco => {
+
+          const input =
+            bloco.querySelector(
+              'input[type="file"]'
+            );
+
+          const label =
+            bloco.querySelector(
+              ".uploadBoxDesmontagem"
+            );
+
+          input.disabled = true;
+
+          const btnRemover =
+            bloco.querySelector(
+              ".btn-remover"
+            );
+
+          if(btnRemover){
+            btnRemover.style.display =
+              "none";
+          }
+
+          if(label){
+            label.classList.add(
+              "uploadBloqueado"
+            );
+          }
+
+        });
+
+      document.getElementById(
+        "btnSalvar"
+      ).style.display = "none";
+
+      document.getElementById(
+        "btnExportar"
+      ).style.display = "block";
+
+    }
+
+  }
+
+  // ================ FOTOS DO RECEBIMENTO ================================
+  async function carregarFotosRecebimento(){
+
+    for(let i = 1; i <= 12; i++){
+
+      const img =
+        document.getElementById(
+          `recebimentoImg${i}`
+        );
+
+      const url =
+        `/api/desmontagens/${id}/foto-recebimento/${i}`;
+
+      try{
+
+        const res =
+          await fetch(
+            url,
+            {
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+
+        if(res.ok){
+
+          const blob =
+            await res.blob();
+
+          img.src =
+            URL.createObjectURL(blob);
+
+          img.style.display =
+            "block";
+
+          img.onclick = () => {
+            ampliarFoto(img.src);
+          };  
+        }
+      }
+
+      catch(err){
+
+        console.error(
+          `Erro ao carregar foto ${i}`,
+          err
+        );
+      }
+    }
+  }
+
+  // ================== FOTOS DA DESMONTAGEM ==============================
+  function previewFotoDesmontagem(
+    input,
+    idImagem
+  ){
+
+    if(!input.files.length){
+      return;
+    }
+
+    const img =
+      document.getElementById(
+        idImagem
+      );
+
+    img.src =
+      URL.createObjectURL(
+        input.files[0]
+      );
+
+    img.style.display =
+      "block";
+
+    img.onclick = () => {
+      ampliarFoto(img.src);
+    };      
+
+    const uploadBox =
+      input.previousElementSibling;
+
+    uploadBox.style.display =
+      "none";
+
+  }
+
+  async function carregarFotosDesmontagem(){
+
+    for(let i = 1; i <= 24; i++){
+
+      const img =
+        document.getElementById(
+          `imgDes${i}`
+        );
+
+      const input =
+        document.getElementById(
+          `fotoDes${i}`
+        );
+
+      const box =
+        input.previousElementSibling;
+
+      try{
+
+        const res =
+          await fetch(
+            `/api/desmontagens/${id}/foto${i}`,
+            {
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+
+        // FOTO EXISTE
+        if(res.ok){
+          const blob = await res.blob();
+          img.src =  URL.createObjectURL(blob);
+          img.style.display = "block";
+
+          img.onclick = () => ampliarFoto(img.src);
+          const btnRemover =  document.getElementById(
+              `btnRemover${i}`
+            );
+
+          if(btnRemover){
+            btnRemover.style.display =
+              statusDesmontagem === "EM DESMONTAGEM"
+                ? "block"
+                : "none";
+          }
+
+          if(box){
+            box.style.display = "none";
+          }
+
+        }
+      }
+      catch(err){
+
+        console.error(
+          `Erro ao carregar foto ${i}:`,
+          err
+        );
+
+      }
+
+    }
+
+  }
+
+  // =================== MODAL DE VISUALIZAÇÃO ===============================
+  function ampliarFoto(src){
+    const modal =
+      document.getElementById("modalFoto");
+
+    const imagem =
+      document.getElementById("imagemExpandida");
+
+    imagem.src = src;
+
+    modal.classList.add("ativo");
+
+  }
+
+  function fecharFoto(){
+
+    document
+      .getElementById("modalFoto")
+      .classList.remove("ativo");
+
+  }
+
+  // ==================== SALVAMENTO ==================================
+  async function salvarFotosDesmontagem(){
+
+    const formData =
+      new FormData();
+
+    for(let i=1;i<=24;i++){
+
+      const input =
+        document.getElementById(
+          `fotoDes${i}`
+        );
+
+      if(
+        input &&
+        input.files &&
+        input.files[0]
+      ){
+
+        formData.append(
+          `foto${i}`,
+          input.files[0]
+        );
+
+      }
+
+    }
+
+    try{
+
+      const res =
+        await fetch(
+          `/api/desmontagens/${id}/fotos`,
+          {
+            method:"POST",
+
+            headers:{
+              Authorization:token
+            },
+
+            body:formData
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao salvar fotos"
+        );
+
+        return;
+
+      }
+
+      alert(
+        "✅ Fotos salvas com sucesso!"
+      );
+
+      window.location.reload();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor."
+      );
+
+    }
+
+  }
+
+  // ===================== REMOÇÃO DE FOTOS ==============================
+  async function removerFoto(numero){
+
+    if(
+      statusDesmontagem ===
+      "FINALIZADA"
+    ){
+      return;
+    }
+
+    const confirmar =
+      confirm(
+        `Remover Foto ${numero}?`
+      );
+
+    if(!confirmar){
+      return;
+    }
+
+    try{
+
+      const res =
+        await fetch(
+          `/api/desmontagens/${id}/foto/${numero}`,
+          {
+            method:"DELETE",
+            headers:{
+              Authorization:token
+            }
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao remover foto."
+        );
+
+        return;
+      }
+
+      alert(
+        "✅ Foto removida."
+      );
+
+      window.location.reload();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor."
+      );
+
+    }
+
+  }
+
+  // ====================== NAVEGAÇÃO ================================
+  function voltar(){
+    window.location.href =
+      "listaDesmontagem.html";
+  }
+
+  function irHome(){
+    window.location.href =
+      "../../home.html";
+  }
+
+  function logout(){
+
+    const confirmar =
+      confirm("⚠️ Deseja realmente sair do sistema?");
+
+    if(!confirmar) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href =
+      "../../index.html";
+
+  }
+
+  // ======================= EXPORTAR PDF ===============================
+  function exportarPDF(){
+    window.print();
+  }
+
+  // ======================= INICIALIZAÇÃO ===============================
+
+  window.onload = async () => {
+
+    if (!id) {
+      alert("OS não informada.");
+      voltar();
+      return;
+    }
+
+    await carregarRecebimento();
+    await carregarDesmontagem();
+    await carregarFotosRecebimento();
+    await carregarFotosDesmontagem();
+
+    aplicarPermissoesDesmontagem();
+  };
+
+</script>
+</body>
+</html>
+
+

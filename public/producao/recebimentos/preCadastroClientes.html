@@ -1,0 +1,518 @@
+<!-- public/producao/recebimentos/preCadastroClientes.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré Cadastro de Clientes</title>
+
+    <style>
+                
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Segoe UI",sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            background:white;
+        }
+
+        .header{
+            background:#020617;
+            color:white;
+            padding:15px 30px;
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr;
+            align-items:center;
+        }
+
+        .left{justify-self:start;}
+        .center{justify-self:center;color:#cbd5f5;}
+        .right{justify-self:end;}
+
+        .logout{
+            cursor:pointer;
+            color:#ef4444;
+        }
+
+        main{
+            flex:1;
+            padding:30px;
+            background:white;
+        }
+
+        .card{
+            border:1px solid #e2e8f0;
+            border-radius:10px;
+            padding:15px;
+            background:#fff;
+            margin-bottom:15px;
+        }
+
+        h2{
+            margin-top:5px;
+            margin-bottom:15px;
+            font-size:medium;
+            color:#0f172a;
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:
+            repeat(auto-fit,minmax(220px,1fr));
+            gap:15px;
+        }
+
+        .campo{
+            display:flex;
+            flex-direction:column;
+            gap:5px;
+        }
+
+        label{
+            font-size:12px;
+            color:#475569;
+        }
+
+        input,
+        select{
+            width:100%;
+            padding:15px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            font-size:12px;
+        }
+
+        input:focus,
+        select:focus{
+            border-color:#3b82f6;
+            box-shadow:0 0 0 2px rgba(59,130,246,.2);
+        }
+
+        button{
+            flex:1;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        }
+
+        .salvar{
+            background:#22c55e;
+            color:white;
+        }
+
+        .salvar:hover{
+            background:#16a34a;
+        }
+
+        .voltar{
+            background:#334155;
+            color:white;
+        }
+
+        .voltar:hover{
+            background:#475569;
+        }
+
+        .footer-actions{
+            display:flex;
+            gap:10px;
+            padding:25px;
+            background:white;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <header class="header">
+    <div class="left">
+        <h1 onclick="voltarRecebimento()">
+        S.I.I.V.
+        </h1>
+    </div>
+    <div class="center">
+        <span id="usuario"></span>
+    </div>
+    <div class="right">
+        <span class="logout" onclick="logout()">
+        SAIR ➜
+        </span>
+    </div>
+    </header>
+
+    <main class="main">
+
+        <section class="card">
+            <h2>DADOS DO CLIENTE</h2>
+            <div class="grid">
+                <div class="campo">
+                    <label>TIPO PESSOA</label>
+                    <select id="tipoPessoa">
+                        <option value=""> SELECIONAR </option>
+                        <option value="pf"> PESSOA FÍSICA </option>
+                        <option value="pj"> PESSOA JURÍDICA </option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label> DOCUMENTO </label>
+                    <input id="documento" placeholder="CPF ou CNPJ" >
+                </div>
+            </div>
+            <div class="grid">
+                <div class="campo">
+                    <label>NOME DO CLIENTE</label>
+                    <input
+                        id="nomeFantasia"
+                        placeholder="NOME DO CLIENTE">
+                </div>
+                <div class="campo">
+                    <label>NOME DO ESTABELECIMENTO</label>
+
+                    <input
+                        id="razaoSocial"
+                        placeholder="NOME DO ESTABELECIMENTO">
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>CONTATO</h2>
+            <div class="grid">
+                <div class="campo">
+                    <label>SOLICITANTE</label>
+                    <input id="responsavel1" placeholder="NOME DO SOLICITANTE" >
+                </div>
+                <div class="campo">
+                    <label>TELEFONE</label>
+                    <input id="telefoneResponsavel1" placeholder="TELEFONE" >
+                </div>
+
+                <div class="campo">
+                    <label>E-MAIL</label>
+                    <input id="emailResponsavel1" placeholder="E-MAIL" >
+                </div>
+            </div>
+        </section>
+
+
+        <section class="card">
+            <h2>CONTROLE</h2>
+            <div class="grid">
+                <div class="campo">
+                    <label>DATA / HORA</label>
+                    <input id="dataHora" type="datetime-local" readonly>
+                </div>
+
+                <div class="campo">
+                    <label>CADASTRADOR POR</label>
+                    <input id="cadastradoPor" readonly >
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer class="footer-actions">
+        <button class="voltar" onclick="voltarRecebimento()">⬅ VOLTAR</button>
+        <button class="salvar" onclick="salvar()">💾 SALVAR</button>
+    </footer>
+
+
+
+<script>
+
+    const token =
+    localStorage.getItem("token");
+
+    const usuario =
+    localStorage.getItem("usuario");
+
+    if(!token){
+    window.location.href =
+        "../../index.html";
+    }
+
+    document.getElementById(
+    "usuario"
+    ).textContent =
+    usuario
+        ? `👋 Olá, ${usuario}`
+        : "";
+
+
+    function alterarTipoPessoa(){
+        const documento =
+            document.getElementById(
+                "documento"
+            );
+        switch(
+            document.getElementById(
+                "tipoPessoa"
+            ).value
+        ){
+            case "pf":
+                documento.placeholder =
+                    "INFORME O CPF";
+                break;
+            case "pj":
+                documento.placeholder =
+                    "INFORME O CNPJ";
+                break;
+            default:
+                documento.placeholder =
+                    "CPF OU CNPJ";
+        }
+    }
+
+
+    document
+        .getElementById("tipoPessoa")
+        .addEventListener(
+            "change",
+            alterarTipoPessoa
+        );
+
+    window.addEventListener(
+        "load",
+        () => {
+
+            const agora = new Date();
+
+            const ano =
+            agora.getFullYear();
+
+            const mes =
+            String(
+                agora.getMonth() + 1
+            ).padStart(2,"0");
+
+            const dia =
+            String(
+                agora.getDate()
+            ).padStart(2,"0");
+
+            const hora =
+            String(
+                agora.getHours()
+            ).padStart(2,"0");
+
+            const minuto =
+            String(
+                agora.getMinutes()
+            ).padStart(2,"0");
+
+            document.getElementById(
+            "dataHora"
+            ).value =
+            `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+
+            document.getElementById(
+            "cadastradoPor"
+            ).value =
+            usuario || "";
+
+        }
+    );
+
+    async function salvar(){
+
+        if(
+            !document.getElementById("tipoPessoa").value
+        ){
+            alert("Selecione o tipo de pessoa.");
+            return;
+        }
+
+        if(
+            !document.getElementById("documento").value.trim()
+        ){
+            alert("Informe o documento.");
+            return;
+        }
+
+        const tipoPessoa =
+            document.getElementById(
+                "tipoPessoa"
+            ).value;
+
+        if(
+            !document.getElementById("nomeFantasia").value.trim()
+        ){
+            alert("Informe o nome do cliente.");
+            return;
+        }
+
+        if(
+            tipoPessoa === "pj" &&
+            !document.getElementById(
+                "razaoSocial"
+            ).value.trim()
+        ){
+            alert(
+                "Informe o nome do estabelecimento."
+            );
+
+            return;
+        }
+
+
+        const nomeCliente =
+            document.getElementById(
+                "nomeFantasia"
+            ).value.trim();
+
+        const nomeEstabelecimento =
+            document.getElementById(
+                "razaoSocial"
+            ).value.trim();
+
+        const cliente = {
+            tipoPessoa,
+
+            documento:
+            document.getElementById(
+                "documento"
+            ).value.trim(),
+
+            nomePF:
+                tipoPessoa === "pf"
+                    ? nomeCliente
+                    : "",
+
+            nomeFantasia:
+                tipoPessoa === "pj"
+                    ? nomeCliente
+                    : "",
+
+            razaoSocial:
+                tipoPessoa === "pj"
+                    ? nomeEstabelecimento
+                    : "",
+
+            responsavel1:
+            document.getElementById(
+                "responsavel1"
+            ).value.trim(),
+
+            telefoneResponsavel1:
+            document.getElementById(
+                "telefoneResponsavel1"
+            ).value.trim(),
+
+            emailResponsavel1:
+            document.getElementById(
+                "emailResponsavel1"
+            ).value.trim(),
+
+            dataHora:
+            document.getElementById(
+                "dataHora"
+            ).value,
+
+            cadastradoPor:
+            document.getElementById(
+                "cadastradoPor"
+            ).value
+        };
+
+        try{
+
+            const formData = new FormData();
+
+            Object.entries(cliente).forEach(
+                ([chave, valor]) => {
+
+                    formData.append(
+                        chave,
+                        valor || ""
+                    );
+
+                }
+            );
+
+            const resposta =
+                await fetch(
+                    "/api/clientes",
+                    {
+                        method:"POST",
+
+                        headers:{
+                            Authorization: token
+                        },
+
+                        body: formData
+                    }
+                );
+
+            const dados =
+                await resposta.json();
+
+            if(!resposta.ok){
+
+                alert(
+                    dados.erro ||
+                    "Erro ao cadastrar cliente."
+                );
+
+                return;
+            }
+
+            alert( "✅ Cliente cadastrado com sucesso." );
+
+            const clienteNome = nomeCliente;
+            window.location.href = `cadastroRecebimentos.html?cliente=${encodeURIComponent(clienteNome)}`;
+        }
+        catch(erro){
+
+            console.error(erro);
+
+            alert(
+                "Erro ao comunicar com servidor."
+            );
+        }
+    }
+
+    function voltarRecebimento(){
+
+        window.location.href =
+            "cadastroRecebimentos.html";
+    }
+
+
+    function logout(){
+        const confirmar =
+            confirm(
+            "⚠️ Deseja realmente sair?"
+            );
+
+        if(!confirmar){
+            return;
+        }
+
+        localStorage.removeItem(
+            "token"
+        );
+
+        localStorage.removeItem(
+            "usuario"
+        );
+
+        window.location.href =
+            "../../index.html";
+    }
+
+</script>
+
+</body>
+</html>
+

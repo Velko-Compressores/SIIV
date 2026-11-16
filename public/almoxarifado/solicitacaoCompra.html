@@ -1,0 +1,834 @@
+<!-- public/aumoxarifado/solicitacaoCompra.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itens em estoque mínimo</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI", Roboto, sans-serif;
+}
+
+body{
+    background:#0f172a;
+}
+
+/* HEADER SIIV */
+
+.header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+}
+
+.left{
+    justify-self:start;
+}
+
+.center{
+    justify-self:center;
+    color:#cbd5f5;
+}
+
+.right{
+    justify-self:end;
+}
+
+.logout{
+    cursor:pointer;
+    color:#ef4444;
+}
+
+/* MAIN */
+
+main{
+    max-width:1800px;
+    margin:30px auto;
+    background:white;
+    padding:40px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+/* TÍTULO */
+
+.page-title{
+    font-size:24px;
+    font-weight:600;
+    color:#0f172a;
+    margin-bottom:20px;
+}
+
+/* TABELA */
+
+.table-header{
+    display:grid;
+
+    grid-template-columns:
+    90px
+    140px
+    3fr
+    170px
+    220px
+    100px
+    120px
+    150px
+    150px
+    120px
+    140px;
+
+    column-gap:20px;
+
+    background:#e2e8f0;
+    padding:20px 25px;
+    border-radius:8px;
+    font-weight:bold;
+    color:#475569;
+    margin-bottom:10px;
+    text-align:center;
+}
+
+.pedido-item{
+    display:grid;
+
+    grid-template-columns:
+    90px
+    140px
+    3fr
+    170px
+    220px
+    100px
+    120px
+    150px
+    150px
+    120px
+    140px;
+
+    column-gap:20px;
+
+    align-items:center;
+    padding:25px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+/* ALINHAMENTOS */
+
+.pedido-item > div:nth-child(1){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(2){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(3){
+    text-align:left;
+}
+
+.pedido-item > div:nth-child(4){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(5){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(6){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(7){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(8){
+    text-align:center;
+}
+
+.pedido-item > div:nth-child(9){
+    text-align:center;
+}
+
+/* CHECKBOX */
+
+.selecionar-item{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.selecionar-item input{
+    width:20px;
+    height:20px;
+    cursor:pointer;
+}
+
+/* DADOS */
+
+.codigo{
+    font-size:18px;
+    font-weight:bold;
+    color:#1d4ed8;
+}
+
+.numero-pedido{
+    color:#64748b;
+    margin-top:4px;
+    font-size:14px;
+}
+
+.produto-titulo{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:5px;
+    color:#0f172a;
+}
+
+.produto-desc{
+    font-size:14px;
+    color:#475569;
+    line-height:1.5;
+}
+
+.fornecedor{
+    text-align:center;
+    font-size:14px;
+    font-weight:600;
+    color:#334155;
+}
+
+.qtd{
+    text-align:center;
+    font-weight:bold;
+}
+
+.prioridade{
+    text-align:center;
+    font-weight:700;
+}
+
+.prioridade-alta{
+    color:#dc2626;
+}
+
+.prioridade-media{
+    color:#d97706;
+}
+
+.prioridade-baixa{
+    color:#16a34a;
+}
+
+.valor{
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
+    color:#0f172a;
+}
+
+/* AÇÕES DA LINHA */
+
+.acoes{
+    display:flex;
+    justify-content:center;
+}
+
+.btn-editar{
+    border:none;
+    border-radius:6px;
+    padding:8px 12px;
+    cursor:pointer;
+    color:white;
+    font-size:13px;
+    font-weight:600;
+    background:#2563eb;
+}
+
+.btn-editar:hover{
+    background:#1d4ed8;
+}
+
+/* TOTAL GERAL */
+
+.total-geral{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:20px;
+
+    margin-top:30px;
+    padding:20px 25px;
+
+    background:#f8fafc;
+    border-top:3px solid #2563eb;
+    border-radius:8px;
+}
+
+.titulo-total{
+    font-size:18px;
+    font-weight:700;
+    color:#334155;
+}
+
+.valor-total-geral{
+    font-size:28px;
+    font-weight:800;
+    color:#2563eb;
+}
+
+/* BOTÕES FINAIS */
+
+.actions{
+    display:flex;
+    gap:10px;
+    padding-top:25px;
+}
+
+.actions button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.voltar{
+    background:#334155;
+    color:white;
+}
+
+.voltar:hover{
+    background:#475569;
+}
+
+.historico{
+    background:#7c3aed;
+    color:white;
+    font-weight:600;
+}
+
+.historico:hover{
+    background:#6d28d9;
+}
+
+.novo-item{
+    background:#0aa846;
+    color:white;
+    font-weight:600;
+}
+
+.novo-item:hover{
+    background:#17c259;
+}
+
+.enviar-compras{
+    background:#0a83a8;
+    color:white;
+    font-weight:600;
+}
+
+.enviar-compras:hover{
+    background:#2698c5;
+}
+
+.enviar-compras:active{
+    transform:scale(.98);
+}
+
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+    main{
+        margin:10px;
+        padding:20px;
+    }
+
+    .table-header{
+        display:none;
+    }
+
+    .pedido-item{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .qtd,
+    .valor{
+        text-align:left;
+    }
+
+    .acoes{
+        justify-content:flex-start;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+}
+
+</style>
+
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="left">
+        <h1 onclick="irHome()" style="cursor:pointer;">
+            S.I.I.V.
+        </h1>
+    </div>
+
+    <div class="center">
+        <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+        <span class="logout" onclick="logout()">
+            SAIR ➜]
+        </span>
+    </div>
+
+</header>
+
+<main>
+        
+    <div class="page-title">
+        📋 ITENS EM ESTOQUE MÍNIMO
+    </div>
+
+    <div class="table-header">
+        <div>SELECIONAR</div>
+        <div>ITEM</div>
+        <div>CÓDIGO</div>
+        <div>PRODUTO</div>
+        <div>DATA/INCLUSÃO</div>
+        <div>FORNECEDOR</div>
+        <div>QTD</div>
+        <div>VAL.UNITÁRIO</div>
+        <div>VAL.TOTAL</div>
+        <div>PRIORIDADE</div>
+        <div>AÇÕES</div>
+    </div>
+
+    <!-- ITEM 1 -->
+    <div class="pedido-item">
+
+        <div class="selecionar-item">
+            <input
+                type="checkbox"
+                class="item-compra"
+                data-valor="255"
+                onchange="atualizarTotal()">
+        </div>        
+
+        <div>1</div>
+
+        <div>
+            <div class="codigo">ESC-015</div>
+            <div class="numero-pedido">Pedido #098</div>
+        </div>
+
+        <div>
+            <div class="produto-titulo">
+                Caixa de Copos Descartáveis 200ml
+            </div>
+            <div class="produto-desc">
+                Caixa com 2.500 unidades para uso administrativo e copa
+            </div>
+        </div>
+
+        <div>02/09/2026</div>
+
+        <div class="fornecedor">
+            Atacadão do Escritório
+        </div>
+
+        <div class="qtd">3 cx</div>
+
+        <div class="valor">
+            R$ 85,00
+        </div>
+
+        <div class="valor">
+            R$ 255,00
+        </div>
+
+        <div class="prioridade prioridade-alta">
+            🔴 Alta
+        </div>
+
+        <div class="acoes">
+            <button
+                class="btn-editar"
+                onclick="editarPedido('ESC-015')">
+                ✏️ Editar
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ITEM 2 -->
+    <div class="pedido-item">
+        <div class="selecionar-item">
+            <input
+                type="checkbox"
+                class="item-compra"
+                data-valor="780"
+                onchange="atualizarTotal()">
+        </div> 
+
+        <div>2</div>
+        <div>
+            <div class="codigo">ESC-001</div>
+            <div class="numero-pedido">Pedido #097</div>
+        </div>
+        <div>
+            <div class="produto-titulo">Papel Sulfite A4</div>
+            <div class="produto-desc">
+                Resma com 500 folhas<br>
+                Uso Administrativo
+            </div>
+        </div>
+        <div>01/09/2026</div>
+        <div class="fornecedor">
+            Kalunga
+        </div>
+        <div class="qtd">20 un</div>
+        <div class="valor">
+            R$ 39,00
+        </div>
+        <div class="valor">
+            R$ 780,00
+        </div>
+        <div class="prioridade prioridade-media">
+            🟡 Média
+        </div>        
+        <div class="acoes">
+            <button class="btn-editar"
+                onclick="editarPedido('ESC-001')">
+                ✏️ Editar
+            </button>
+        </div>
+    </div>
+
+    <!-- ITEM 3 -->
+    <div class="pedido-item">
+        <div class="selecionar-item">
+            <input
+                type="checkbox"
+                class="item-compra"
+                data-valor="95"
+                onchange="atualizarTotal()">
+        </div> 
+
+        <div>3</div>
+        <div>
+            <div class="codigo">ESC-005</div>
+            <div class="numero-pedido">Pedido #097</div>
+        </div>
+        <div>
+            <div class="produto-titulo">Caneta Esferográfica Azul</div>
+            <div class="produto-desc">
+                Caixa com 50 unidades
+            </div>
+        </div>
+        <div>01/09/2026</div>
+        <div class="fornecedor">
+            Papelaria Central
+        </div>
+        <div class="qtd">2 cx</div>
+        <div class="valor">
+            R$ 47,50
+        </div>
+        <div class="valor">
+            R$ 95,00
+        </div>
+        <div class="prioridade prioridade-media">
+            🟡 Média
+        </div>        
+        <div class="acoes">
+            <button class="btn-editar"
+                onclick="editarPedido('ESC-005')">
+                ✏️ Editar
+            </button>
+        </div>
+    </div>
+
+    <!-- ITEM 4 -->
+    <div class="pedido-item">
+        <div class="selecionar-item">
+            <input
+                type="checkbox"
+                class="item-compra"
+                data-valor="1350"
+                onchange="atualizarTotal()">
+        </div> 
+
+        <div>4</div>
+        <div>
+            <div class="codigo">ESC-009</div>
+            <div class="numero-pedido">Pedido #096</div>
+        </div>
+        <div>
+            <div class="produto-titulo">Toner HP 136A</div>
+            <div class="produto-desc">
+                Suprimento para impressora do setor administrativo
+            </div>
+        </div>
+        <div>31/08/2026</div>
+        <div class="fornecedor">
+            Office Print
+        </div>
+        <div class="qtd">5 un</div>
+        <div class="valor">
+            R$ 270,00
+        </div>
+        <div class="valor">
+            R$ 1.350,00
+        </div>
+        <div class="prioridade prioridade-alta">
+            🔴 Alta
+        </div>        
+        <div class="acoes">
+            <button class="btn-editar"
+                onclick="editarPedido('ESC-009')">
+                ✏️ Editar
+            </button>
+        </div>
+    </div>
+
+    <!-- ITEM 5 -->
+    <div class="pedido-item">
+        <div class="selecionar-item">
+            <input
+                type="checkbox"
+                class="item-compra"
+                data-valor="250"
+                onchange="atualizarTotal()">
+        </div> 
+
+        <div>5</div>
+        <div>
+            <div class="codigo">ESC-012</div>
+            <div class="numero-pedido">Pedido #095</div>
+        </div>
+        <div>
+            <div class="produto-titulo">
+                Pasta Suspensa Kraft
+            </div>
+            <div class="produto-desc">
+                Caixa com 50 unidades para arquivamento de documentos
+            </div>
+        </div>
+        <div>
+            30/08/2026
+        </div>
+        <div class="fornecedor">
+            Papelaria Central
+        </div>
+        <div class="qtd">
+            4 cx
+        </div>
+        <div class="valor">
+            R$ 62,50
+        </div>
+        <div class="valor">
+            R$ 250,00
+        </div>
+        <div class="prioridade prioridade-baixa">
+            🟢 Baixa
+        </div>        
+        <div class="acoes">
+            <button class="btn-editar"
+                onclick="editarPedido('ESC-012')">
+                ✏️ Editar
+            </button>
+        </div>
+    </div>
+
+
+    <!-- TOTAL GERAL -->
+    <div class="total-geral">
+        <span class="titulo-total">
+            TOTAL GERAL DA SOLICITAÇÃO:
+        </span>
+
+        <span
+            class="valor-total-geral"
+            id="valorTotalSelecionado">
+
+            R$ 0,00
+
+        </span>
+    </div>
+
+    <!-- BOTÕES DE AÇÃO -->
+    <div class="actions">
+
+        <button
+            class="voltar"
+            onclick="voltar()">
+            ⬅ Voltar
+        </button>
+
+        <button
+            class="historico"
+            onclick="historicoCompras()">
+            📜 Entradas Pendentes
+        </button>
+
+        <button
+            class="novo-item"
+            onclick="novoItem()">
+            ➕ Novo Item
+        </button>
+
+        <button
+            class="enviar-compras"
+            onclick="enviarSelecionados()">
+            🛒 Enviar para Compras
+        </button>
+
+    </div>
+
+</main>
+
+<script>
+
+// TOKEN
+const token = localStorage.getItem("token");
+if(!token){
+    window.location.href = "../index.html";
+}
+
+// USUÁRIO
+const usuario = localStorage.getItem("usuario");
+document.getElementById("usuario").textContent =
+usuario ? `👋 Olá, ${usuario}` : "";
+
+// HOME
+function irHome(){
+    window.location.href = "../home.html";
+}
+
+// VOLTAR
+function voltar(){
+    window.location.href = "almoxarifado.html";
+}
+
+// EDITAR
+function editarPedido(codigo){
+    alert("✏️ Edição em desenvolvimento.\n\nItem: " + codigo);
+}
+
+function historicoCompras(){
+    window.location.href = "historicoCompras.html";
+}
+
+function novoItem(){
+    alert("✅ Página NOVO ITEM em desenvolvimento!");
+}
+
+function enviarCompras(codigo){
+    alert( "✅ Item enviado para compras.\n\nCódigo: " + codigo );
+}
+
+
+
+function atualizarTotal(){
+
+    const checkboxes =
+        document.querySelectorAll(".item-compra");
+
+    let total = 0;
+
+    checkboxes.forEach(item => {
+
+        if(item.checked){
+            total += Number(item.dataset.valor);
+        }
+
+    });
+
+    document.getElementById(
+        "valorTotalSelecionado"
+    ).textContent =
+        total.toLocaleString(
+            "pt-BR",
+            {
+                style:"currency",
+                currency:"BRL"
+            }
+        );
+}
+
+function enviarSelecionados(){
+
+    const itens =
+        document.querySelectorAll(".item-compra");
+
+    const selecionados = [];
+
+    itens.forEach(item => {
+
+        if(item.checked){
+
+            const linha =
+                item.closest(".pedido-item");
+
+            const codigo =
+                linha.querySelector(".codigo")
+                .textContent;
+
+            selecionados.push(codigo);
+        }
+
+    });
+
+    if(selecionados.length === 0){
+
+        alert(
+            "Selecione pelo menos um item para envio."
+        );
+
+        return;
+    }
+
+    alert(
+        "✅ Itens enviados para compras:\n\n" +
+        selecionados.join("\n")
+    );
+}
+
+
+
+// LOGOUT
+function logout(){
+    const confirmar =
+        confirm("⚠️ Deseja realmente sair do sistema?");
+    if(!confirmar) return;
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "../index.html";
+}
+
+</script>
+
+</body>
+</html>

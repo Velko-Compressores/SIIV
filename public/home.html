@@ -1,0 +1,271 @@
+<!-- public/home.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Setores</title>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+    color: #1e293b;
+  }
+
+  /* HEADER */
+.header {
+  background: #020617;
+  color: white;
+  padding: 15px 30px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.left {
+  justify-self: start;
+}
+
+.center {
+  justify-self: center;
+  font-size: 16px;
+  color: #cbd5f5;
+}
+
+.right {
+  justify-self: end;
+}
+
+.logout {
+  cursor: pointer;
+  color: #ef4444;
+}
+
+
+
+
+  /* MAIN */
+  main {
+    padding: 30px;
+  }
+
+  .title {
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+  }
+
+  .card span {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 5px;
+  }
+
+  .card strong {
+    font-size: 18px;
+    color: #0f172a;
+  }
+
+  /* cores por setor (visual bonito) */
+  .recebimento { border-left: 6px solid #3b82f6; }
+  .desmontagem { border-left: 6px solid #f59e0b; }
+  .comercial { border-left: 6px solid #4f1aca; }
+  .preparacao { border-left: 6px solid #10b981; }
+  .rebobinamento { border-left: 6px solid #8b5cf6; }
+  .retifica { border-left: 6px solid #ef4444; }
+  .montagem { border-left: 6px solid #22c55e; }
+  .testes { border-left: 6px solid #eab308; }
+  .pintura { border-left: 6px solid #ec4899; }
+  .finalizacao { border-left: 6px solid #06b6d4; }
+  .expedicao { border-left: 6px solid #6366f1; }
+  .ordemServico { border-left: 6px solid #a8f163; }
+  .logistica { border-left: 6px solid #9d4ee6; }
+  .clientes { border-left: 6px solid #ffe240; }
+
+</style>
+</head>
+
+<body>
+
+
+
+<header class="header">
+  <div class="left">
+    <h1>S.I.I.V</h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+</header>
+
+  <main>
+    <!-- <h2 class="title">Selecione um setor</h2> -->
+    <section class="grid">
+      <div class="card recebimento" onclick="ir('producao/recebimentos/recebimentos.html')">
+        <strong>RECEBIMENTO</strong>
+      </div>
+
+      <div class="card desmontagem" onclick="ir('producao/desmontagens/desmontagemInspecao.html')">
+        <strong>INSPEÇÃO</strong>
+      </div>
+
+      <div class="card comercial" onclick="ir('producao/comercial/comercial.html')">
+        <strong>COMERCIAL</strong>
+      </div>
+
+      <div class="card preparacao" onclick="ir('')">
+        <strong>PREPARAÇÃO</strong>
+      </div>
+
+      <div class="card rebobinamento" onclick="ir('')">
+        <strong>REBOBINAMENTO</strong>
+      </div>
+
+      <div class="card retifica" onclick="ir('')">
+        <strong>RETÍFICA</strong>
+      </div>
+
+      <div class="card montagem" onclick="ir('')">
+        <strong>MONTAGEM</strong>
+      </div>
+
+      <div class="card testes" onclick="ir('')">
+        <strong>TESTES</strong>
+      </div>
+
+      <div class="card pintura" onclick="ir('')">
+        <strong>PINTURA</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>FINALIZAÇÃO</strong>
+      </div>
+
+      <div class="card expedicao" onclick="ir('')">
+        <strong>EXPEDIÇÃO</strong>
+      </div>
+
+      <div class="card ordemServico" onclick="ir('ordemServicos/listaOrdemServicos.html')">
+        <strong>ORDEM SERVIÇO</strong>
+      </div>
+
+      <div class="card logistica" onclick="ir('')">
+        <strong>LOGÍSTICA</strong>
+      </div>
+
+      <div class="card clientes" onclick="ir('cadastros/cadastros.html')">
+        <strong>CADASTROS</strong>
+      </div>
+
+      <div class="card desmontagem" onclick="ir('')">
+        <strong>DOCUMENTAÇÃO</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('estoque/estoque.html')">
+        <strong>ESTOQUE</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('almoxarifado/almoxarifado.html')">
+        <strong>ALMOXARIFADO</strong>
+      </div>
+
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>COMPRAS</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>FINANCEIRO</strong>
+      </div>
+
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>PLANEJAMENTO</strong>
+      </div>
+
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>RH/DP</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>QUALIDADE</strong>
+      </div>
+
+      <div class="card finalizacao" onclick="ir('')">
+        <strong>SERVIÇOS GERAIS</strong>
+      </div>
+
+
+    </section>
+
+  </main>
+
+<script>
+  
+  // Proteção simples - verifica token - exibi ola usuario logado
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  if (!token) window.location.href = "index.html";
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "Olá";
+
+
+  function ir(pagina) {
+    window.location.href = pagina;
+  }
+
+  // ✅ LOGOUT
+  function logout(){
+    const confirmar = confirm("⚠️ Deseja realmente sair do sistema?");
+    if (!confirmar) return;
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "index.html";
+  }
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,1224 @@
+<!-- public/cadastros/clientes/cadastroClientes.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Clientes</title>
+
+<style>
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background:white;
+  }
+
+
+  .header {
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left {justify-self: start;}
+  .center {justify-self: center; color: #cbd5f5;}
+  .right {justify-self: end;}
+  .logout {cursor: pointer; color: #ef4444;}
+
+
+  main {
+      flex: 1;
+      background: white;
+      padding: 30px;
+  }
+ 
+  .card{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    gap:15px;
+    margin-bottom:15px;
+  }
+
+  h2 {
+    margin-top:5px;
+    margin-bottom:15px;
+    font-size:medium;
+    color:#0f172a;
+  }
+
+
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+  }
+
+  .gridEmpresa{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+  }
+  
+  .campo{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  
+  #campoNomePF{
+    grid-column: span 2;
+  }
+
+  .full {
+    grid-column: span 2;
+  }
+
+
+  label {
+    font-size:12px;
+    color:#475569;
+  }
+
+  input, 
+  select {
+    width:100%;
+    padding:15px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    font-size:12px;
+  }
+
+  input:focus,
+  select:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    resize: vertical;
+  }
+
+  textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    outline: none;
+  }
+
+
+  button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+
+  svg {
+    stroke: currentColor;
+  }
+
+  #msg {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+
+  .success { color: #16a34a; }
+  .error { color: #dc2626; }
+
+
+    
+  input[type="checkbox"] {
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+
+  .gridDuplo{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+
+  .subCard{
+    border:1px solid #e2e8f0;
+    border-radius:8px;
+    padding:15px;
+  }  
+
+  .gridCheckbox{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+
+  .itemCheckbox{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:#475569;
+  }
+
+  .itemCheckbox input{
+    margin:0;
+  }
+
+  .gridReferencia{
+    display:grid;
+    grid-template-columns:2fr 2fr 1fr 2fr;
+    gap:15px;
+    margin-bottom:15px;
+  }  
+
+  #camposPJ {
+    display: contents;
+  }
+
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+  @media (max-width:1200px){
+    .gridEmpresa{
+      grid-template-columns:repeat(2,1fr);
+    }
+  }
+
+  @media (max-width:768px){
+    .gridEmpresa{
+      grid-template-columns:1fr;
+    }
+    .gridCheckbox{
+      grid-template-columns:1fr;
+    }
+    .gridDuplo{
+      grid-template-columns:1fr;
+    }
+    #campoNomePF{
+      grid-column:span 1;
+    }
+    .gridReferencia{
+      grid-template-columns:1fr;
+    }
+
+  }
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">S.I.I.V.</h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()"> SAIR ➜] </span>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- BLOCO 1 - DADOS E ENDEREÇO DA EMPRESA -->
+  <section class="card">
+    <h2>DADOS DA EMPRESA</h2>
+    <!-- Dados da empresa -->
+    <div class="gridEmpresa">
+
+      <div class="campo">
+        <label>TIPO DE PESSOA</label>
+        <select id="tipoPessoa">
+          <option value="">SELECIONAR</option>
+          <option value="pf">PESSOA FÍSICA (CPF)</option>
+          <option value="pj">PESSOA JURÍDICA (CNPJ)</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label id="labelDocumento">DOCUMENTO</label>
+        <input id="documento" placeholder="CPF ou CNPJ">
+      </div>
+
+      <div class="campo" id="campoNomePF" style="display:none;">
+        <label>NOME COMPLETO</label>
+        <input id="nomePF" placeholder="Nome completo">
+      </div>
+
+      <div id="camposPJ">
+        <div class="campo">
+          <label>RAZÃO SOCIAL</label>
+          <input id="razaoSocial" placeholder="Razão social">
+        </div>
+
+        <div class="campo">
+          <label>NOME FANTASIA</label>
+          <input id="nomeFantasia" placeholder="Nome Fantasia">
+        </div>
+
+        <div class="campo">
+          <label>INSCRIÇÃO ESTADUAL</label>
+          <input id="inscricaoEstadual" placeholder="Inscrição Estadual">
+        </div>
+
+        <div class="campo">
+          <label>Inscrição Municipal</label>
+          <input id="inscricaoMunicipal" placeholder="Inscrição Municipal">
+        </div>
+
+        <div class="campo">
+          <label>REGIME DE TRIBUTAÇÃO</label>
+          <select id="tributacao">
+            <option value="">SELECIONAR</option>
+            <option value="rnlp">REGIME NORMAL-LUCRO PRESUMIDO</option>
+            <option value="sn">SIMPLES NACIONAL</option>
+            <option value="rnlr">REGIME NORMAL-LUCRO REAL</option>
+            <option value="esfl">EMPRESA SEM FINS LUCRATIVOS</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>SITUAÇÃO DO ICMS</label>
+          <select id="icms">
+            <option value="">SELECIONAR</option>
+            <option value="contribuinte">CONTRIBUINTE DO ICMS</option>
+            <option value="naoContribuinte">NÃO CONTRIBUINTE DO ICMS</option>
+            <option value="contribuinteInsento">CONTRIBUINTE INSENTO DE INSCRIÇÃO NO CADASTRO DE CONTRIBUINTE DE ICMS</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Endereço da empresa -->
+    <div class="grid">
+      <div class="campo">
+        <label>ENDEREÇO</label>
+        <input id="endereco" placeholder="Endereço">
+      </div>
+
+      <div class="campo">
+        <label>NÚMERO</label>
+        <input id="numero" placeholder="Número">
+      </div>
+
+      <div class="campo">
+        <label>COMPLEMENTO</label>
+        <input id="complemento" placeholder="Complemento">
+      </div>
+
+      <div class="campo">
+        <label>Bairro</label>
+        <input id="bairro" placeholder="Bairro">
+      </div>
+
+      <div class="campo">
+        <label>CIDADE</label>
+        <input id="cidade" placeholder="Cidade">
+      </div>
+
+      <div class="campo">
+        <label>ESTADO</label>
+        <input id="estado" placeholder="Estado">
+      </div>   
+
+      <div class="campo">
+        <label>PAÍS</label>
+        <input id="pais" placeholder="País">
+      </div>  
+
+      <div class="campo">
+        <label>CEP</label>
+        <input id="cep" placeholder="CEP">
+      </div> 
+
+      <div class="campo">
+        <label>TELEFONE</label>
+        <input id="telefone" placeholder="Telefone">
+      </div> 
+
+      <div class="campo">
+        <label>CELULAR</label>
+        <input id="celular" placeholder="Celular">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL COBRANÇA</label>
+        <input id="emailCobranca" type="email" placeholder="E-mail Cobrança">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL DANFE</label>
+        <input id="emailDanfe" type="email" placeholder="E-mail DANFE">
+      </div>
+      
+    </div>
+
+  </section>
+
+  <!-- BLOCO 2 - DOCUMENTAÇÃO OBRIGATÓRIA -->
+  <section class="card">
+    <h2>DOCUMENTAÇÃO OBRIGATÓRIA</h2>
+
+    <div class="grid">
+
+      <div class="campo">
+        <label>Alvará de Funcionamento</label>
+
+        <input type="file" id="alvara">
+
+        <button
+          type="button"
+          id="btnVerAlvara"
+          class="voltar"
+          style="display:none;margin-top:5px;"
+          onclick="abrirAlvara()"
+        >
+          📄 Ver Alvará
+        </button>
+      </div>
+
+      <div class="campo">
+        <label>Cartão CNPJ</label>
+
+        <input type="file" id="cartaoCnpj">
+
+        <button
+          type="button"
+          id="btnVerCartao"
+          class="voltar"
+          style="display:none;margin-top:5px;"
+          onclick="abrirCartao()"
+        >
+          📄 Ver Cartão CNPJ
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BLOCO 3 - CONTATOS -->
+  <section class="card">
+    <h2>CONTATOS</h2>
+
+    <!-- RESPONSÁVEL 1 -->
+    <div class="grid">
+      <div class="campo">
+        <label>RESPONSÁVEL 1</label>
+        <input id="responsavel1" placeholder="Nome responsável 1">
+      </div>
+      <div class="campo">
+        <label>TELEFONE RESPONSÁVEL 1</label>
+        <input id="telefoneResponsavel1" placeholder="Telefone">
+      </div>
+      <div class="campo">
+        <label>E-MAIL RESPONSÁVEL 1</label>
+        <input id="emailResponsavel1" type="email" placeholder="Email">
+      </div>
+    </div>
+
+    <!-- RESPONSÁVEL 2 -->
+    <div class="grid">
+      <div class="campo">
+        <label>RESPONSÁVEL 2</label>
+        <input id="responsavel2" placeholder="Nome responsável 2">
+      </div>
+      <div class="campo">
+        <label>TELEFONE RESPONSÁVEL 2</label>
+        <input id="telefoneResponsavel2" placeholder="Telefone">
+      </div>
+      <div class="campo">
+        <label>E-MAIL RESPONSÁVEL 2</label>
+        <input id="emailResponsavel2" type="email" placeholder="Email">
+      </div>
+    </div>
+
+    <!-- Compras -->
+    <div class="grid">
+      <div class="campo">
+        <label>COMPRAS</label>
+        <input id="compras" placeholder="Nome responsável compras">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE COMPRAS</label>
+        <input id="telefoneCompras" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL COMPRAS</label>
+        <input id="emailCompras" type="email" placeholder="E-mail">
+      </div>
+    </div>
+
+    <!-- Area técnica -->
+    <div class="grid">
+      <div class="campo">
+        <label>ÁREA TÉCNICA</label>
+        <input id="areaTecnica" placeholder="Nome responsável área técnica">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE ÁREA TÉCNICA</label>
+        <input id="telefoneAreaTecnica" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL ÁREA TÉCNICA</label>
+        <input id="emailAreaTecnica" type="email" placeholder="E-mail">
+      </div>
+    </div>
+
+    <!-- Contas a pagar -->
+    <div class="grid">    
+      <div class="campo">
+        <label>CONTAS A PAGAR</label>
+        <input id="contasPagar" placeholder="Nome responsável contas a pagar">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE CONTAS A PAGAR</label>
+        <input id="telefoneContasPagar" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL CONTAS A PAGAR</label>
+        <input id="emailContasPagar" type="email" placeholder="E-mail">
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCO 4 - RAMO DE ATIVIDADE -->
+  <section class="card">
+
+    <div class="gridDuplo">
+
+      <!-- RAMO ATIVIDADE -->
+      <div class="subCard">
+
+        <h2>RAMO ATIVIDADE</h2>
+
+        <div class="gridCheckbox">
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="comercioVaregista">
+            COMÉRCIO VAREJISTA
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="industriaEquipamento">
+            INDÚSTRIA EQUIP.
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="industriAlimentoBebida">
+            INDÚSTRIA ALIMENTOS
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="industriOutro">
+            INDÚSTRIA OUTROS
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="agroindustria">
+            AGROINDÚSTRIA
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="oficinaServicos">
+            OFICINA
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="comercioPeca">
+            COMÉRCIO DE PEÇAS
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="ramoAtividade" value="fabricanteCompressore">
+            FABRICANTE DE COMPRESSORES
+          </label>
+
+        </div>
+
+      </div>
+
+      <!-- MARCAS UTILIZADAS -->
+      <div class="subCard">
+
+        <h2>MARCAS UTILIZADAS</h2>
+
+        <div class="gridCheckbox">
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="bitzer">
+            BITZER
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="danfoss">
+            DANFOSS
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="bock">
+            BOCK
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="traine">
+            TRAINE
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="copeland">
+            COPELAND
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="carrier">
+            CARRIER
+          </label>
+
+          <label class="itemCheckbox">
+            <input type="checkbox" name="marcaCompressor" value="dorin">
+            DORIN
+          </label>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- BLOCO 5 - REFERÊNCIAS COMERCIAIS -->
+  <section class="card">
+
+    <h2>REFERÊNCIAS COMERCIAIS</h2>
+
+    <!-- EMPRESA 1 -->
+    <div class="gridReferencia">
+
+      <div class="campo">
+        <label>EMPRESA 1</label>
+        <input id="nomeEmpresa1" placeholder="Empresa">
+      </div>
+
+      <div class="campo">
+        <label>CONTATO</label>
+        <input id="contatoEmpresa1" placeholder="Contato">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE</label>
+        <input id="telEmpresa1" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL</label>
+        <input
+          id="emailEmpresa1"
+          type="email"
+          placeholder="E-mail"
+        >
+      </div>
+
+    </div>
+
+    <!-- EMPRESA 2 -->
+    <div class="gridReferencia">
+
+      <div class="campo">
+        <label>EMPRESA 2</label>
+        <input id="nomeEmpresa2" placeholder="Empresa">
+      </div>
+
+      <div class="campo">
+        <label>CONTATO</label>
+        <input id="contatoEmpresa2" placeholder="Contato">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE</label>
+        <input id="telEmpresa2" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL</label>
+        <input
+          id="emailEmpresa2"
+          type="email"
+          placeholder="E-mail"
+        >
+      </div>
+
+    </div>
+
+    <!-- EMPRESA 3 -->
+    <div class="gridReferencia">
+
+      <div class="campo">
+        <label>EMPRESA 3</label>
+        <input id="nomeEmpresa3" placeholder="Empresa">
+      </div>
+
+      <div class="campo">
+        <label>CONTATO</label>
+        <input id="contatoEmpresa3" placeholder="Contato">
+      </div>
+
+      <div class="campo">
+        <label>TELEFONE</label>
+        <input id="telEmpresa3" placeholder="Telefone">
+      </div>
+
+      <div class="campo">
+        <label>E-MAIL</label>
+        <input
+          id="emailEmpresa3"
+          type="email"
+          placeholder="E-mail"
+        >
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- BLOCO 6 - OBSERVAÇÕES -->
+  <section class="card">
+    <h2>OBSERVAÇÕES</h2>
+    <div class="campo">
+      <label>INFORMAÇÕES ADICIONAIS</label>
+      <textarea
+        id="observacoes"
+        placeholder="Digite observações importantes sobre o cliente"
+      ></textarea>
+    </div>
+  </section>
+
+  <!-- BLOCO 7 - CONTROLE -->
+  <section class="card">
+    <h2>CONTROLE</h2>
+    <div class="grid">
+
+      <div class="campo">
+        <label>DATA/HORA DO CADASTRO</label>
+        <input id="dataHora" type="datetime-local">
+      </div>
+
+      <div class="campo">
+        <label>CADASTRADO POR</label>
+        <input id="cadastradoPor" readonly>
+      </div>
+
+    </div>
+  </section>
+
+  <p id="msg"></p>
+
+</main>
+
+
+<!-- BLOCO 8 - BOTÕES -->
+<div class="footer-actions">
+  <button class="voltar" id="btnVoltar" onclick="voltar()">⬅ VOLTAR</button>
+  <button class="salvar" onclick="salvar()">💾 SALVAR</button>
+</div>
+
+<script>
+
+  // 🔐 AUTH
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  if (!token) window.location.href = "../../index.html";
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+  // ✅ PARAMS
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const modo = params.get("modo");
+
+  // ✅ REMOVE FLICKER DO HEADER IMEDIATAMENTE
+  if (modo === "visualizar") {
+    document.querySelector(".header").style.display = "none";
+  }
+
+  // ✅ VOLTAR
+  function voltar(){
+    window.location.href = "listaClientes.html";
+  }
+
+  function irHome(){
+    window.location.href = "../../home.html";
+  }
+
+  // ✅ FORMATAR CPF/CNPJ
+  function formatarDocumento(valor, tipo){
+
+    valor = valor.replace(/\D/g, "");
+
+    if (tipo === "pf"){
+      valor = valor
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    }
+
+    else if (tipo === "pj"){
+      valor = valor
+        .replace(/^(\d{2})(\d)/, "$1.$2")
+        .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/\.(\d{3})(\d)/, ".$1/$2")
+        .replace(/(\d{4})(\d)/, "$1-$2");
+    }
+
+    return valor;
+  }
+
+  // ✅ FORMATAR CEP
+  function formatarCep(valor){
+
+    valor = valor.replace(/\D/g, "");
+
+    valor = valor.replace(
+      /^(\d{5})(\d)/,
+      "$1-$2"
+    );
+
+    return valor;
+
+  }
+
+
+  // ✅ FORMATAR TELEFONE
+  function formatarTelefone(valor){
+
+    valor = valor.replace(/\D/g, "");
+
+    if (valor.length <= 10){
+
+      valor = valor
+        .replace(/^(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{4})(\d)/, "$1-$2");
+
+    } else {
+
+      valor = valor
+        .replace(/^(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d)/, "$1-$2");
+
+    }
+
+    return valor;
+
+  }
+
+
+  // ✅ VISUALIZAÇÃO
+  function ativarModoVisualizacao(){
+    document.querySelectorAll("input, select, textarea").forEach(el => {
+      el.disabled = true;
+    });
+    document.querySelector(".salvar").style.display = "none";
+    document.getElementById("btnVoltar").style.display = "none";
+  }
+
+  // ✅ PF/PJ
+  function alterarTipoPessoa(){
+
+    const tipo = document.getElementById("tipoPessoa").value;
+
+    const labelDocumento = document.getElementById("labelDocumento");
+    const documento = document.getElementById("documento");
+    const campoNomePF = document.getElementById("campoNomePF");
+    const camposPJ = document.getElementById("camposPJ");
+    const nomePF = document.getElementById("nomePF");
+
+    if (tipo === "pf"){
+      labelDocumento.textContent = "CPF";
+      documento.placeholder = "Digite o CPF";
+      campoNomePF.style.display = "flex";
+      camposPJ.style.display = "none";
+
+    } else if (tipo === "pj"){
+      labelDocumento.textContent = "CNPJ";
+      documento.placeholder = "Digite o CNPJ";
+      campoNomePF.style.display = "none";
+      nomePF.value = "";
+      camposPJ.style.display = "contents";
+
+    } else {
+      labelDocumento.textContent = "Documento";
+      documento.placeholder = "CPF ou CNPJ";
+      campoNomePF.style.display = "none";
+      camposPJ.style.display = "contents";
+    }
+  }
+
+
+  // ✅ CARREGAR CLIENTE
+  async function carregarCliente(){
+    try {
+      const res = await fetch(`/api/clientes/${id}`, {
+        headers: { Authorization: token }
+      });
+
+      if (!res.ok){
+        alert("Erro ao buscar cliente");
+        return;
+      }
+
+      const cliente = await res.json();
+
+      // preencher
+      document.querySelectorAll("input, select, textarea").forEach(el => {
+
+        if (
+          el.type === "checkbox" ||
+          el.type === "file"
+        ) {
+          return;
+        }
+
+        if (cliente[el.id] !== undefined) {
+          el.value = cliente[el.id] || "";
+        }
+
+      });
+
+
+      document.getElementById("cadastradoPor").value = cliente.cadastradoPor || "";
+
+      // checkboxes
+      cliente.ramoAtividade.forEach(v => {
+        const el = document.querySelector(`[name="ramoAtividade"][value="${v}"]`);
+        if (el) el.checked = true;
+      });
+
+      cliente.marcaCompressor.forEach(v => {
+        const el = document.querySelector(`[name="marcaCompressor"][value="${v}"]`);
+        if (el) el.checked = true;
+      });
+
+      // ALVARÁ
+      if (cliente.alvara) {
+        document.getElementById(
+          "btnVerAlvara"
+        ).style.display = "flex";
+      }
+
+      // CARTÃO CNPJ
+      if (cliente.cartaoCnpj) {
+        document.getElementById(
+          "btnVerCartao"
+        ).style.display = "flex";
+      }
+
+      alterarTipoPessoa();
+
+    } catch (err){
+      console.error(err);
+      alert("Erro ao carregar cliente");
+    }
+  }
+
+  // ✅ SALVAR
+  async function salvar(){
+    const formData = new FormData();
+    document.querySelectorAll("input, select, textarea").forEach(el => {
+
+      // uploads
+      if(el.type === "file"){
+
+        if(el.files.length > 0){
+          formData.append(
+            el.id,
+            el.files[0]
+          );
+        }
+      }
+
+      // checkboxes ignorados aqui
+      else if(el.type !== "checkbox"){
+        formData.append(
+          el.id,
+          el.value || ""
+        );
+      }
+    });
+
+    const ramos = Array.from(
+      document.querySelectorAll(
+        '[name="ramoAtividade"]:checked'
+      )
+    ).map(el => el.value);
+
+    const marcas = Array.from(
+      document.querySelectorAll(
+        '[name="marcaCompressor"]:checked'
+      )
+    ).map(el => el.value);
+
+    formData.append(
+      "ramoAtividade",
+      JSON.stringify(ramos)
+    );
+
+    formData.append(
+      "marcaCompressor",
+      JSON.stringify(marcas)
+    );
+
+    formData.set(
+      "cadastradoPor",
+      usuario || ""
+    );
+
+    const url =
+      id
+        ? `/api/clientes/${id}`
+        : "/api/clientes";
+
+    const metodo =
+      id
+        ? "PUT"
+        : "POST";
+
+    try {
+
+      const res = await fetch(url, {
+        method: metodo,
+        headers: {
+          Authorization: token
+        },
+        body: formData
+      });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.erro || "Erro ao salvar");
+      return;
+    }
+
+    alert(
+      id
+        ? "✅ Cliente atualizado!"
+        : "✅ Cliente criado!"
+    );
+
+    window.location.href =
+      "listaClientes.html";
+
+    } catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor"
+      );
+
+  }
+
+}
+
+// ✅ LOAD (TUDO CENTRALIZADO)
+  window.addEventListener("load", () => {
+
+    // ✅ formatação documento
+    document.getElementById("documento").addEventListener("input", function(e){
+      const tipo = document.getElementById("tipoPessoa").value;
+      e.target.value = formatarDocumento(e.target.value, tipo);
+    });
+
+    // ✅ formatação CEP
+    document.getElementById("cep").addEventListener("input", function(e){
+
+      e.target.value =
+        formatarCep(e.target.value);
+    });
+
+    // ✅ formatação de telefone e celular
+    [
+      "telefone",
+      "celular",
+
+      "telefoneResponsavel1",
+      "telefoneResponsavel2",
+
+      "telefoneCompras",
+      "telefoneAreaTecnica",
+      "telefoneContasPagar",
+
+      "telEmpresa1",
+      "telEmpresa2",
+      "telEmpresa3"
+    ].forEach(id => {
+      const campo = document.getElementById(id);
+      if (!campo) return;
+      campo.addEventListener("input", function(e){
+        e.target.value =
+          formatarTelefone(e.target.value);
+      });
+    });
+
+
+
+    // ✅ mudança PF/PJ
+    document.getElementById("tipoPessoa").addEventListener("change", function(){
+      alterarTipoPessoa();
+      document.getElementById("documento").value = "";
+    });
+
+    if (id){
+      carregarCliente().then(() => {
+        if (modo === "visualizar"){
+          ativarModoVisualizacao();
+        }
+      });
+    } 
+    else {
+      const agora = new Date();
+      const ano = agora.getFullYear();
+      const mes = String(agora.getMonth() + 1).padStart(2, "0");
+      const dia = String(agora.getDate()).padStart(2, "0");
+      const hora = String(agora.getHours()).padStart(2, "0");
+      const minuto = String(agora.getMinutes()).padStart(2, "0");
+      document.getElementById("dataHora").value =
+        `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+
+      document.getElementById("cadastradoPor").value = usuario || "";
+    }
+  });
+
+
+  // Visualizar documentos
+  async function abrirAlvara(){
+    if(!id) return;
+    try{
+      const res = await fetch(
+        `/api/clientes/${id}/alvara`,
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      if(!res.ok){
+        alert("Erro ao abrir Alvará");
+        return;
+      }
+
+      const blob =
+        await res.blob();
+      const url =
+        window.URL.createObjectURL(blob);
+      window.open(url);
+    } catch(err){
+      console.error(err);
+      alert("Erro ao abrir Alvará");
+    }
+  }
+
+  async function abrirCartao(){
+  if(!id) return;
+  try{
+    const res = await fetch(
+      `/api/clientes/${id}/cartao`,
+      {
+        headers:{
+          Authorization: token
+        }
+      }
+    );
+
+    if(!res.ok){
+      alert("Erro ao abrir Cartão CNPJ");
+      return;
+    }
+
+    const blob =
+      await res.blob();
+    const url =
+      window.URL.createObjectURL(blob);
+    window.open(url);
+  } catch(err){
+    console.error(err);
+    alert("Erro ao abrir Cartão CNPJ");
+  }
+}
+
+
+
+  // ✅ LOGOUT
+  function logout(){
+    const confirmar = confirm("⚠️ Deseja realmente sair do sistema?");
+    if (!confirmar) return;
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "../../index.html";
+  }
+
+</script>
+
+</body>
+</html>
+
+
+
+

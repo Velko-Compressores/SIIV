@@ -1,0 +1,1241 @@
+<!-- public/producao/inspecoes/listaInspecao.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Lista de Inspeção</title>
+
+<style>
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Roboto,sans-serif;
+  }
+
+  body {
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:white;
+  }
+
+  /* HEADER */
+  .header {
+    background: #020617;
+    color: white;
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .left { justify-self: start; }
+  .center { justify-self: center; color: #cbd5f5; }
+  .right { justify-self: end; }
+  .logout { cursor: pointer; color: #ef4444; }
+
+
+  /* MAIN */
+  main {
+    flex: 1;
+    background: white;
+    padding: 30px;
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #0f172a;
+  }
+
+  h3{
+    margin:25px 0 10px;
+    color:#0f172a;
+  }  
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #020617;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+
+  tr:hover {
+    background: #f1f5f9;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+  }
+
+  td button{
+    margin:2px;
+    padding:6px 8px;
+    font-size:12px;
+
+    border:none;
+    border-radius:6px;
+  }
+
+  td button:hover {
+    opacity: 0.8;
+  }
+
+  td select{
+    width:100%;
+    padding:6px;
+    border:1px solid #cbd5e1;
+    border-radius:6px;
+    text-align:center;
+  }
+
+
+
+  .btn-os{
+    min-width:110px;
+    height:34px;
+    border:none;
+    border-radius:6px;
+    background:#98b6f8;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-os:hover{
+    background:#1d4ed8;
+  }
+
+  .btn-iniciar{
+    min-width:110px;
+    height:34px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#2563eb;  
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-iniciar:hover{
+    opacity:.9;
+  }
+
+
+  .btn-salvar{
+    background:#22c55e;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    min-width:110px;
+    height:34px;
+
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-salvar:hover{
+    opacity:.9;
+  }
+
+  .btn-finalizar{
+    min-width:110px;
+    height:34px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#22c55e;   
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  .btn-finalizar:hover{
+    opacity:.9;
+  }
+
+
+  .area-producao{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .area-cronometro{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .btn-pause{
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:none;
+    border-radius:6px;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:16px;
+    padding:0;
+    line-height:1;
+
+  }
+
+  .btn-pause:hover{
+    opacity:.9;
+  }
+
+  .cronometro{
+    font-size:16px;
+    font-weight:bold;
+    color:#2563eb;
+    background:#dbeafe;
+    padding:6px 10px;
+    border-radius:8px;
+  }
+
+  select:disabled{
+    border:none;
+    background:transparent;
+    color:#0f172a;
+    font-weight:bold;
+    cursor:default;
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    padding:0;
+  }
+
+  .tabela-container{
+    width:100%;
+    overflow-x:auto;
+  }
+
+
+
+  .footer-actions{
+    display:flex;
+    gap:10px;
+    padding:25px;
+    background:white;
+  }
+
+  .footer-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+
+  }
+
+  .footer-actions button:hover{
+    opacity:.9;
+  }
+
+
+
+  /* DESMONTAGEM */
+  .btn-desmontagem{
+    background:#2563eb;
+  }
+
+  /* FINALIZADOS */
+  .btn-finalizados{
+    background:#eab308;
+  }
+
+  /* APROVADOS */
+  .btn-aprovados{
+    background:#22c55e;
+  }
+
+  /* SEM CONSERTO */
+  .btn-sem-conserto{
+    background:#f97316;
+  }
+
+  /* NÃO APROVADOS */
+  .btn-nao-aprovados{
+    background:#ef4444;
+  }
+
+
+  .prioridade-urgente{
+    color: #e2e8f0;
+    background:#fecaca;
+    border-left:6px solid #dc2626;
+    font-weight:bold;
+    animation:piscarUrgente 1.5s infinite;
+  }
+
+
+  @keyframes piscarUrgente{
+    0%{
+      background:#fecaca;
+    }
+
+    50%{
+      background:#ef4444;
+    }
+
+    100%{
+      background:#fecaca;
+    }
+  }
+
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="left">
+    <h1 onclick="irHome()" style="cursor:pointer;">
+      S.I.I.V.
+    </h1>
+  </div>
+
+  <div class="center">
+    <span id="usuario"></span>
+  </div>
+
+  <div class="right">
+    <span class="logout" onclick="logout()">
+      SAIR ➜
+    </span>
+  </div>
+
+</header>
+
+<main>
+  <h2>FILA DE INSPEÇÃO</h2>
+  <!-- AGUARDANDO -->
+  <h3>🔍 AGUARDANDO</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>OS</th>
+        <th>CLIENTE</th>
+        <th>FABRICANTE</th>
+        <th>MODELO</th>
+        <th>TENSÃO</th>
+        <th>Nº SÉRIE</th>
+        <th>INSPECIONADOR</th>
+        <th>PRIORIDADE</th>
+        <th>AÇÕES</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaAguardando">
+    </tbody>
+  </table>
+
+
+  <!-- EM INSPEÇÃO -->
+  <h3>🛠️ EM PROCESSO</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>OS</th>
+        <th>CLIENTE</th>
+        <th>FABRICANTE</th>
+        <th>MODELO</th>
+        <th>TENSÃO</th>
+        <th>Nº SÉRIE</th>
+        <th>INSPECIONADOR</th>
+        <th>PRIORIDADE</th>
+        <th>AÇÕES</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaEmProcesso">
+    </tbody>
+  </table>
+</main>
+
+  <footer class="footer-actions">
+    <button
+      class="btn-desmontagem"
+      onclick="desmontagem()">
+      🔧 DESMONTAGEM
+    </button>
+
+    <button
+      class="btn-finalizados"
+      onclick="finalizados()">
+      🔔 FINALIZADOS
+    </button>
+
+    <button
+      class="btn-aprovados"
+      onclick="aprovados()">
+      ✅ APROVADOS
+    </button>
+
+    <button
+      class="btn-sem-conserto"
+      onclick="semConcerto()">
+      ⭕️ SEM CONSERTO
+    </button>
+
+    <button
+      class="btn-nao-aprovados"
+      onclick="naoAprovados()">
+      🚫 NÃO APROVADOS
+    </button>
+
+  </footer>
+
+
+<script>
+
+// AUTH
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "../../index.html";
+}
+
+const usuario =
+  localStorage.getItem("usuario");
+
+document.getElementById("usuario").textContent =
+  usuario ? `👋 Olá, ${usuario}` : "";
+
+let inspecoes = [];
+
+
+  // AUTH
+  async function carregar(){
+
+    try{
+
+      const response =
+        await fetch(
+          "/api/inspecoes",
+          {
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      if(!response.ok){
+
+        alert(
+          "Erro ao carregar inspeções."
+        );
+
+        return;
+      }
+
+      inspecoes =
+        await response.json();
+
+      render();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao carregar inspeções."
+      );
+
+    }
+
+  }
+
+
+  function render(){
+
+    const tabela =
+      document.getElementById(
+        "tabelaAguardando"
+      );
+
+    const tabelaEmProcesso =
+      document.getElementById(
+        "tabelaEmProcesso"
+      );
+
+
+    tabela.innerHTML = "";
+    tabelaEmProcesso.innerHTML = "";
+
+
+    const aguardando =
+      ordenarPrioridade(
+        inspecoes.filter(
+          item =>
+            item.status === "AGUARDANDO"
+        )
+      );
+
+    const emProcesso =
+      ordenarPrioridade(
+        inspecoes.filter(
+          item =>
+            item.status === "EM INSPEÇÃO"
+        )
+      );
+      
+
+      if(aguardando.length === 0){
+
+        tabela.innerHTML = `
+          <tr>
+            <td colspan="9">
+              Nenhuma OS aguardando inspeção.
+            </td>
+          </tr>
+        `;
+
+      }
+      else{
+
+        aguardando.forEach(item => {
+
+          const classeUrgente =
+            item.prioridade === "1º"
+              ? 'class="prioridade-urgente"'
+              : '';
+
+
+          tabela.innerHTML += `
+            <tr ${classeUrgente}>
+              <td>
+                <button
+                  class="btn-os"
+                  onclick="abrirOS(${item.recebimentoId})"
+                >
+                  ${item.numeroOS}
+                </button>
+              </td>
+
+              <td>
+                ${item.nomeFantasia || "-"}
+              </td>
+
+              <td>
+                ${item.fabricante || "-"}
+              </td>
+
+              <td>
+                ${item.modelo || "-"}
+              </td>
+
+              <td>
+                ${item.tensao || "-"}
+              </td>
+
+              <td>
+                ${item.numeroSerie || "-"}
+              </td>
+
+              <td>
+                <select
+                  id="inspecionador-${item.id}"
+                >
+                  <option
+                    value=""
+                    ${!item.inspecionador ? "selected" : ""}
+                  >
+                    Selecione
+                  </option>
+
+                  <option
+                    value="RENATO"
+                    ${item.inspecionador === "RENATO" ? "selected" : ""}
+                  >
+                    RENATO
+                  </option>
+
+                  <option
+                    value="WALLACE"
+                    ${item.inspecionador === "WALLACE" ? "selected" : ""}
+                  >
+                    WALLACE
+                  </option>
+
+                  <option
+                    value="ANDRE"
+                    ${item.inspecionador === "ANDRE" ? "selected" : ""}
+                  >
+                    ANDRE
+                  </option>
+
+                  <option
+                    value="DANIEL"
+                    ${item.inspecionador === "DANIEL" ? "selected" : ""}
+                  >
+                    DANIEL
+                  </option>
+
+                  <option
+                    value="LUCAS"
+                    ${item.inspecionador === "LUCAS" ? "selected" : ""}
+                  >
+                    LUCAS
+                  </option>
+                </select>
+              </td>
+
+              <td>
+                <select
+                  id="prioridade-${item.id}"
+                >
+                  <option
+                    value=""
+                    ${!item.prioridade ? "selected" : ""}
+                  >
+                    Selecione
+                  </option>
+
+                  <option
+                    value="1º"
+                    ${item.prioridade === "1º" ? "selected" : ""}
+                  >
+                    1º
+                  </option>
+
+                  <option
+                    value="2º"
+                    ${item.prioridade === "2º" ? "selected" : ""}
+                  >
+                    2º
+                  </option>
+
+                  <option
+                    value="3º"
+                    ${item.prioridade === "3º" ? "selected" : ""}
+                  >
+                    3º
+                  </option>
+
+                  <option
+                    value="4º"
+                    ${item.prioridade === "4º" ? "selected" : ""}
+                  >
+                    4º
+                  </option>
+
+                  <option
+                    value="5º"
+                    ${item.prioridade === "5º" ? "selected" : ""}
+                  >
+                    5º
+                  </option>
+                </select>
+              </td>
+
+              <td>
+                <button
+                  class="btn-salvar"
+                  onclick="salvarProgramacao(${item.id})"
+                >
+                  SALVAR 💾
+                </button>
+
+                <button
+                  class="btn-iniciar"
+                  onclick="iniciarInspecao(${item.recebimentoId})"
+                >
+                  INICIAR ▶️
+                </button>
+              </td>
+            </tr>
+          `;
+
+        });
+
+      }
+
+
+    emProcesso.forEach(item => {
+
+      const inicio =
+        new Date(item.dataHoraInicio);
+
+      let referenciaTempo;
+
+      if(
+        item.cronometroPausado &&
+        item.dataHoraPausa
+      ){
+        referenciaTempo =
+          new Date(item.dataHoraPausa);
+      }
+      else{
+        referenciaTempo =
+          new Date();
+      }
+
+      const diff =
+        (referenciaTempo - inicio) -
+        ((item.tempoPausadoTotal || 0) * 1000);
+
+      const horas =
+        Math.floor(diff / 1000 / 60 / 60);
+
+      const minutos =
+        Math.floor(
+          (diff / 1000 / 60) % 60
+        );
+
+      const segundos =
+        Math.floor(
+          (diff / 1000) % 60
+        );
+
+
+
+
+      tabelaEmProcesso.innerHTML += `
+        <tr>
+          
+          <td>
+            <button
+              class="btn-os"
+              onclick="abrirOS(${item.recebimentoId})"
+            >
+              ${item.numeroOS} 📄
+            </button>
+          </td>
+
+          <td>${item.nomeFantasia || "-"}</td>
+          <td>${item.fabricante || "-"}</td>
+          <td>${item.modelo || "-"}</td>
+          <td>${item.tensao || "-"}</td>
+          <td>${item.numeroSerie || "-"}</td>
+          <td>${item.inspecionador || "-"}</td>
+          <td>${item.prioridade || "-"}</td>
+
+          <td>
+            <div class="area-producao">
+              <button
+                class="btn-finalizar"
+                onclick="finalizarInspecao(${item.recebimentoId})"
+              >
+                FINALIZAR ✅
+              </button>
+
+              <div class="area-cronometro">
+
+              <button
+                type="button"
+                class="btn-pause"
+                onclick="toggleCronometro(${item.recebimentoId})"
+                id="btn-cronometro-${item.recebimentoId}"
+              >
+                ${
+                  item.cronometroPausado
+                    ? "▶️"
+                    : "⏸️"
+                }
+              </button>
+
+              <span
+                class="cronometro"
+                id="cronometro-${item.recebimentoId}"
+                data-inicio="${item.dataHoraInicio}"
+                data-pausado="${item.tempoPausadoTotal || 0}"
+              >
+                ⏱️ 
+                  ${String(horas).padStart(2,"0")}:
+                  ${String(minutos).padStart(2,"0")}:
+                  ${String(segundos).padStart(2,"0")}                
+              </span>
+              </div>
+            </div>
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+
+  }
+
+
+  async function iniciarInspecao(recebimentoId){
+
+    const item =
+      inspecoes.find(
+        i =>
+          i.recebimentoId ==
+          recebimentoId
+      );
+
+    if(!item.inspecionador){
+
+      alert(
+        "Salve o inspecionador antes de iniciar."
+      );
+
+      return;
+    }
+
+    if(!item.prioridade){
+
+      alert(
+        "Salve a prioridade antes de iniciar."
+      );
+
+      return;
+    }
+
+    try{
+
+      const response =
+        await fetch(
+          `/api/inspecoes/iniciar/${recebimentoId}`,
+          {
+            method:"PUT",
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      if(!response.ok){
+
+        alert(
+          "Erro ao iniciar inspeção."
+        );
+
+        return;
+      }
+
+      await carregar();
+
+      alert(
+        "✅ Inspeção iniciada com sucesso!"
+      );
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao iniciar inspeção."
+      );
+
+    }
+
+  }
+
+
+  async function salvarProgramacao(id){
+
+    const inspecionador =
+      document.getElementById(
+        `inspecionador-${id}`
+      ).value;
+
+    const prioridade =
+      document.getElementById(
+        `prioridade-${id}`
+      ).value;
+
+    try{
+
+      const response =
+        await fetch(
+          `/api/inspecoes/programacao/${id}`,
+          {
+            method:"PUT",
+            headers:{
+              "Content-Type":"application/json",
+              Authorization: token
+            },
+            body:JSON.stringify({
+
+              inspecionador,
+              prioridade
+
+            })
+          }
+        );
+
+      if(!response.ok){
+
+        alert(
+          "Erro ao salvar programação."
+        );
+
+        return;
+      }
+
+      await carregar();
+
+      alert(
+        "✅ Programação salva."
+      );
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao salvar programação."
+      );
+
+    }
+
+  }
+
+
+
+  // Funcao de Prioridade
+
+  function ordenarPrioridade(lista){
+    return lista.sort((a,b) => {
+      const prioridadeA =
+        parseInt(a.prioridade) || 99;
+      const prioridadeB =
+        parseInt(b.prioridade) || 99;
+      return prioridadeA - prioridadeB;
+    });
+  }
+
+  async function finalizarInspecao(recebimentoId){
+
+    const confirmar = confirm(
+      "✅ Deseja realmente finalizar esta inspeção?"
+    );
+
+    if(!confirmar){
+      return;
+    }
+
+    try{
+
+      const response =
+        await fetch(
+          `/api/inspecoes/finalizar/${recebimentoId}`,
+          {
+            method:"PUT",
+            headers:{
+              Authorization: token
+            }
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if(!response.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao finalizar inspeção."
+        );
+
+        return;
+      }
+
+      alert(
+        "✅ Inspeção finalizada com sucesso."
+      );
+
+      await carregar();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com o servidor."
+      );
+
+    }
+  }
+
+
+  async function toggleCronometro(recebimentoId){
+
+    const item =
+      inspecoes.find(
+        i => i.recebimentoId == recebimentoId
+      );
+
+    if(!item){
+      return;
+    }
+
+    try{
+
+      let response;
+
+      if(item.cronometroPausado){
+
+        response =
+          await fetch(
+            `/api/inspecoes/retomar/${recebimentoId}`,
+            {
+              method:"PUT",
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+
+      }else{
+
+        response =
+          await fetch(
+            `/api/inspecoes/pausar/${recebimentoId}`,
+            {
+              method:"PUT",
+              headers:{
+                Authorization: token
+              }
+            }
+          );
+
+      }
+
+      const data =
+        await response.json();
+
+      if(!response.ok){
+
+        alert(
+          data.erro ||
+          "Erro ao alterar cronômetro."
+        );
+
+        return;
+
+      }
+
+      await carregar();
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert(
+        "Erro ao comunicar com servidor."
+      );
+
+    }
+
+  }
+
+  function atualizarCronometros(){
+
+    const cronometros =
+      document.querySelectorAll(
+        "[id^='cronometro-']"
+      );
+
+    cronometros.forEach(el => {
+
+      const recebimentoId =
+        el.id.replace(
+          "cronometro-",
+          ""
+        );
+
+      const item =
+        inspecoes.find(
+          i =>
+            i.recebimentoId ==
+            recebimentoId
+        );
+
+      if(
+        item &&
+        item.cronometroPausado
+      ){
+
+        const inicio =
+          new Date(
+            item.dataHoraInicio
+          );
+
+        const pausa =
+          new Date(
+            item.dataHoraPausa
+          );
+
+        const segundosPausados =
+          item.tempoPausadoTotal || 0;
+
+        const diff =
+          (pausa - inicio) -
+          (segundosPausados * 1000);
+
+        const horas =
+          Math.floor(
+            diff / 1000 / 60 / 60
+          );
+
+        const minutos =
+          Math.floor(
+            (diff / 1000 / 60) % 60
+          );
+
+        const segundos =
+          Math.floor(
+            (diff / 1000) % 60
+          );
+
+        el.innerHTML = `
+          ⏱️
+          ${String(horas).padStart(2,"0")}:
+          ${String(minutos).padStart(2,"0")}:
+          ${String(segundos).padStart(2,"0")}
+        `;
+
+        return;
+      }
+
+      const inicio =
+        new Date(
+          el.dataset.inicio
+        );
+
+      const agora =
+        new Date();
+
+      const segundosPausados =
+        item?.tempoPausadoTotal || 0;
+
+      const diff =
+        (agora - inicio) -
+        (segundosPausados * 1000);
+
+      const horas =
+        Math.floor(
+          diff / 1000 / 60 / 60
+        );
+
+      const minutos =
+        Math.floor(
+          (diff / 1000 / 60) % 60
+        );
+
+      const segundos =
+        Math.floor(
+          (diff / 1000) % 60
+        );
+
+      el.innerHTML = `
+        ⏱️
+        ${String(horas).padStart(2,"0")}:
+        ${String(minutos).padStart(2,"0")}:
+        ${String(segundos).padStart(2,"0")}
+      `;
+
+    });
+
+  }
+
+
+
+
+  
+// NAVEGAÇÃO
+function irHome(){
+  window.location.href =
+    "../../home.html";
+}
+
+
+function abrirOS(id){
+  window.location.href =
+    `cadastroInspecao.html?id=${id}`;
+}
+
+
+function desmontagem(){
+  window.location.href = "../desmontagens/listaDesmontagem.html";
+}
+
+function finalizados(){
+  window.location.href =
+    "listaInspecionados.html";
+}
+
+function aprovados(){
+  alert("🚧 Tela em fase de desenvolvimento.");
+}
+
+function semConcerto(){
+  alert("🚧 Tela em fase de desenvolvimento.");
+}
+
+function naoAprovados(){
+  alert("🚧 Tela em fase de desenvolvimento.");
+}
+// LOGOUT
+
+function logout(){
+
+  const confirmar =
+    confirm("⚠️ Deseja realmente sair do sistema?");
+
+  if(!confirmar) return;
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("usuario");
+
+  window.location.href =
+    "../../index.html";
+}
+
+window.addEventListener(
+  "load",
+  async () => {
+
+    await carregar();
+
+    atualizarCronometros();
+
+    setInterval(
+      atualizarCronometros,
+      1000
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>

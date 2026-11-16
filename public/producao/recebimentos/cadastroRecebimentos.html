@@ -1,0 +1,1270 @@
+<!-- public/producao/recebimentos/cadastroRecebimentos.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Recebimento</title>
+
+<style>
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+  }
+
+  body{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background:white;
+  }
+
+  .header{
+    background:#020617;
+    color:white;
+    padding:15px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+  }
+
+  .left{justify-self:start;}
+  .center{justify-self:center;color:#cbd5f5;}
+  .right{justify-self:end;}
+
+  .logout{
+    cursor:pointer;
+    color:#ef4444;
+  }
+
+  main{
+      flex: 1;
+      background: white;
+      padding: 30px;
+  }
+
+  .card{
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    padding:15px;
+    background:#fff;
+    gap:15px;
+    margin-bottom:15px;
+  }
+
+  h2{
+    margin-top:5px;
+    margin-bottom:15px;
+    font-size:medium;
+    color:#0f172a;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+  }
+
+  .campo{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .full{
+    grid-column:span 1;
+  }
+
+  label{
+    font-size:12px;
+    color:#475569;
+  }
+
+
+  input,
+  select{
+    width:100%;
+    padding:15px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    font-size:12px;
+  }
+
+  input:focus,
+  select:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+  }
+
+
+  .fotos{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+    gap:8px;
+    padding:10px;
+  }
+
+  .foto{
+    position:relative;
+    aspect-ratio:1 / 1;
+    /* max-width:150px; */
+  }
+
+  .foto img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:12px;
+    display:none;
+
+    position:absolute;
+    top:0;
+    left:0;
+  }
+
+
+  .foto input[type="file"]{
+    display:none;
+  }
+
+  .upload-box{
+    border:2px dashed #cbd5e1;
+    border-radius:12px;
+    background:#f8fafc;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.2s;
+    text-align:center;
+    padding:10px;
+  }
+
+  .upload-box:hover{
+    background:#eff6ff;
+    border-color:#3b82f6;
+  }
+
+  .upload-box .icone{
+    font-size:28px;
+    margin-bottom:5px;
+  }
+
+  .upload-box .texto{
+    font-size:12px;
+    color:#475569;
+  }
+
+  .upload-box .subtexto{
+    font-size:10px;
+    color:#94a3b8;
+    margin-top:4px;
+  }
+
+  .btn-remover{
+    position:absolute;
+    top:5px;
+    right:5px;
+
+    width:24px;
+    height:24px;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:0;
+
+    border:none;
+    border-radius:50%;
+
+    background:#ef4444;
+    color:#fff;
+
+    font-size:14px;
+    font-weight:bold;
+    line-height:1;
+
+    cursor:pointer;
+    z-index:10;
+  }
+
+  .btn-remover:hover{
+    background:#dc2626;
+  }
+
+  /* Modal para visualizar foto ampliada */
+  .modal-foto{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.9);
+
+    justify-content:center;
+    align-items:center;
+ 
+    z-index:9999;
+  }
+
+  .modal-foto img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(255,255,255,.2);
+    cursor:zoom-out;
+  }
+
+  .modal-foto.ativo{
+    display:flex;
+  }
+
+
+  .btn-fechar-modal{
+    position:absolute;
+    top:20px;
+    right:20px;
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#ef4444;
+    color:#fff;
+
+    font-size:22px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:10000;
+  }
+
+  .btn-fechar-modal:hover{
+    background:#dc2626;
+  }
+
+
+  button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .salvar{
+    background:#22c55e;
+    color:white;
+  }
+
+  .salvar:hover{
+    background:#16a34a;
+  }
+
+  .voltar {
+    background: #334155;
+    color: white;
+  }
+
+  .voltar:hover {
+    background: #475569;
+  }
+
+  /* Pesquisar clientes */
+  #listaClientes{
+    position: relative;
+    width: 100%;
+  }
+
+  .itemCliente{
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-top: none;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .itemCliente:hover{
+    background: #f1f5f9;
+  }
+
+
+
+  .cadastrar-cliente{
+    color:#2563eb;
+    font-weight:600;
+  }
+
+  .cadastrar-cliente:hover{
+    background:#dbeafe;
+  }
+
+
+  .footer-actions{
+    display: flex;
+    gap: 10px;
+    padding: 25px;
+    background: white;
+  }
+
+
+</style>
+
+</head>
+
+<body>
+
+  <header class="header">
+
+    <div class="left">
+      <h1 onclick="irHome()" style="cursor:pointer;">
+        S.I.I.V.
+      </h1>
+    </div>
+
+    <div class="center">
+      <span id="usuario"></span>
+    </div>
+
+    <div class="right">
+      <span class="logout" onclick="logout()"> SAIR ➜] </span>
+    </div>
+
+  </header>
+
+  <main class="main">
+
+      <!-- INFORMAÇÕES -->  
+      <section class="card">
+        <h2> INFORMAÇÕES </h2>
+        <div class="grid">
+
+          <div class="campo">
+            <label> ORDEM SERVOÇO Nº </label>
+            <input id="numeroOS" readonly>
+          </div>
+
+          <div class="campo">
+            <label>GARANTIA</label>
+            <input id="garantia" placeholder="N° OS ANTERIOR">
+          </div>
+
+          <div class="campo">
+            <label>NOTA FISCAL</label>
+            <input id="notaFiscal" placeholder="N° NOTA FISCAL">
+          </div>
+
+          <div class="campo">
+            <label>TRANSPORTE</label>
+            <select id="transporte">
+              <option value="">SELECIONAR</option>
+              <option value="cliente">CLIENTE</option>
+              <option value="velko">VELKO</option>
+              <option value="terceirizado">TERCEIRIZADO</option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CLIENTE -->
+      <section class="card">
+        <h2>DADOS CLIENTES</h2>
+        <div class="grid">
+
+          <div class="campo full">
+            <label>CLIENTE</label>
+            <input
+              id="cliente" placeholder="INFORMA O NOME DO CLIENTE">
+            <div id="listaClientes"></div>
+          </div>
+          <input type="hidden" id="clienteId">
+
+          <div class="campo full">
+            <label>NOME DO ESTABELECIMENTO</label>
+            <input id="nomeCliente" readonly 
+            placeholder="NOME DO ESTABELECIMENTO">
+          </div>
+
+          <div class="campo">
+            <label>CNPJ / CPF</label>
+            <input id="documento" readonly
+            placeholder="CNPJ/CPF DO CLIENTE">      
+
+        </div>
+      </section>
+
+      <!-- SOLICITANTE -->
+      <section class="card">
+        <h2>SOLICITANTE</h2>
+        <div class="grid">
+
+          <div class="campo">
+            <label>NOME DO SOLICITANTE</label>
+            <input id="nomeSolicitante" placeholder="NOME DO SOLICITANTE">
+          </div>
+
+          <div class="campo">
+            <label>TELEFONE</label>
+            <input id="telefoneSolicitante" placeholder="TELEFONE DO SOLICITANTE">
+          </div>
+
+          <div class="campo">
+            <label>E-MAIL</label>
+            <input id="emailSolicitante" placeholder="E-MAIL DO SOLICITANTE">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- EQUIPAMENTO -->
+      <section class="card">
+        <h2>EQUIPAMENTO</h2>
+
+        <div class="grid">
+          <div class="campo">
+            <label>FABRICANTE</label>
+            <select id="fabricante">
+              <option value="">SELECIONAR</option>
+              <option value="bitzer">BITZER</option>
+              <option value="bock">BOCK</option>
+              <option value="carrier">CARRIER</option>
+              <option value="copeland">COPERLAND</option>
+              <option value="dorin">DORIN</option>
+              <option value="mycom">MYCOM</option>
+              <option value="york">YORK</option>
+              <option value="trane">TRANE</option>
+              <option value="hitachi">HITACHI</option>
+              <option value="frascold">FRASCOLD</option>
+              <option value="refcomp">REFCOMP</option>
+              <option value="jehall">JEHALL</option>
+              <option value="daikin">DAIKIN</option>
+              <option value="sabroe">SABROE</option>
+              <option value="hanbell">HANBELL</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>MODELO</label>
+            <input id="modelo" placeholder="MODELO DO EQUIPAMENTO">
+          </div>
+
+          <div class="campo">
+            <label>TENSÃO</label>
+            <select id="tensao">
+              <option value="">SELECIONAR</option>
+              <option value="220">220V</option>
+              <option value="380">380V</option>
+              <option value="440">440V</option>
+              <option value="690">690V</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>NÚMERO DE SÉRIE</label>
+            <input id="numeroSerie" placeholder="N° SÉRIE DO EQUIPAMENTO">
+          </div>
+
+          <div class="campo">
+            <label>TIPO</label>
+            <select id="tipo">
+              <option value="">SELECIONAR</option>
+              <option value="pistao">PISTÃO</option>
+              <option value="parafuso">PARAFUSO</option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FOTOS -->
+      <section class="card">
+        <h2>FOTOS DO EQUIPAMENTO</h2>
+        <div class="fotos">
+
+          <!-- Foto 1 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto1','img1',this)">
+              ✖
+            </button>
+            <label for="foto1" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 1</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto1"
+              name="foto1"
+              onchange="preview(this,'img1')">
+            <img id="img1">
+          </div>
+
+          <!-- Foto 2 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto2','img2',this)">
+              ✖
+            </button>
+            <label for="foto2" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 2</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto2"
+              name="foto2"
+              onchange="preview(this,'img2')">
+            <img id="img2">
+          </div>
+
+          <!-- Foto 3 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto3','img3',this)">
+              ✖
+            </button>
+            <label for="foto3" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 3</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto3"
+              name="foto3"
+              onchange="preview(this,'img3')">
+            <img id="img3">
+          </div>
+
+          <!-- Foto 4 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto4','img4',this)">
+              ✖
+            </button>
+            <label for="foto4" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 4</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto4"
+              name="foto4"
+              onchange="preview(this,'img4')">
+            <img id="img4">
+          </div>
+
+          <!-- Foto 5 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto5','img5',this)">
+              ✖
+            </button>
+            <label for="foto5" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 5</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto5"
+              name="foto5"
+              onchange="preview(this,'img5')">
+            <img id="img5">
+          </div>
+
+          <!-- Foto 6 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto6','img6',this)">
+              ✖
+            </button>
+            <label for="foto6" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 6</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto6"
+              name="foto6"
+              onchange="preview(this,'img6')">
+            <img id="img6">
+          </div>
+
+          <!-- Foto 7 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto7','img7',this)">
+              ✖
+            </button>
+            <label for="foto7" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 7</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto7"
+              name="foto7"
+              onchange="preview(this,'img7')">
+            <img id="img7">
+          </div>
+
+          <!-- Foto 8 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto8','img8',this)">
+              ✖
+            </button>
+            <label for="foto8" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 8</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto8"
+              name="foto8"
+              onchange="preview(this,'img8')">
+            <img id="img8">
+          </div>
+
+          <!-- Foto 9 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto9','img9',this)">
+              ✖
+            </button>
+            <label for="foto9" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 9</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto9"
+              name="foto9"
+              onchange="preview(this,'img9')">
+            <img id="img9">
+          </div>
+
+          <!-- Foto 10 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto10','img10',this)">
+              ✖
+            </button>
+            <label for="foto10" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 10</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto10"
+              name="foto10"
+              onchange="preview(this,'img10')">
+            <img id="img10">
+          </div>
+
+          <!-- Foto 11 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto11','img11',this)">
+              ✖
+            </button>
+            <label for="foto11" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 11</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto11"
+              name="foto11"
+              onchange="preview(this,'img11')">
+            <img id="img11">
+          </div>
+
+          <!-- Foto 12 -->
+          <div class="foto">
+            <button
+              type="button"
+              class="btn-remover"
+              onclick="removerFoto('foto12','img12',this)">
+              ✖
+            </button>
+            <label for="foto12" class="upload-box">
+              <div class="icone">📷</div>
+              <div class="texto">Foto 12</div>
+              <div class="subtexto">Clique para selecionar</div>
+            </label>
+            <input
+              type="file"
+              id="foto12"
+              name="foto12"
+              onchange="preview(this,'img12')">
+            <img id="img12">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CONTROLE -->
+      <section class="card">
+        <h2>CONTROLE</h2>
+        <div class="grid">
+
+          <!-- Preenchido automaticamente ao abrir o cadastro -->
+          <div class="campo">
+            <label>DATA HORA DO RECEBIMENTO</label>
+            <input id="dataHoraRecebimento" type="datetime-local" readonly >
+          </div>
+
+          <!-- Preenchido automaticamente ao salvar -->          
+          <div class="campo">
+            <label>DATA HORA DA LIBERAÇÃO</label>
+            <input id="dataHoraLiberacao" type="text" value="LIBERAÇÃO PENDENTE" readonly>
+          </div>
+
+          <div class="campo">
+            <label>RECEBIDO POR</label>
+            <input id="recebidoPor" readonly>
+          </div>
+
+          <div class="campo">
+            <label>LIBERADO POR</label>
+            <input id="liberadoPor" placeholder="NOME DE QUEM LIBEROU O SERVIÇO">
+          </div>
+
+        </div>
+      </section>
+
+    <!-- Modal para visualizar foto ampliada -->
+    <div id="modalFoto" class="modal-foto" onclick="fecharModalFoto()">
+      <button
+        type="button"
+        class="btn-fechar-modal"
+        onclick="event.stopPropagation(); fecharModalFoto();">
+        ✖
+      </button>
+      <img
+        id="imagemModal"
+        onclick="event.stopPropagation()">
+    </div>
+  </main>
+
+  <footer class="footer-actions">
+    <button class="voltar" onclick="voltar()">⬅ VOLTAR</button>
+    <button class="salvar" onclick="salvar()">💾 SALVAR</button>
+  </footer>
+
+<script>
+ 
+// =========AUTENTICAÇÃO=======================
+
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+
+  if(!token){ 
+    location.href = "../../index.html";
+  }
+
+  document.getElementById("usuario").textContent =
+    usuario ? `👋 Olá, ${usuario}` : "";
+
+  function logout(){
+    const confirmar =
+      confirm("Deseja sair do sistema?");
+    if(!confirmar) return;
+    
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    location.href = "../../index.html";
+  }
+
+// ============NAVEGAÇÃO===================
+
+  function voltar(){
+    location.href = "recebimentos.html";
+  }
+
+  function irHome(){
+    location.href = "../../home.html";
+  }
+
+// ============FOTOS=====================
+
+// Exibe a pré-visualização da foto selecionada
+// e oculta a caixa de upload
+  function preview(input,id){
+    if(!input.files.length) return;
+    const img = document.getElementById(id);
+    img.src = URL.createObjectURL(input.files[0]);
+    img.onclick = () => {
+      ampliarFoto(img.src);
+    };
+
+    img.style.display = "block";
+    const uploadBox = input.parentElement.querySelector(".upload-box");
+    uploadBox.style.display = "none";
+    const btnExcluir = input.parentElement.querySelector(".btn-remover");
+
+    if(btnExcluir){
+      btnExcluir.style.display = "flex";
+    }
+  }
+
+  // Função para remover foto
+  function removerFoto(inputId, imgId, botao){
+    const input =
+      document.getElementById(inputId);
+    const img =
+      document.getElementById(imgId);
+    input.value = "";
+    img.src = "";
+    img.style.display = "none";
+    const uploadBox =
+      input.parentElement.querySelector(".upload-box");
+    uploadBox.style.display = "flex";
+    botao.style.display = "none";
+  }
+
+  // Funcao no modal para visualizar foto ampliada
+  function ampliarFoto(src){
+    const modal = document.getElementById("modalFoto");
+    const imagem = document.getElementById("imagemModal");
+    imagem.src = src;
+    modal.classList.add("ativo");
+  }
+
+  // Funcao para Fechar foto modal
+  function fecharModalFoto(){
+    document
+      .getElementById("modalFoto")
+      .classList.remove("ativo");
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape"){
+      fecharModalFoto();
+    }
+  });
+
+// ===========CLIENTES=================
+
+  // Funcao para buscar clientes cadastrados no banco
+  async function buscarClientes(){
+
+    const termo =
+      document.getElementById("cliente")
+      .value
+      .trim()
+      .toLowerCase();
+
+    const lista =
+      document.getElementById("listaClientes");
+
+    lista.innerHTML = "";
+
+    if(termo.length < 2){
+      return;
+    }
+
+    try{
+
+      const res = await fetch(
+        "/api/clientes",
+        {
+          headers:{
+            Authorization: token
+          }
+        }
+      );
+
+      if(!res.ok){
+        return;
+      }
+
+      const clientes = await res.json();
+
+      const encontrados =
+        clientes.filter(cliente => {
+
+          const nomePF =
+            (cliente.nomePF || "")
+            .toLowerCase();
+
+          const nomeFantasia =
+            (cliente.nomeFantasia || "")
+            .toLowerCase();
+
+          const razaoSocial =
+            (cliente.razaoSocial || "")
+            .toLowerCase();
+
+          return (
+            nomePF.includes(termo) ||
+            nomeFantasia.includes(termo) ||
+            razaoSocial.includes(termo)
+          );
+
+        });
+
+        // Nova função para cadastrar um novo cliente
+        if(encontrados.length === 0){
+
+          lista.innerHTML = `
+            <div class="itemCliente">
+              Cliente não encontrado
+            </div>
+
+            <div
+              class="itemCliente cadastrar-cliente"
+              onclick="novoCliente()">
+
+              ➕ Cadastrar cliente
+
+            </div>
+          `;
+
+          return;
+        }
+
+
+      encontrados.forEach(cliente => {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "itemCliente";
+
+        item.textContent =
+          cliente.nomePF ||
+          cliente.nomeFantasia ||
+          cliente.razaoSocial ||
+          "";
+
+        item.onclick = () =>
+          selecionarCliente(cliente);
+
+        lista.appendChild(item);
+      });
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
+
+  // Funcao para selecionar clientes cadastrados no banco
+  function selecionarCliente(cliente){
+    document.getElementById(
+      "clienteId"
+    ).value =
+      cliente.id;
+
+    document.getElementById(
+      "cliente"
+    ).value =
+      cliente.nomePF ||
+      cliente.nomeFantasia ||
+      cliente.razaoSocial ||
+      "";
+
+    document.getElementById(
+      "documento"
+    ).value =
+      cliente.documento || "";
+
+    document.getElementById(
+      "nomeCliente"
+    ).value =
+      cliente.razaoSocial ||
+      cliente.nomeFantasia ||
+      cliente.nomePF ||
+      "";
+
+    document.getElementById(
+      "nomeSolicitante"
+    ).value =
+      cliente.responsavel1 || "";
+
+    document.getElementById(
+      "telefoneSolicitante"
+    ).value =
+      cliente.telefoneResponsavel1 || "";
+
+    document.getElementById(
+      "emailSolicitante"
+    ).value =
+      cliente.emailResponsavel1 || "";
+
+
+    document.getElementById(
+      "listaClientes"
+    ).innerHTML = "";
+
+  }
+
+
+  function novoCliente(){
+    location.href = "preCadastroClientes.html";
+  }
+
+// ===========DATA E HORA========================
+
+  function obterDataHoraAtual(){
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(
+        agora.getMonth() + 1
+      ).padStart(2,"0");
+    const dia = String(
+        agora.getDate()
+      ).padStart(2,"0");
+    const hora = String(
+        agora.getHours()
+      ).padStart(2,"0");
+    const minuto =  String(
+        agora.getMinutes()
+      ).padStart(2,"0");
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+  }
+  
+// ===========INICIALIZAÇÃO=====================
+
+    window.onload = () => {
+      // Data atual
+      document.getElementById(
+        "dataHoraRecebimento"
+      ).value = obterDataHoraAtual();
+
+      // Usuário logado
+      document.getElementById(
+        "recebidoPor"
+      ).value = usuario || "";
+
+      // OS será gerada pelo backend
+      document.getElementById(
+        "numeroOS"
+      ).value = "OS-PENDENTE";
+
+      // Ativa pesquisa de clientes
+      document
+        .getElementById("cliente")
+        .addEventListener(
+          "input",
+          buscarClientes
+        );
+    };
+
+// ==================SALVAMENTO=============
+
+  // function salvar
+  async function salvar(){
+
+    document.getElementById(
+      "dataHoraLiberacao"
+    ).value =
+      obterDataHoraAtual();
+
+    const formData = new FormData();
+
+    // Obriga o usuário a selecionar um cliente
+    const clienteId = document.getElementById("clienteId").value;
+    if(!clienteId){
+      alert("Selecione um cliente.");
+      return;
+    };
+
+    formData.append(
+      "clienteId",
+      clienteId
+    );
+
+    formData.append(
+      "nomeFantasia",
+      document.getElementById("cliente").value
+    );
+
+    formData.append(
+      "razaoSocial",
+      document.getElementById("nomeCliente").value
+    );
+
+    formData.append(
+      "documento",
+      document.getElementById("documento").value
+    );
+
+
+    formData.append(
+      "garantia",
+      document.getElementById("garantia").value
+    );
+
+    formData.append(
+      "notaFiscal",
+      document.getElementById("notaFiscal").value
+    );
+
+    formData.append(
+      "transporte",
+      document.getElementById("transporte").value
+    );
+
+    formData.append(
+      "nomeSolicitante",
+      document.getElementById("nomeSolicitante").value
+    );
+
+    formData.append(
+      "telefoneSolicitante",
+      document.getElementById("telefoneSolicitante").value
+    );
+
+    formData.append(
+      "emailSolicitante",
+      document.getElementById("emailSolicitante").value
+    );
+
+    formData.append(
+      "fabricante",
+      document.getElementById("fabricante").value
+    );
+
+    formData.append(
+      "tipo",
+      document.getElementById("tipo").value
+    );
+
+    formData.append(
+      "modelo",
+      document.getElementById("modelo").value
+    );
+
+    formData.append(
+      "tensao",
+      document.getElementById("tensao").value
+    );
+
+    formData.append(
+      "numeroSerie",
+      document.getElementById("numeroSerie").value
+    );
+
+
+    formData.append(
+      "recebidoPor",
+      document.getElementById("recebidoPor").value
+    );
+
+    formData.append(
+      "dataHoraRecebimento",
+      document.getElementById(
+        "dataHoraRecebimento"
+      ).value
+    );
+
+    formData.append(
+      "dataHoraLiberacao",
+      document.getElementById(
+        "dataHoraLiberacao"
+      ).value
+    );
+
+    formData.append(
+      "liberadoPor",
+      document.getElementById("liberadoPor").value
+    );
+
+    // Fotos
+    for(let i = 1; i <= 12; i++){
+      const foto = document.getElementById(`foto${i}`);
+
+      if(foto.files.length){
+        formData.append(
+          `foto${i}`,
+          foto.files[0]
+        );
+      }
+    } 
+
+    try{
+      const res = await fetch(
+        "/api/recebimentos",
+        {
+          method: "POST",
+          headers:{
+            Authorization: token
+          },
+          body: formData
+        }
+      );
+
+      const data = await res.json();
+      if(!res.ok){
+        alert(data.erro || "Erro ao salvar");
+        return;
+      }
+      alert(`✅ Recebimento salvo!\nNúmero da OS: ${data.numeroOS}`);
+
+      window.location.href =
+        "listaRecebimentos.html";
+    }
+    catch(err){
+      console.error(err);
+      alert(  "Erro ao comunicar com servidor" );
+    }
+
+  }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,929 @@
+<!-- public/producao/inspecoes/visualizarRelatorioInspecao.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Visualização de Relatorio</title>
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:"Segoe UI", sans-serif;
+    }
+
+    body{
+        background:#fff;
+        color:#000;
+        padding:10px;
+    }
+
+    #btnFecharRelatorio{
+        position:fixed;
+        top:15px;
+        right:15px;
+        width:50px;
+        height:50px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        border:none;
+        border-radius:50%;
+        background:#ef4444;
+        color:white;
+        font-size:22px;
+        font-weight:bold;
+        line-height:1;
+        cursor:pointer;
+        z-index:9999;
+        box-shadow:0 4px 12px rgba(0,0,0,.25);
+    }
+
+    #btnFecharRelatorio:hover{
+        background:#dc2626;
+    }
+
+  .titulo-bloco{
+    margin-top:5px;
+    margin-bottom:20px;
+    font-size:24px;
+    font-weight:700;
+    color:#0f172a;
+    text-align:center;
+  }
+
+
+    .blocoRelatorio{
+        background:#fff;
+        border:1px solid #dbe2ea;
+        border-radius:10px;
+        padding:20px;
+        margin-bottom:20px;
+    }
+
+
+
+    .linha-equipamento{
+        display:grid;
+        grid-template-columns:repeat(12,1fr);
+        gap:5px;
+        padding-top:15px;
+    }
+
+    .campo{
+        border:1px solid #cbd5e1;
+        border-radius:10px;
+        padding:8px 12px;
+        display:flex;
+        flex-direction:column;
+    }
+
+    .campo strong{
+        font-size:13px;
+        color:#0f172a;
+        margin-bottom:2px;
+    }
+
+    .campo span{
+        color:#64748b;
+        font-size:16px;
+        font-weight:600;
+        line-height:1.2;
+    }
+
+    .os{ grid-column:span 2; }
+    .cliente{ grid-column:span 10; }
+
+    .fabricante{ grid-column:span 3; }
+    .modelo{ grid-column:span 3; }
+    .tipo{ grid-column:span 2; }
+    .tensao{ grid-column:span 2; }
+    .serie{ grid-column:span 2; }
+
+    .desmontador,
+    .liberado,
+    .liberacao{
+        grid-column:span 4;
+    }
+
+    .inicio,
+    .fim,
+    .total,
+    .parado{
+        grid-column:span 3;
+    }
+
+
+
+
+
+
+
+    /* =====================================================
+    FOTOS RECEBIMENTO
+    ===================================================== */
+
+
+    .fotosRecebimentoRelatorio{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:150px;
+    }
+
+    .itemFotoRecebimento{
+       width:13cm;
+    }
+
+    .itemFotoRecebimento img{
+        width:13cm;
+        height:9cm;
+        object-fit:cover;
+        border-radius:12px;
+        border:1px solid #cbd5e1;
+    }
+
+    .observacaoFoto{
+        margin-top:8px;
+        font-size:12px;
+        line-height:1.4;
+        text-align:left;
+    }
+
+
+    /* =====================================================
+    FOTOS DESMONTAGEM
+    ===================================================== */
+
+    .fotosDesmontagemRelatorio{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:150px;
+    }
+
+
+    .itemFotoDesmontagem{
+        width:13cm;
+    }
+
+    .itemFotoDesmontagem img{
+        width:13cm;
+        height:9cm;
+        object-fit:cover;
+        border-radius:12px;
+        border:1px solid #cbd5e1;
+    }
+
+    .observacaoDesmontagem{
+        margin-top:8px;
+        font-size:12px;
+        line-height:1.4;
+        text-align:left;
+    }
+
+
+
+
+    .itemFotoRecebimento,
+    .itemFotoDesmontagem{
+        position:relative;
+    }
+
+    .numero-foto{
+        position:absolute;
+        top:10px;
+        right:10px;
+        background:#f58220;
+        color:white;
+        padding:6px 10px;
+        border-radius:6px;
+        font-size:14px;
+        font-weight:700;
+        z-index:100;
+    }
+
+
+    /* =====================================================
+    PROBLEMAS / CAUSAS / RECOMENDAÇÕES
+    ===================================================== */
+
+    .problemasEncontradosRelatorio{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:10px;
+    }
+
+    .itemProblema{
+        display:flex;
+        align-items:center;
+        gap:5px;
+        padding:5px;
+        border-radius:8px;
+    }
+
+
+    .textoProblema{
+        line-height:1.4;
+    }
+
+    .checkProblema{
+        width:18px;
+        min-width:18px;
+        color:#22c55e;
+        font-weight:bold;
+    }
+
+    .subtituloProblema{
+        margin-top:10px;
+        margin-bottom:15px;
+        font-size:16px;
+        font-weight:700;
+        color:#0f172a;
+        border-bottom:1px solid #e2e8f0;
+        padding-bottom:5px;
+    }
+
+
+
+    /* =====================================================
+    OBSERVAÇÕES GERAIS
+    ===================================================== */
+
+    .observacoesGeraisRelatorio{
+        padding:15px;
+        font-size:13px;
+        line-height:1.6;
+        text-align:justify;
+        white-space:pre-wrap;
+        min-height:80px;
+    }
+
+
+
+    @media(max-width:900px){
+        .problemasEncontradosRelatorio{
+            grid-template-columns:repeat(2,1fr);
+        }
+    }
+
+    @media(max-width:600px){
+        .problemasEncontradosRelatorio{
+            grid-template-columns:1fr;
+        }
+    }
+
+</style>
+
+</head>
+
+<body>
+
+
+<button
+    id="btnFecharRelatorio"
+    onclick="fecharRelatorio()"
+    title="Fechar Visualização">
+    ✕
+</button>
+
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            RELATÓRIO DE INSPEÇÃO DE COMPRESSOR SEMI-HERMÉTICO
+        </h2>
+
+        <div class="linha-equipamento">
+
+            <div class="campo os">
+                <strong>OS:</strong>
+                <span id="numeroOS">-</span>
+            </div>
+
+            <div class="campo cliente">
+                <strong>CLIENTE:</strong>
+                <span id="cliente">-</span>
+            </div>
+
+            <div class="campo fabricante">
+                <strong>FABRICANTE:</strong>
+                <span id="fabricante">-</span>
+            </div>
+
+            <div class="campo modelo">
+                <strong>MODELO:</strong>
+                <span id="modelo">-</span>
+            </div>
+
+            <div class="campo tipo">
+                <strong>TIPO:</strong>
+                <span id="tipo">-</span>
+            </div>
+
+            <div class="campo tensao">
+                <strong>TENSÃO:</strong>
+                <span id="tensao">-</span>
+            </div>
+
+            <div class="campo serie">
+                <strong>Nº SÉRIE:</strong>
+                <span id="numeroSerie">-</span>
+            </div>
+
+            <div class="campo desmontador">
+                <strong>INSPECIONADOR:</strong>
+                <span id="inspecionador">-</span>
+            </div>
+
+            <div class="campo liberado">
+                <strong>LIBERADO POR:</strong>
+                <span id="liberadoPor">-</span>
+            </div>
+
+            <div class="campo liberacao">
+                <strong>DATA LIBERAÇÃO:</strong>
+                <span id="dataLiberacao">-</span>
+            </div>
+
+            <div class="campo inicio">
+                <strong>INÍCIO:</strong>
+                <span id="dataHoraInicio">-</span>
+            </div>
+
+            <div class="campo fim">
+                <strong>FIM:</strong>
+                <span id="dataHoraFim">-</span>
+            </div>
+
+            <div class="campo total">
+                <strong>TEMPO TOTAL:</strong>
+                <span id="tempoTotal">-</span>
+            </div>
+
+            <div class="campo parado">
+                <strong>PAUSAS:</strong>
+                <span id="tempoParado">-</span>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            FOTOS DO RECEBIMENTO DO COMPRESSOR
+        </h2>
+        <div
+            id="fotosRecebimentoRelatorio"
+            class="fotosRecebimentoRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">    
+        <h2 class="titulo-bloco">
+            FOTOS DA DESMONTAGEM DO COMPRESSOR
+        </h2>
+        <div
+            id="fotosDesmontagemRelatorio"
+            class="fotosDesmontagemRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            PRINCIPAIS PROBLEMAS ENCONTRADOS
+        </h2>
+        <div
+            id="problemasEncontradosRelatorio"
+            class="problemasEncontradosRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            POSSÍVEIS CAUSAS DOS PROBLEMAS | MECÂNICOS
+        </h2>
+
+        <div
+            id="causasMecanicasRelatorio"
+            class="problemasEncontradosRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            POSSÍVEIS CAUSAS DOS PROBLEMAS | ELÉTRICOS
+        </h2>
+
+        <div
+            id="causasEletricasRelatorio"
+            class="problemasEncontradosRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            RECOMENDAÇÕES IMPORTANTES PARA INSTALAÇÃO DO COMPRESSOR
+        </h2>
+        <div
+            id="recomendacoesRelatorio"
+            class="problemasEncontradosRelatorio">
+        </div>
+    </section>
+
+    <section class="blocoRelatorio">
+        <h2 class="titulo-bloco">
+            OBSERVAÇÕES GERAIS
+        </h2>
+        <div
+            id="observacoesGeraisRelatorio"
+            class="observacoesGeraisRelatorio">
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+    const params = new URLSearchParams(
+            window.location.search
+        );
+    const id = params.get("id");
+    const token =  localStorage.getItem("token");
+
+    function formatarDataHora(data){
+        if(!data){
+            return "-";
+        }
+
+        return new Date(data)
+            .toLocaleString("pt-BR");
+    }
+
+    function formatarDuracao(segundos){
+
+        segundos = Number(segundos || 0);
+
+        const horas =
+            Math.floor(segundos / 3600);
+
+        const minutos =
+            Math.floor(
+                (segundos % 3600) / 60
+            );
+
+        const segundosRestantes =
+            segundos % 60;
+
+        return `${horas}h ${minutos}m ${segundosRestantes}s`;
+    }
+
+
+    async function carregarFotosRecebimento(inspecao){
+        const container =
+            document.getElementById(
+                "fotosRecebimentoRelatorio"
+            );
+
+        const selecionadas =
+            inspecao.fotosRecebimentoSelecionadas
+                ? inspecao.fotosRecebimentoSelecionadas.split(",")
+                : [];
+
+        for(const numero of selecionadas){
+            try{
+                const resposta =
+                    await fetch(
+                        `/api/inspecoes/${id}/foto${numero}`,
+                        {
+                            headers:{
+                                Authorization:token
+                            }
+                        }
+                    );
+
+                if(!resposta.ok){
+                    continue;
+                }
+
+                const blob = await resposta.blob();
+                const fotoURL = URL.createObjectURL(blob);
+                const observacao = inspecao[
+                        `comentarioRecebimento${numero}`
+                    ] || "";
+
+                const card = document.createElement("div");
+                card.className = "itemFotoRecebimento";
+                card.innerHTML =
+                    `
+                    <div class="numero-foto">
+                        FOTO ${numero}
+                    </div>
+
+                    <img src="${fotoURL}">
+
+                    <div class="observacaoFoto">
+                        ${observacao}
+                    </div>
+                    `;
+                container.appendChild(card);
+            }
+            catch(err){
+                console.error(
+                    "Erro ao carregar foto:",
+                    numero,
+                    err
+                );
+            }
+        }
+    }
+
+    async function carregarFotosDesmontagem(inspecao){
+        const container =
+            document.getElementById(
+                "fotosDesmontagemRelatorio"
+            );
+
+        const selecionadas =
+            inspecao.fotosDesmontagemSelecionadas
+                ? inspecao.fotosDesmontagemSelecionadas.split(",")
+                : [];
+
+        for(const numero of selecionadas){
+            try{
+                const resposta =
+                    await fetch(
+                        `/api/inspecoes/${id}/foto${numero}`,
+                        {
+                            headers:{
+                                Authorization:token
+                            }
+                        }
+                    );
+
+                if(!resposta.ok){
+                    continue;
+                }
+
+                const blob = await resposta.blob();
+                const fotoURL = URL.createObjectURL(blob);
+                const observacao =
+                    inspecao[
+                        `comentarioDesmontagem${numero}`
+                    ] || "";
+
+                const card = document.createElement("div");
+                card.className = "itemFotoDesmontagem";
+                card.innerHTML =
+                    `
+                    <div class="numero-foto">
+                        FOTO ${numero}
+                    </div>
+
+                    <img src="${fotoURL}">
+
+                    <div class="observacaoDesmontagem">
+                        ${observacao}
+                    </div>
+                    `;
+                container.appendChild(card);
+            }
+            catch(err){
+                console.error(
+                    "Erro ao carregar foto desmontagem:",
+                    numero,
+                    err
+                );
+            }
+        }
+    }
+
+    function carregarProblemas(inspecao){
+
+        const container =
+            document.getElementById(
+                "problemasEncontradosRelatorio"
+            );
+
+        if(!container){
+            return;
+        }
+
+        let problemas = [];
+
+        try{
+
+            problemas =
+                JSON.parse(
+                    inspecao.problemasEncontrados || "[]"
+                );
+
+        }catch{
+
+            problemas = [];
+        }
+
+        if(problemas.length === 0){
+
+            container.innerHTML = `
+                <div class="itemProblema">
+                    Nenhum problema informado.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            problemas.map(item => `
+                <div class="itemProblema">
+                    <span class="checkProblema">
+                        ✓
+                    </span>
+                    <span class="textoProblema">
+                        ${item}
+                    </span>
+                </div>
+            `).join("");
+    }
+
+    function carregarCausasMecanicas(inspecao){
+
+        const container =
+            document.getElementById(
+                "causasMecanicasRelatorio"
+            );
+
+        if(!container){
+            return;
+        }
+
+        let causas = [];
+
+        try{
+
+            causas =
+                JSON.parse(
+                    inspecao.causasMecanicas || "[]"
+                );
+
+        }catch{
+
+            causas = [];
+        }
+
+        if(causas.length === 0){
+
+            container.innerHTML = `
+                <div class="itemProblema">
+                    Nenhuma causa mecânica informada.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            causas.map(item => `
+                <div class="itemProblema">
+                    <span class="checkProblema">
+                        ✓
+                    </span>
+                    <span class="textoProblema">
+                        ${item}
+                    </span>
+                </div>
+            `).join("");
+    }
+
+    function carregarCausasEletricas(inspecao){
+
+        const container =
+            document.getElementById(
+                "causasEletricasRelatorio"
+            );
+
+        if(!container){
+            return;
+        }
+
+        let causas = [];
+
+        try{
+
+            causas =
+                JSON.parse(
+                    inspecao.causasEletricas || "[]"
+                );
+
+        }catch{
+
+            causas = [];
+        }
+
+        if(causas.length === 0){
+
+            container.innerHTML = `
+                <div class="itemProblema">
+                    Nenhuma causa elétrica informada.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            causas.map(item => `
+                <div class="itemProblema">
+                    <span class="checkProblema">
+                        ✓
+                    </span>
+                    <span class="textoProblema">
+                        ${item}
+                    </span>
+                </div>
+            `).join("");
+    }
+
+    function carregarRecomendacoes(inspecao){
+
+        const container =
+            document.getElementById(
+                "recomendacoesRelatorio"
+            );
+
+        if(!container){
+            return;
+        }
+
+        let recomendacoes = [];
+
+        try{
+
+            recomendacoes =
+                JSON.parse(
+                    inspecao.recomendacoesInstalacao || "[]"
+                );
+
+        }catch{
+
+            recomendacoes = [];
+        }
+
+        if(recomendacoes.length === 0){
+
+            container.innerHTML = `
+                <div class="itemProblema">
+                    Nenhuma recomendação informada.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            recomendacoes.map(item => `
+                <div class="itemProblema">
+                    <span class="checkProblema">
+                        ✓
+                    </span>
+                    <span class="textoProblema">
+                        ${item}
+                    </span>
+                </div>
+            `).join("");
+    }    
+
+    function carregarObservacoesGerais(inspecao){
+
+        const container =
+            document.getElementById(
+                "observacoesGeraisRelatorio"
+            );
+
+        if(!container){
+            return;
+        }
+
+        const observacoes =
+            inspecao.observacoesGerais || "";
+
+        if(!observacoes.trim()){
+
+            container.innerHTML =
+                "Nenhuma observação informada.";
+
+            return;
+        }
+
+        container.textContent =
+            observacoes;
+    }
+
+
+    async function carregarRelatorio(){
+        try{
+            const res =
+                await fetch(
+                    `/api/inspecoes/${id}`,
+                    {
+                        headers:{
+                            Authorization:token
+                        }
+                    }
+                );
+
+            const inspecao = await res.json();
+            await carregarFotosRecebimento(inspecao);
+            await carregarFotosDesmontagem(inspecao);
+            carregarProblemas(inspecao);
+            carregarCausasMecanicas(inspecao);
+            carregarCausasEletricas(inspecao);
+            carregarRecomendacoes(inspecao);
+            carregarObservacoesGerais(inspecao);
+
+
+            document.getElementById("numeroOS").textContent =
+                inspecao.numeroOS || "-";
+
+            document.getElementById("cliente").textContent =
+                inspecao.nomeFantasia || "-";
+
+            document.getElementById("fabricante").textContent =
+                inspecao.fabricante || "-";
+
+            document.getElementById("modelo").textContent =
+                inspecao.modelo || "-";
+
+            document.getElementById("tipo").textContent =
+                inspecao.tipo || "-";
+
+            document.getElementById("tensao").textContent =
+                inspecao.tensao || "-";
+
+            document.getElementById("numeroSerie").textContent =
+                inspecao.numeroSerie || "-";
+
+            document.getElementById("inspecionador").textContent =
+                inspecao.inspecionador || "-";
+
+            document.getElementById("liberadoPor").textContent =
+                inspecao.liberadoPor || "-";
+
+            document.getElementById("dataLiberacao").textContent =
+                formatarDataHora(
+                    inspecao.dataLiberacao
+                );
+
+            document.getElementById("dataHoraInicio").textContent =
+                formatarDataHora(
+                    inspecao.dataHoraInicio
+                );
+
+            document.getElementById("dataHoraFim").textContent =
+                formatarDataHora(
+                    inspecao.dataHoraFim
+                );
+
+            document.getElementById("tempoTotal").textContent =
+                inspecao.tempoTotal || "-";
+
+            document.getElementById("tempoParado").textContent =
+                formatarDuracao(
+                    inspecao.tempoPausadoTotal
+                );
+
+        }
+        catch(err){
+            console.error(err);
+            alert(
+                "Erro ao carregar relatório."
+            );
+        }
+    }
+
+
+
+    window.onload =  carregarRelatorio;
+
+
+    function fecharRelatorio(){
+        window.close();
+    }
+
+</script>
+
+</body>
+
+</html>
